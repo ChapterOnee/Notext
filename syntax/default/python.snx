@@ -1,0 +1,6 @@
+config for .py
+config name Python
+
+group keywords if|else|elif|def|lambda|import|as
+group comment (?:^|\s)#.*(?:\r?\n|$)
+group strings (\"[^\"]*\")|'[^']*'
