@@ -94,12 +94,12 @@ public class Root extends JPanel {
                 Root.this.editorInFocus = this;
             }
         };
-        TextEditor secondaryEditor = new TextEditor(){
+        /*TextEditor secondaryEditor = new TextEditor(){
             @Override
             public void onClicked(EventStatus eventStatus) {
                 Root.this.editorInFocus = this;
             }
-        };
+        };*/
 
         editorInFocus = primaryEditor;
 
@@ -109,10 +109,10 @@ public class Root extends JPanel {
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorSpacePlacement.add(primaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
-        editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
+        //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
 
-        placement.add(header,new UnitValue(20, UnitValue.Unit.PIXELS));
+        placement.add(header,new UnitValue(theme.getFontByName("small").getSize()+20, UnitValue.Unit.PIXELS));
         placement.add(editorSpace,new UnitValue(0, UnitValue.Unit.AUTO));
 
         //core.resize(Size.fromDimension(this.getSize()));
@@ -150,7 +150,7 @@ public class Root extends JPanel {
 
                         current_line.setText(text.substring(editorInFocus.getCursor().getX()));
 
-                        editorInFocus.insertNewLine(text.substring(0, editorInFocus.getCursor().getX()), editorInFocus.getCursor().getY());
+                        editorInFocus.getText().insertNewLine(text.substring(0, editorInFocus.getCursor().getX()), editorInFocus.getCursor().getY());
                         editorInFocus.getCursor().down();
                         editorInFocus.getCursor().toLineStart();
                     }
@@ -159,16 +159,17 @@ public class Root extends JPanel {
                     */
                     case 8 -> {
                         EditorLine current_line = editorInFocus.getLineUnderCursor();
+
                         if (!editorInFocus.getCursor().canMove(new Position(-1, 0))) {
                             if(editorInFocus.getCursor().canMoveOnLine(-1)){
                                 String text = current_line.getText();
-                                editorInFocus.getLines().remove(current_line);
+                                editorInFocus.getText().removeLine(current_line);
                                 editorInFocus.getCursor().upToLineEnd();
-                                editorInFocus.getLines().get(editorInFocus.getCursor().getY()).appendText(text);
+                                editorInFocus.getText().appendTextAt(text,editorInFocus.getCursor().getY());
                             }
                         }
                         else {
-                            current_line.removeTextAt(editorInFocus.getCursor().getX() - 1);
+                            editorInFocus.getText().removeCharAt(editorInFocus.getCursor().getX() - 1, editorInFocus.getCursor().getY());
                             editorInFocus.getCursor().left();
                         }
                     }
@@ -176,9 +177,8 @@ public class Root extends JPanel {
                         Delete
                      */
                     case 127 -> {
-                        EditorLine current_line = editorInFocus.getLineUnderCursor();
                         if(editorInFocus.getCursor().getCurrrentCharsUnderCursor().charAt(1) != 0){
-                            current_line.removeTextAt(editorInFocus.getCursor().getX());
+                            editorInFocus.getText().removeCharAt(editorInFocus.getCursor().getX(),editorInFocus.getCursor().getY());
                         }
 
                         //theme.setAccentColor(theme.getColorByName("accent").darker());
@@ -337,7 +337,7 @@ public class Root extends JPanel {
                             editorInFocus.insertStringOnCursor(formated_data[i]);
                         }
                         else{
-                            editorInFocus.insertNewLine(formated_data[i], editorInFocus.getCursor().getY()+i);
+                            editorInFocus.getText().insertNewLine(formated_data[i], editorInFocus.getCursor().getY()+i);
                         }
 
                         if(i+1 >= formated_data.length){
@@ -349,6 +349,13 @@ public class Root extends JPanel {
                 catch (Exception ex){
 
                 }
+            }
+        };
+
+        Keybind revert = new Keybind("Revert", this, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK)){
+            @Override
+            public void activated(ActionEvent e) {
+                editorInFocus.getText().revert();
             }
         };
     }

@@ -9,6 +9,6 @@ color keywords 200,200,100
 color strings 100,100,100
 color comment 50,50,50
 
-font normal Monospaced,16
-font small Monospaced,14
-font big Monospaced,24
+font normal Serif,16
+font small Serif,14
+font big Serif,24

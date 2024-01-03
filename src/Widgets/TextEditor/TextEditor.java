@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TextEditor extends Widget {
-    private final ArrayList<EditorLine> lines;
+    private final StoredText text;
 
     private final Position offset = new Position(60,20);
     final private int LINE_OFFSET = 20;
@@ -38,8 +38,8 @@ public class TextEditor extends Widget {
 
     public TextEditor() {
         super();
-        this.lines = new ArrayList<>();
         this.cursor = new Cursor(new Position(0, 0));
+        this.text = new StoredText(this.cursor);
         //this.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
 
         /*this.highlighter = new Highlighter("Simple");
@@ -52,22 +52,11 @@ public class TextEditor extends Widget {
 
         //this.highlighter.loadFromFile("syntax/default/theme.snx");
 
-        cursor.setCurrentTextLines(this.lines);
-
-        this.newLine("");
-    }
-    public void newLine(String text){
-        this.insertNewLine(text,this.lines.size());
-    }
-
-    public void insertNewLine(String text, int index){
-        EditorLine line = new EditorLine(text,theme, highlighter.getCurrentHighlighter());
-        lines.add(index ,line);
+        cursor.setCurrentTextLines(text.getLines());
     }
 
     public void insertStringOnCursor(String text){
-        EditorLine current_line = lines.get(cursor.getY());
-        current_line.addTextAt(text,cursor.getX());
+        this.text.insertTextAt(text,cursor.getX(),cursor.getY());
 
         for(int i = 0; i < text.length();i++) {
             cursor.right();
@@ -83,7 +72,7 @@ public class TextEditor extends Widget {
         //int single_char_width = fm.stringWidth(" " + cursor.getCurrrentCharsUnderCursor().charAt(0));
         int text_height = fm.getHeight();
         Position pos = cursor.getRealCursorPosition(fm);
-        offset.x = fm.stringWidth(" ."+lines.size());
+        offset.x = fm.stringWidth(" ."+text.getLines().size());
 
         // Draw background
         g2.setColor(theme.getColorByName("primary"));
@@ -94,29 +83,6 @@ public class TextEditor extends Widget {
 
         g2.setColor(theme.getColorByName("accent"));
         g2.fillRect(this.getX()+ offset.x+3,this.getY(),2, this.getHeight());
-
-        //
-        //  Draw all hints
-        //
-        //g2.drawString(cursor.getCurrrentCharsUnderCursor(), this.getWidth() - 50, this.getHeight() - 50);
-
-        String cursorPosition = cursor.getX() + ":" + cursor.getY() + " " + highlighter.getCurrentHighlighter().getName() + " " + currentlyOpenFile;
-        int cursorPositionWidth = fm.stringWidth(cursorPosition);
-
-        int cursorPositionDisplayMargin = 5;
-
-        g2.setColor(theme.getColorByName("secondary"));
-        g2.fillRect(
-                this.getX() + this.getWidth() - cursorPositionWidth - cursorPositionDisplayMargin*2,
-                this.getY() + this.getHeight() - cursorPositionDisplayMargin - text_height,
-                cursorPositionWidth+cursorPositionDisplayMargin*2,
-                text_height+cursorPositionDisplayMargin
-        );
-        g2.setColor(theme.getColorByName("text1"));
-        g2.drawString(cursorPosition,
-                this.getX() + this.getWidth() - cursorPositionWidth - 5,
-                this.getY() + this.getHeight() - 5
-        ); // Widgets.TextEditor.Cursor position in bottom right corner
 
 
         //
@@ -146,7 +112,7 @@ public class TextEditor extends Widget {
             to = selection.getTo();
 
             // First line
-            int offset_x = fm.stringWidth(lines.get(from.getY()).getText().substring(0,from.getX()));
+            int offset_x = fm.stringWidth(text.getLines().get(from.getY()).getText().substring(0,from.getX()));
             g2.fillRect(
                     this.getX() + offset.x + LINE_OFFSET + offset_x,
                     this.getY() + offset.y + from.getY()*text_height,
@@ -193,7 +159,7 @@ public class TextEditor extends Widget {
         int line_number = 0;
         String line_text;
         int x,y;
-        for (EditorLine line : lines) {
+        for (EditorLine line : text.getLines()) {
             line_text = line_number + ".";
             x = this.getX() + offset.x;
             y = this.getY() + offset.y+line_number*text_height;
@@ -236,7 +202,7 @@ public class TextEditor extends Widget {
             g2.drawString(group.getContent(), x, y+text_height);
         }
 
-        contentHeight = lines.size()*text_height;
+        contentHeight = text.getLines().size()*text_height;
 
         //
         // Draw cursor
@@ -263,25 +229,43 @@ public class TextEditor extends Widget {
         g2.setTransform(at2);
         lastg2 = g2;
 
+
+        //
+        //  Draw all hints
+        //
+        //g2.drawString(cursor.getCurrrentCharsUnderCursor(), this.getWidth() - 50, this.getHeight() - 50);
+
+        String cursorPosition = cursor.getX() + ":" + cursor.getY() + " " + highlighter.getCurrentHighlighter().getName() + " " + currentlyOpenFile;
+        int cursorPositionWidth = fm.stringWidth(cursorPosition);
+
+        int cursorPositionDisplayMargin = 5;
+
+        g2.setColor(theme.getColorByName("secondary"));
+        g2.fillRect(
+                this.getX() + this.getWidth() - cursorPositionWidth - cursorPositionDisplayMargin*2,
+                this.getY() + this.getHeight() - cursorPositionDisplayMargin - text_height,
+                cursorPositionWidth+cursorPositionDisplayMargin*2,
+                text_height+cursorPositionDisplayMargin
+        );
+        g2.setColor(theme.getColorByName("text1"));
+        g2.drawString(cursorPosition,
+                this.getX() + this.getWidth() - cursorPositionWidth - 5,
+                this.getY() + this.getHeight() - 5
+        ); // Widgets.TextEditor.Cursor position in bottom right corner
+
         super.drawSelf(g2);
     }
 
     public String getFullContent(){
-        StringBuilder content = new StringBuilder();
-
-        for(EditorLine line: lines){
-            content.append(line.getText()).append("\n");
-        }
-
-        return content.toString();
+        return text.getFullContent();
     }
 
     public int getRealX(int x, int y, FontMetrics fm){
-        if(y < 0 || y > lines.size()-1){
+        if(y < 0 || y > text.getLines().size()-1){
             return 0;
         }
 
-        return fm.stringWidth(lines.get(y).getText().substring(0,x));
+        return fm.stringWidth(text.getLines().get(y).getText().substring(0,x));
     }
 
     public void startSelection(){
@@ -291,7 +275,7 @@ public class TextEditor extends Widget {
         clearSelections();
 
         Cursor second = new Cursor(new Position(cursor.getX(), cursor.getY()));
-        second.setCurrentTextLines(lines);
+        second.setCurrentTextLines(text.getLines());
 
         currentSelection = new Selection(cursor, second);
         activeSelections.add(currentSelection);
@@ -301,7 +285,7 @@ public class TextEditor extends Widget {
             return;
         }
         Cursor second = new Cursor(new Position(cursor.getX(), cursor.getY()));
-        second.setCurrentTextLines(lines);
+        second.setCurrentTextLines(text.getLines());
 
         currentSelection.setFrom(second);
         currentSelection = null;
@@ -325,14 +309,14 @@ public class TextEditor extends Widget {
         y = y / fm.getHeight();
         int x = pos.x - offset.x - LINE_OFFSET - this.getX();
 
-        if(y < 0 || y >= lines.size()){
+        if(y < 0 || y >= text.getLines().size()){
             return cursor_pos;
         }
 
         /*
             Locate on x axis
          */
-        String line = lines.get(y).getText();
+        String line = text.getLines().get(y).getText();
         String current_line = "";
 
         int i = 0;
@@ -346,7 +330,7 @@ public class TextEditor extends Widget {
     }
 
     public void clear(){
-        this.lines.clear();
+        this.text.getLines().clear();
         scroll = new Position(0,0);
         activeSelections.clear();
     }
@@ -358,10 +342,22 @@ public class TextEditor extends Widget {
             highlighter.toDetectedHighlighterFromFilename(filename);
             clear();
 
+            StringBuilder all_data = new StringBuilder();
+
+            int lines = 0;
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
-                newLine(data);
+                all_data.append(data).append("\n");
+
+                lines += 1;
+
+                if (lines > 5000){
+                    System.out.println("Max amount of lines reached. For safety reasons cutting reading of text");
+                }
             }
+
+            text.setText(all_data.toString());
+
             myReader.close();
             currentlyOpenFile = filename;
 
@@ -373,7 +369,7 @@ public class TextEditor extends Widget {
     public void saveToCurrentlyOpenFile(){
         try {
             FileWriter myWriter = new FileWriter(currentlyOpenFile);
-            for(EditorLine line: lines) {
+            for(EditorLine line: text.getLines()) {
                 myWriter.write(line.getText() + "\n");
             }
             myWriter.close();
@@ -412,14 +408,10 @@ public class TextEditor extends Widget {
 
     public void setTheme(Theme theme) {
         this.theme = theme;
-
-        for(EditorLine line: lines){
-            line.setTheme(theme);
-        }
     }
 
     public EditorLine getLine(int y){
-        return this.lines.get(y);
+        return this.text.getLines().get(y);
     }
 
     public EditorLine getLineUnderCursor(){
@@ -431,7 +423,7 @@ public class TextEditor extends Widget {
     }
 
     public ArrayList<EditorLine> getLines() {
-        return lines;
+        return text.getLines();
     }
 
     public String getCurrentlyOpenFile() {
@@ -451,6 +443,10 @@ public class TextEditor extends Widget {
                 cursor.setPosition(last_pos);
             }
         }
+    }
+
+    public StoredText getText() {
+        return text;
     }
 
     public ArrayList<Selection> getActiveSelections() {
