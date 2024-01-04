@@ -1,10 +1,8 @@
 package Widgets.DropdownMenu;
 
-import Widgets.Theme;
-import Utility.Position;
+import Utility.*;
 import Utility.Rectangle;
-import Utility.Size;
-import Utility.UnitValue;
+import Widgets.Theme;
 import Widgets.Label;
 import Widgets.Placements.VerticalPlacement;
 import Widgets.Widget;
@@ -39,6 +37,7 @@ public class DropdownMenu extends Label {
                 return DropdownMenu.this.getPosition().getOffset(new Position(0,DropdownMenu.this.getHeight()));
             }
         };
+        verticalPlacement.setItemMargin(2);
     }
 
     @Override
@@ -54,7 +53,12 @@ public class DropdownMenu extends Label {
 
         if(mouseOver){
             g2.setColor(theme.getColorByName(this.getBackgroudColor()));
-            g2.fillRect(this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size());
+
+            AdvancedGraphics.borderedRect(g2,
+                    this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size(),
+                    2, theme.getColorByName("secondary"), theme.getColorByName("primary"), AdvancedGraphics.BORDER_FULL
+            );
+            //g2.fillRect(this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size());
         }
     }
 

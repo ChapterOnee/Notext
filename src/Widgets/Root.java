@@ -27,7 +27,7 @@ public class Root extends Core {
         HorizontalPlacement header_placement = new HorizontalPlacement(theme);
         header.setChildrenPlacement(header_placement);
 
-        Button open_file = new Button("Open", "small", 2,0) {
+        Button open_file = new Button("Open", "small", 0,0) {
             @Override
             public void onClicked(EventStatus eventStatus) {
                 FileDialog fd = new FileDialog(frame, "Choose a file", FileDialog.LOAD);
@@ -42,7 +42,7 @@ public class Root extends Core {
                 eventStatus.setMouseDown(false);
             }
         };
-        Button save_file = new Button("Save", "small", 2, 0) {
+        Button save_file = new Button("Save", "small", 0, 0) {
             @Override
             public void onClicked(EventStatus eventStatus) {
                 editorInFocus.saveToCurrentlyOpenFile();
@@ -53,8 +53,6 @@ public class Root extends Core {
         DropdownMenu menu = new DropdownMenu("File", "small",0,0, new Size(100,30));
         menu.setzIndex(1);
 
-        save_file.setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
-        open_file.setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
 
         header_placement.add(menu, new UnitValue(50, UnitValue.Unit.PIXELS));
 
@@ -90,14 +88,12 @@ public class Root extends Core {
 
         //core.resize(Size.fromDimension(this.getSize()));
 
-        this.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
+        panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
         this.bindEvents();
-
-        setFocusable(true);
     }
 
     public void bindEvents(){
-        addKeyListener(new KeyListener() {
+        panel.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent keyEvent) {
 
@@ -203,7 +199,7 @@ public class Root extends Core {
                 update();
             }
         });
-        addMouseMotionListener(new MouseMotionListener() {
+        panel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 editorInFocus.startSelection();
@@ -214,7 +210,7 @@ public class Root extends Core {
 
             }
         });
-        addMouseListener(new MouseListener() {
+        panel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 editorInFocus.clearSelections();
@@ -242,7 +238,7 @@ public class Root extends Core {
 
             }
         });
-        addMouseWheelListener(new MouseWheelListener() {
+        panel.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                 editorInFocus.setScrollY(Math.max(0, editorInFocus.getScroll().y + e.getWheelRotation()*25));
@@ -250,14 +246,14 @@ public class Root extends Core {
             }
         });
 
-        Keybind save = new Keybind("Save", this, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)) {
+        Keybind save = new Keybind("Save", panel, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)) {
             @Override
             public void activated(ActionEvent e) {
                 System.out.println("Save action performed");
             }
         };
 
-        Keybind copy = new Keybind("Copy", this, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK)){
+        Keybind copy = new Keybind("Copy", panel, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK)){
             @Override
             public void activated(ActionEvent e) {
                 if(!editorInFocus.getActiveSelections().isEmpty()){
@@ -272,7 +268,7 @@ public class Root extends Core {
             }
         };
 
-        Keybind paste = new Keybind("Paste", this, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK)){
+        Keybind paste = new Keybind("Paste", panel, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK)){
             @Override
             public void activated(ActionEvent e) {
                 try {
@@ -301,7 +297,7 @@ public class Root extends Core {
             }
         };
 
-        Keybind revert = new Keybind("Revert", this, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK)){
+        Keybind revert = new Keybind("Revert", panel, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK)){
             @Override
             public void activated(ActionEvent e) {
                 editorInFocus.getText().revert();

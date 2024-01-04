@@ -9,9 +9,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Core extends JPanel {
+public class Core {
     protected final Frame core_frame;
     protected JFrame frame;
+
+    protected JPanel panel;
 
     protected Theme theme;
 
@@ -28,17 +30,26 @@ public class Core extends JPanel {
 
             @Override
             public int getWidth() {
-                return getPreferredSize().width;
+                return panel.getPreferredSize().width;
             }
 
             @Override
             public int getHeight() {
-                return getPreferredSize().height;
+                return panel.getPreferredSize().height;
             }
         };
         core_frame.setTheme(theme);
 
-        addComponentListener(new ComponentListener() {
+        panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+
+                Core.this.core_frame.draw(g2);
+            }
+        };
+
+        panel.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
                 core_frame.getChildrenPlacement().resize(Size.fromDimension(e.getComponent().getSize()));
@@ -60,7 +71,7 @@ public class Core extends JPanel {
             }
         });
 
-        addMouseMotionListener(new MouseMotionListener() {
+        panel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 eventStatus.getMousePosition().x = e.getX();
@@ -76,7 +87,7 @@ public class Core extends JPanel {
             }
         });
 
-        addMouseListener(new MouseListener() {
+        panel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
@@ -104,6 +115,8 @@ public class Core extends JPanel {
 
             }
         });
+
+        panel.setFocusable(true);
     }
 
     public void open(){
@@ -115,22 +128,21 @@ public class Core extends JPanel {
         gb.weightx = 1;
         gb.weighty = 1;
 
-        frame.add(this,gb);
+        frame.add(panel,gb);
 
         frame.setSize(800,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        onFrameLoad();
+    }
+
+    public void onFrameLoad(){
+
     }
 
     public void update(){
         core_frame.update(eventStatus);
-        repaint();
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-
-        core_frame.draw(g2);
+        panel.repaint();
     }
 }

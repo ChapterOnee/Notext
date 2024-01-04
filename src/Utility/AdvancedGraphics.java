@@ -3,7 +3,7 @@ package Utility;
 import java.awt.*;
 
 public class AdvancedGraphics {
-
+    public static final GraphicsBorderModifier BORDER_FULL = new GraphicsBorderModifier(true,true,true,true);
     public static void borderedRect(Graphics2D g2, int x, int y, int width, int height, int borderWidth, Color fill, Color border, GraphicsBorderModifier borderModifier){
         g2.setColor(border);
         g2.fillRect(x,y,width,height);

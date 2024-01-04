@@ -25,6 +25,7 @@ public class VerticalPlacement extends Placement{
         this.rootPosition = new Position(0,0);
         this.rootSize = new Size(0,0);
         this.theme = theme;
+        this.itemMargin = 0;
     }
 
     @Override
@@ -61,7 +62,7 @@ public class VerticalPlacement extends Placement{
         int current_y = 0;
         for(PlacementCell cel: children){
             cell = ((VerticalPlacementCell) cel);
-            cell.setLastCalculatedPosition(new Position(0,current_y));
+            cell.setLastCalculatedPosition(new Position(itemMargin,current_y+ itemMargin));
 
             int calculated_height = cell.getHeight().toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
 
@@ -69,7 +70,7 @@ public class VerticalPlacement extends Placement{
                 calculated_height = (this.getRootSize().height-taken_up_scape)/filling;
             }
 
-            cell.setLastCalculatedSize(new Size(this.getRootSize().width, calculated_height));
+            cell.setLastCalculatedSize(new Size(this.getRootSize().width- itemMargin *2, calculated_height- itemMargin *2));
 
             //System.out.println(new Position(0,current_y) + " " + new Size(this.getRootSize().width, calculated_height));
 

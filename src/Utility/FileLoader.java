@@ -38,6 +38,10 @@ public class FileLoader {
                 String name = split_data.get(1).strip();
                 String arguments = split_data.get(2).strip();
 
+                if(arguments.startsWith("\"") && arguments.endsWith("\"")){
+                    arguments = arguments.substring(1,arguments.length()-1);
+                }
+
                 this.handleTag(tag, name, arguments);
 
             }

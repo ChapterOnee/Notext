@@ -63,6 +63,7 @@ public abstract class Widget implements Comparable<Widget>{
     }
     public void setupDraw(Graphics2D g2){
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setFont(theme.getFontByName("normal"));
         g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
     }

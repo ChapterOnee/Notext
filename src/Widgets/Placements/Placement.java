@@ -12,6 +12,8 @@ public abstract class Placement {
     protected ArrayList<PlacementCell> children = new ArrayList<>();
 
     protected Theme theme;
+    protected int itemMargin = 0;
+
     public Position getPosition(int index) {
         //System.out.println(this.getRootPosition() + " " + this.children.get(index).getLastCalculatedPosition() + this.children.get(index));
         return this.getRootPosition().getOffset(this.children.get(index).getLastCalculatedPosition());
@@ -59,5 +61,13 @@ public abstract class Placement {
 
     public void setTheme(Theme theme) {
         this.theme = theme;
+    }
+
+    public int getItemMargin() {
+        return itemMargin;
+    }
+
+    public void setItemMargin(int itemMargin) {
+        this.itemMargin = itemMargin;
     }
 }

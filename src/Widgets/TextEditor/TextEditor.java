@@ -97,7 +97,7 @@ public class TextEditor extends Widget {
         // Draw selections
         //
 
-        g2.setColor(theme.getColorByName("accent2"));
+        g2.setColor(theme.getColorByName("selection"));
         Cursor from, to;
         for(Selection selection: activeSelections){
             selection = selection.getReorganized();
