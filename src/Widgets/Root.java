@@ -16,38 +16,11 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 
-public class Root extends JPanel {
+public class Root extends Core {
     private TextEditor editorInFocus;
-
-    private final Frame core;
-
-    private JFrame frame;
-
-    private final EventStatus eventStatus = new EventStatus();
     public Root() {
-        Theme theme = new Theme();
-        theme.loadFromFile("themes/default.thm");
-
         VerticalPlacement placement = new VerticalPlacement(theme);
-
-        core = new Frame("primary") {
-            @Override
-            public Position getPosition() {
-                return new Position(0,0);
-            }
-
-            @Override
-            public int getWidth() {
-                return getPreferredSize().width;
-            }
-
-            @Override
-            public int getHeight() {
-                return getPreferredSize().height;
-            }
-        };
-        core.setTheme(theme);
-        core.setChildrenPlacement(placement);
+        core_frame.setChildrenPlacement(placement);
 
         Frame header = new Frame("secondary");
 
@@ -73,7 +46,7 @@ public class Root extends JPanel {
             @Override
             public void onClicked(EventStatus eventStatus) {
                 editorInFocus.saveToCurrentlyOpenFile();
-                editorInFocus.openFile(editorInFocus.getCurrentlyOpenFile());
+                editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
             }
         };
 
@@ -121,7 +94,6 @@ public class Root extends JPanel {
         this.bindEvents();
 
         setFocusable(true);
-
     }
 
     public void bindEvents(){
@@ -159,6 +131,11 @@ public class Root extends JPanel {
                     */
                     case 8 -> {
                         EditorLine current_line = editorInFocus.getLineUnderCursor();
+
+                        if(editorInFocus.getActiveSelections().size() > 0){
+                            editorInFocus.getText().removeSelection(editorInFocus.getActiveSelections().get(0));
+                            editorInFocus.clearSelections();
+                        }
 
                         if (!editorInFocus.getCursor().canMove(new Position(-1, 0))) {
                             if(editorInFocus.getCursor().canMoveOnLine(-1)){
@@ -226,41 +203,15 @@ public class Root extends JPanel {
                 update();
             }
         });
-        addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                core.getChildrenPlacement().resize(Size.fromDimension(e.getComponent().getSize()));
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-
-            }
-        });
         addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 editorInFocus.startSelection();
-                eventStatus.getMousePosition().x = e.getX();
-                eventStatus.getMousePosition().y = e.getY();
-                update();
             }
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                eventStatus.getMousePosition().x = e.getX();
-                eventStatus.getMousePosition().y = e.getY();
-                update();
+
             }
         });
         addMouseListener(new MouseListener() {
@@ -271,14 +222,12 @@ public class Root extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                eventStatus.setMouseDown(true);
                 //editor.startSelection();
                 update();
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                eventStatus.setMouseDown(false);
                 editorInFocus.endSelection();
                 update();
             }
@@ -358,33 +307,5 @@ public class Root extends JPanel {
                 editorInFocus.getText().revert();
             }
         };
-    }
-
-    public void open(){
-        frame = new JFrame();
-        frame.setLayout(new GridBagLayout());
-
-        GridBagConstraints gb = new GridBagConstraints();
-        gb.fill = GridBagConstraints.BOTH;
-        gb.weightx = 1;
-        gb.weighty = 1;
-
-        frame.add(this,gb);
-
-        frame.setSize(800,500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-
-        core.draw(g2);
-    }
-
-    public void update(){
-        core.update(eventStatus);
-        repaint();
     }
 }

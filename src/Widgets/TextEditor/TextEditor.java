@@ -34,8 +34,6 @@ public class TextEditor extends Widget {
 
     private final SyntaxHighlighter highlighter;
 
-    private String currentlyOpenFile;
-
     public TextEditor() {
         super();
         this.cursor = new Cursor(new Position(0, 0));
@@ -235,7 +233,7 @@ public class TextEditor extends Widget {
         //
         //g2.drawString(cursor.getCurrrentCharsUnderCursor(), this.getWidth() - 50, this.getHeight() - 50);
 
-        String cursorPosition = cursor.getX() + ":" + cursor.getY() + " " + highlighter.getCurrentHighlighter().getName() + " " + currentlyOpenFile;
+        String cursorPosition = cursor.getX() + ":" + cursor.getY() + " " + highlighter.getCurrentHighlighter().getName() + " " + text.getCurrentFile();
         int cursorPositionWidth = fm.stringWidth(cursorPosition);
 
         int cursorPositionDisplayMargin = 5;
@@ -330,45 +328,18 @@ public class TextEditor extends Widget {
     }
 
     public void clear(){
-        this.text.getLines().clear();
         scroll = new Position(0,0);
         activeSelections.clear();
     }
     public void openFile(String filename){
-        try {
-            File myObj = new File(filename);
-            Scanner myReader = new Scanner(myObj);
-
+        if(text.fromFile(filename)){
             highlighter.toDetectedHighlighterFromFilename(filename);
             clear();
-
-            StringBuilder all_data = new StringBuilder();
-
-            int lines = 0;
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                all_data.append(data).append("\n");
-
-                lines += 1;
-
-                if (lines > 5000){
-                    System.out.println("Max amount of lines reached. For safety reasons cutting reading of text");
-                }
-            }
-
-            text.setText(all_data.toString());
-
-            myReader.close();
-            currentlyOpenFile = filename;
-
-        } catch (FileNotFoundException ignored) {
-
         }
     }
 
     public void saveToCurrentlyOpenFile(){
-        try {
-            FileWriter myWriter = new FileWriter(currentlyOpenFile);
+        try (FileWriter myWriter = new FileWriter(text.getCurrentFile())){
             for(EditorLine line: text.getLines()) {
                 myWriter.write(line.getText() + "\n");
             }
@@ -420,14 +391,6 @@ public class TextEditor extends Widget {
 
     public Position getScroll() {
         return scroll;
-    }
-
-    public ArrayList<EditorLine> getLines() {
-        return text.getLines();
-    }
-
-    public String getCurrentlyOpenFile() {
-        return currentlyOpenFile;
     }
 
     @Override

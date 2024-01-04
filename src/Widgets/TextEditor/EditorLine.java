@@ -46,4 +46,16 @@ public class EditorLine{
         this.raw_content =  sb.toString();
         //this.raw_content = this.raw_content.substring(0,index-1) + this.raw_content.substring(index);
     }
+
+    public void removeAllBetween(int start, int end){
+        StringBuilder buf = new StringBuilder(this.raw_content);
+
+        buf.replace(start, end, "");
+
+        this.raw_content = buf.toString();
+    }
+
+    public int size(){
+        return this.raw_content.length();
+    }
 }
