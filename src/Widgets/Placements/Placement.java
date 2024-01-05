@@ -3,6 +3,7 @@ import Widgets.Theme;
 import Utility.Position;
 import Utility.Size;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class Placement {
@@ -65,6 +66,10 @@ public abstract class Placement {
 
     public int getItemMargin() {
         return itemMargin;
+    }
+
+    public void drawDebug(Graphics2D g2){
+
     }
 
     public void setItemMargin(int itemMargin) {

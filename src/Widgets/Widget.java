@@ -39,6 +39,10 @@ public abstract class Widget implements Comparable<Widget>{
             return;
         }
 
+        if(this.childrenPlacement != null){
+            this.childrenPlacement.drawDebug(g2);
+        }
+
         g2.setFont(new Font("Monospaced", Font.PLAIN,10));
         FontMetrics fm = g2.getFontMetrics(g2.getFont());
 

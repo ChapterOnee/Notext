@@ -4,7 +4,7 @@ import Utility.Position;
 import Utility.Size;
 import Widgets.Widget;
 
-public class PlacementCell {
+public abstract class PlacementCell {
     protected Widget boundElement;
 
     protected Size lastCalculatedSize = new Size(0,0);
