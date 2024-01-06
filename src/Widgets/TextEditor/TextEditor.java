@@ -8,6 +8,8 @@ import Widgets.Theme;
 import Widgets.Widget;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,7 +23,6 @@ public class TextEditor extends Widget {
 
     private final Position offset = new Position(60,20);
     final private int LINE_OFFSET = 20;
-
     private Position scroll = new Position(0,0);
     private int contentHeight = 0;
 
@@ -235,7 +236,6 @@ public class TextEditor extends Widget {
 
         String cursorPosition = cursor.getX() + ":" + cursor.getY() + " " + highlighter.getCurrentHighlighter().getName() + " " + text.getCurrentFile();
         int cursorPositionWidth = fm.stringWidth(cursorPosition);
-
         int cursorPositionDisplayMargin = 5;
 
         g2.setColor(theme.getColorByName("secondary"));
@@ -351,7 +351,7 @@ public class TextEditor extends Widget {
     }
 
     @Override
-    public void onClicked(EventStatus eventStatus) {
+    public void onMouseClicked(MouseEvent e) {
         /*Position pos = realToCursorPosition(eventStatus.getMousePosition(),lastg2);
         Position last_pos = new Position(cursor.getX(), cursor.getY());
 
@@ -368,6 +368,105 @@ public class TextEditor extends Widget {
                 clearSelections();
             }
         }*/
+    }
+
+    @Override
+    public void onKeyPressed(KeyEvent keyEvent) {
+        //System.out.println(keyEvent.getExtendedKeyCode());
+
+        switch (keyEvent.getKeyCode()){
+            case 38 -> this.cursor.up();
+            case 40 -> this.cursor.down();
+            case 37 -> this.cursor.left();
+            case 39 -> this.cursor.right();
+
+                    /*
+                        Enter, handle adding editor.getLines().
+                    */
+            case 10 -> {
+                EditorLine current_line = this.getLineUnderCursor();
+                String text = current_line.getText();
+
+                current_line.setText(text.substring(this.cursor.getX()));
+
+                this.text.insertNewLine(text.substring(0, this.cursor.getX()), this.cursor.getY());
+                System.out.println(this.text.getLines().size());
+                this.cursor.down();
+                this.cursor.toLineStart();
+            }
+                    /*
+                        Backspace, handle removing characters.
+                    */
+            case 8 -> {
+                EditorLine current_line = this.getLineUnderCursor();
+
+                if(!this.activeSelections.isEmpty()){
+                    this.text.removeSelection(this.activeSelections.get(0));
+                    this.clearSelections();
+                }
+
+                if (!this.cursor.canMove(new Position(-1, 0))) {
+                    if(this.cursor.canMoveOnLine(-1)){
+                        String text = current_line.getText();
+                        this.text.removeLine(current_line);
+                        this.cursor.upToLineEnd();
+                        this.text.appendTextAt(text,this.cursor.getY());
+                    }
+                }
+                else {
+                    this.text.removeCharAt(this.cursor.getX() - 1, this.cursor.getY());
+                    this.cursor.left();
+                }
+            }
+                    /*
+                        Delete
+                     */
+            case 127 -> {
+                if(this.cursor.getCurrrentCharsUnderCursor().charAt(1) != 0){
+                    this.text.removeCharAt(this.cursor.getX(),this.cursor.getY());
+                }
+
+                //theme.setAccentColor(theme.getColorByName("accent").darker());
+            }
+                    /*
+                        Tab
+                    */
+
+            case 9 -> this.insertStringOnCursor("    ");
+
+                    /*
+                        Shift to select
+                     */
+            case 16 -> {
+                //editor.startSelection();
+            }
+            case 17, 18 -> {
+
+            }
+            default -> {
+                char c = keyEvent.getKeyChar();
+                Character.UnicodeBlock block = Character.UnicodeBlock.of( c );
+
+                if((!Character.isISOControl(c)) &&
+                        c != KeyEvent.CHAR_UNDEFINED &&
+                        block != null &&
+                        block != Character.UnicodeBlock.SPECIALS
+                ) {
+                    this.insertStringOnCursor(keyEvent.getKeyChar() + "");
+                }
+            }
+
+        }
+    }
+
+    @Override
+    public void onKeyReleased(KeyEvent keyEvent) {
+        switch (keyEvent.getKeyCode()) {
+            case 16 -> {
+                this.endSelection();
+            }
+            default -> {}
+        }
     }
 
     public void setScrollY(int y){
@@ -407,11 +506,9 @@ public class TextEditor extends Widget {
             }
         }
     }
-
     public StoredText getText() {
         return text;
     }
-
     public ArrayList<Selection> getActiveSelections() {
         return activeSelections;
     }

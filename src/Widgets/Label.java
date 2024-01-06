@@ -74,10 +74,7 @@ public class Label extends Widget{
         }
 
 
-        g2.drawString(text,
-                this.getX()+this.getWidth()/2-fm.stringWidth(text)/2,
-                this.getY()+this.getHeight()/2+fm.getHeight()/2
-        );
+        AdvancedGraphics.drawCenteredText(g2, this.getBoundingRect(), text);
 
         super.drawSelf(g2);
         //System.out.println(this.getX() + "x" + this.getY() + " " + text + g2.getFont());

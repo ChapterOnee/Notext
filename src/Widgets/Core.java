@@ -11,11 +11,16 @@ import java.awt.event.*;
 
 public class Core {
     protected final Frame core_frame;
+
+    protected Widget element_in_focus;
+
     protected JFrame frame;
 
     protected JPanel panel;
 
     protected Theme theme;
+
+    private boolean DEBUG = false;
 
     private final EventStatus eventStatus = new EventStatus();
     public Core() {
@@ -39,13 +44,20 @@ public class Core {
             }
         };
         core_frame.setTheme(theme);
+        element_in_focus = core_frame;
 
         panel = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
-
                 Core.this.core_frame.draw(g2);
+
+                if(!DEBUG) {
+                    return;
+                }
+                g2.setClip(null);
+                g2.setColor(new Color(255,0,0));
+                g2.drawRect(element_in_focus.getX(), element_in_focus.getY(),element_in_focus.getWidth()-1,element_in_focus.getHeight()-1);
             }
         };
 
@@ -77,6 +89,12 @@ public class Core {
                 eventStatus.getMousePosition().x = e.getX();
                 eventStatus.getMousePosition().y = e.getY();
                 update();
+
+                if(element_in_focus == null){
+                    return;
+                }
+
+                element_in_focus.onMouseDragged(e);
             }
 
             @Override
@@ -84,12 +102,23 @@ public class Core {
                 eventStatus.getMousePosition().x = e.getX();
                 eventStatus.getMousePosition().y = e.getY();
                 update();
+                if(element_in_focus == null){
+                    return;
+                }
+
+                element_in_focus.onMouseMoved(e);
             }
         });
 
         panel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                element_in_focus = core_frame.getChildUnderMouse();
+
+                if(element_in_focus == null){
+                    return;
+                }
+                element_in_focus.onMouseClicked(e);
             }
 
             @Override
@@ -97,12 +126,22 @@ public class Core {
                 eventStatus.setMouseDown(true);
                 //editor.startSelection();
                 update();
+
+                if(element_in_focus == null){
+                    return;
+                }
+                element_in_focus.onMousePressed(e);
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 eventStatus.setMouseDown(false);
                 update();
+
+                if(element_in_focus == null){
+                    return;
+                }
+                element_in_focus.onMouseReleased(e);
             }
 
             @Override
@@ -113,6 +152,31 @@ public class Core {
             @Override
             public void mouseExited(MouseEvent e) {
 
+            }
+        });
+
+        panel.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(element_in_focus == null){
+                    return;
+                }
+                element_in_focus.onKeyPressed(e);
+                update();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(element_in_focus == null){
+                    return;
+                }
+                element_in_focus.onKeyReleased(e);
+                update();
             }
         });
 

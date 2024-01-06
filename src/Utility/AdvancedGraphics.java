@@ -19,4 +19,12 @@ public class AdvancedGraphics {
     public static void borderedRect(Graphics2D g2, Rectangle rect, int borderWidth, Color fill, Color border, GraphicsBorderModifier borderModifier){
         AdvancedGraphics.borderedRect(g2,rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),borderWidth,fill,border, borderModifier);
     }
+
+    public static void drawCenteredText(Graphics2D g2, Rectangle bounding_rect, String text){
+        FontMetrics fm = g2.getFontMetrics(g2.getFont());
+        g2.drawString(text,
+                bounding_rect.getX()+ bounding_rect.getWidth()/2 - fm.stringWidth(text)/2,
+                bounding_rect.getY()+ bounding_rect.getHeight()/2 + fm.getHeight()/2
+        );
+    }
 }

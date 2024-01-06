@@ -29,4 +29,13 @@ public abstract class PlacementCell {
     public void setLastCalculatedPosition(Position lastCalculatedPosition) {
         this.lastCalculatedPosition = lastCalculatedPosition;
     }
+    public void setLastCalculatedPosition(int x, int y) {
+        lastCalculatedPosition.x = x;
+        lastCalculatedPosition.y = y;
+    }
+    public void setLastCalculatedSize(int width, int height) {
+        lastCalculatedSize.width = width;
+        lastCalculatedSize.height = height;
+    }
+
 }

@@ -8,7 +8,8 @@ import Widgets.Placements.Placement;
 import Widgets.Placements.PlacementCell;
 
 import java.awt.*;
-import java.net.CookieHandler;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -157,17 +158,30 @@ public abstract class Widget implements Comparable<Widget>{
 
         mouseOver = found;
 
-
-        if(mouseOver && eventStatus.isMouseDown()){
-            this.onClicked(eventStatus);
-        }
         for(Widget w: this.getChildren()){
             w.update(eventStatus);
         }
     }
 
-    public void onClicked(EventStatus eventStatus){
+    public Widget getChildUnderMouse(){
+        Widget output = this;
 
+        ArrayList<Widget> children = getAllChildren();
+        ArrayList<Widget> childrenUnderCursor = new ArrayList<>();
+
+        for(Widget child: children){
+            if(child.mouseOver){
+                childrenUnderCursor.add(child);
+            }
+        }
+
+        Collections.sort(childrenUnderCursor);
+
+        if(!childrenUnderCursor.isEmpty()){
+            output = childrenUnderCursor.get(childrenUnderCursor.size()-1);
+        }
+
+        return output;
     }
 
     public Rectangle getBoundingRect(){
@@ -206,5 +220,33 @@ public abstract class Widget implements Comparable<Widget>{
                 ", mouseOver=" + mouseOver +
                 ", zIndex=" + zIndex +
                 '}';
+    }
+
+    public void onMouseDragged(MouseEvent e){
+
+    }
+
+    public void onMouseMoved(MouseEvent e){
+
+    }
+
+    public void onMouseClicked(MouseEvent e){
+
+    }
+
+    public void onMousePressed(MouseEvent e){
+
+    }
+
+    public void onMouseReleased(MouseEvent e){
+
+    }
+
+    public void onKeyPressed(KeyEvent keyEvent){
+
+    }
+
+    public void onKeyReleased(KeyEvent keyEvent){
+
     }
 }

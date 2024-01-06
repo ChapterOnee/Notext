@@ -3,6 +3,7 @@ package Widgets;
 import Utility.*;
 import Widgets.DropdownMenu.DropdownMenu;
 import Widgets.DropdownMenu.DropdownMenuItem;
+import Widgets.Placements.GridPlacement;
 import Widgets.Placements.HorizontalPlacement;
 import Widgets.Placements.VerticalPlacement;
 import Widgets.TextEditor.EditorLine;
@@ -19,7 +20,10 @@ import java.awt.event.*;
 public class Root extends Core {
     private TextEditor editorInFocus;
     public Root() {
-        VerticalPlacement placement = new VerticalPlacement(theme);
+        GridPlacement placement = new GridPlacement(theme);
+        placement.setColumnTemplateFromString("auto");
+        placement.setRowTemplateFromString("40px auto");
+
         core_frame.setChildrenPlacement(placement);
 
         Frame header = new Frame("secondary");
@@ -29,7 +33,7 @@ public class Root extends Core {
 
         Button open_file = new Button("Open", "small", 0,0) {
             @Override
-            public void onClicked(EventStatus eventStatus) {
+            public void onMouseClicked(MouseEvent e) {
                 FileDialog fd = new FileDialog(frame, "Choose a file", FileDialog.LOAD);
                 fd.setDirectory("C:\\");
                 fd.setFile("*.*");
@@ -38,13 +42,11 @@ public class Root extends Core {
                 String filename = fd.getDirectory() + fd.getFile();
                 System.out.println(filename);
                 editorInFocus.openFile(filename);
-
-                eventStatus.setMouseDown(false);
             }
         };
         Button save_file = new Button("Save", "small", 0, 0) {
             @Override
-            public void onClicked(EventStatus eventStatus) {
+            public void onMouseClicked(MouseEvent e) {
                 editorInFocus.saveToCurrentlyOpenFile();
                 editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
             }
@@ -61,7 +63,7 @@ public class Root extends Core {
 
         TextEditor primaryEditor = new TextEditor() {
             @Override
-            public void onClicked(EventStatus eventStatus) {
+            public void onMouseClicked(MouseEvent e) {
                 Root.this.editorInFocus = this;
             }
         };
@@ -83,8 +85,8 @@ public class Root extends Core {
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
 
-        placement.add(header,new UnitValue(theme.getFontByName("small").getSize()+20, UnitValue.Unit.PIXELS));
-        placement.add(editorSpace,new UnitValue(0, UnitValue.Unit.AUTO));
+        placement.add(header,0,0,1,1);
+        placement.add(editorSpace,1,0,1,1);
 
         //core.resize(Size.fromDimension(this.getSize()));
 
@@ -93,112 +95,6 @@ public class Root extends Core {
     }
 
     public void bindEvents(){
-        panel.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent keyEvent) {
-
-            }
-
-            @Override
-            public void keyPressed(KeyEvent keyEvent) {
-                //System.out.println(keyEvent.getExtendedKeyCode());
-
-                switch (keyEvent.getKeyCode()){
-                    case 38 -> editorInFocus.getCursor().up();
-                    case 40 -> editorInFocus.getCursor().down();
-                    case 37 -> editorInFocus.getCursor().left();
-                    case 39 -> editorInFocus.getCursor().right();
-
-                    /*
-                        Enter, handle adding editor.getLines().
-                    */
-                    case 10 -> {
-                        EditorLine current_line = editorInFocus.getLineUnderCursor();
-                        String text = current_line.getText();
-
-                        current_line.setText(text.substring(editorInFocus.getCursor().getX()));
-
-                        editorInFocus.getText().insertNewLine(text.substring(0, editorInFocus.getCursor().getX()), editorInFocus.getCursor().getY());
-                        editorInFocus.getCursor().down();
-                        editorInFocus.getCursor().toLineStart();
-                    }
-                    /*
-                        Backspace, handle removing characters.
-                    */
-                    case 8 -> {
-                        EditorLine current_line = editorInFocus.getLineUnderCursor();
-
-                        if(editorInFocus.getActiveSelections().size() > 0){
-                            editorInFocus.getText().removeSelection(editorInFocus.getActiveSelections().get(0));
-                            editorInFocus.clearSelections();
-                        }
-
-                        if (!editorInFocus.getCursor().canMove(new Position(-1, 0))) {
-                            if(editorInFocus.getCursor().canMoveOnLine(-1)){
-                                String text = current_line.getText();
-                                editorInFocus.getText().removeLine(current_line);
-                                editorInFocus.getCursor().upToLineEnd();
-                                editorInFocus.getText().appendTextAt(text,editorInFocus.getCursor().getY());
-                            }
-                        }
-                        else {
-                            editorInFocus.getText().removeCharAt(editorInFocus.getCursor().getX() - 1, editorInFocus.getCursor().getY());
-                            editorInFocus.getCursor().left();
-                        }
-                    }
-                    /*
-                        Delete
-                     */
-                    case 127 -> {
-                        if(editorInFocus.getCursor().getCurrrentCharsUnderCursor().charAt(1) != 0){
-                            editorInFocus.getText().removeCharAt(editorInFocus.getCursor().getX(),editorInFocus.getCursor().getY());
-                        }
-
-                        //theme.setAccentColor(theme.getColorByName("accent").darker());
-                    }
-                    /*
-                        Tab
-                    */
-
-                    case 9 -> editorInFocus.insertStringOnCursor("    ");
-
-                    /*
-                        Shift to select
-                     */
-                    case 16 -> {
-                        //editor.startSelection();
-                    }
-                    case 17, 18 -> {
-
-                    }
-                    default -> {
-                        char c = keyEvent.getKeyChar();
-                        Character.UnicodeBlock block = Character.UnicodeBlock.of( c );
-
-                        if((!Character.isISOControl(c)) &&
-                                c != KeyEvent.CHAR_UNDEFINED &&
-                                block != null &&
-                                block != Character.UnicodeBlock.SPECIALS
-                        ) {
-                            editorInFocus.insertStringOnCursor(keyEvent.getKeyChar() + "");
-                        }
-                    }
-
-                }
-                update();
-            }
-
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-                switch (keyEvent.getKeyCode()) {
-                    case 16 -> {
-                        editorInFocus.endSelection();
-                    }
-                    default -> {}
-                }
-                update();
-            }
-        });
         panel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {

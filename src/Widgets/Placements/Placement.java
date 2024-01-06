@@ -13,6 +13,7 @@ public abstract class Placement {
     protected ArrayList<PlacementCell> children = new ArrayList<>();
 
     protected Theme theme;
+
     protected int itemMargin = 0;
 
     public Position getPosition(int index) {
