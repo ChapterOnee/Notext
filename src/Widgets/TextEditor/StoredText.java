@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class StoredText {
-    private ArrayList<EditorLine> lines;
+    private final ArrayList<EditorLine> lines;
 
     private String currentFile = null;
 
@@ -204,7 +204,7 @@ public class StoredText {
         EditorLine line = new EditorLine(text);
         lines.add(index ,line);
 
-        actingCursor.setY(index);
+        actingCursor.setY(index+1);
         actingCursor.upToLineEnd();
     }
 

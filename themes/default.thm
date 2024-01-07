@@ -11,6 +11,8 @@ color keywords 200,200,100
 color strings 100,100,100
 color comment 50,50,50
 
-font normal "Copperplate Gothic Bold,16"
-font small "Copperplate Gothic Bold,14"
-font big "Copperplate Gothic Bold,24"
+Copperplate Gothic Bold
+
+font normal "Monospaced,16"
+font small "Monospaced,14"
+font big "Monospace,24"

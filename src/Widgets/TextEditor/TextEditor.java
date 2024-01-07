@@ -402,7 +402,7 @@ public class TextEditor extends Widget {
                 current_line.setText(text.substring(this.cursor.getX()));
 
                 this.text.insertNewLine(text.substring(0, this.cursor.getX()), this.cursor.getY());
-                System.out.println(this.text.getLines().size());
+                //System.out.println(this.text.getLines().size());
                 this.cursor.down();
                 this.cursor.toLineStart();
             }

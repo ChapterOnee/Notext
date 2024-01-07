@@ -20,7 +20,7 @@ public class Core {
 
     protected Theme theme;
 
-    private boolean DEBUG = false;
+    private final boolean DEBUG = false;
 
     private final EventStatus eventStatus = new EventStatus();
     public Core() {
@@ -188,6 +188,7 @@ public class Core {
     public void open(){
         frame = new JFrame();
         frame.setLayout(new GridBagLayout());
+        //frame.setUndecorated(true);
 
         GridBagConstraints gb = new GridBagConstraints();
         gb.fill = GridBagConstraints.BOTH;
