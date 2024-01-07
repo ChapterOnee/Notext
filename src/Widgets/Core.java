@@ -113,7 +113,6 @@ public class Core {
         panel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                element_in_focus = core_frame.getChildUnderMouse();
 
                 if(element_in_focus == null){
                     return;
@@ -123,6 +122,9 @@ public class Core {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                update();
+                element_in_focus = core_frame.getChildUnderMouse();
+
                 eventStatus.setMouseDown(true);
                 //editor.startSelection();
                 update();

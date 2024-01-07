@@ -45,10 +45,6 @@ public class Label extends Widget{
         setupDraw(g2);
         g2.setFont(theme.getFontByName(font));
 
-        FontMetrics fm = g2.getFontMetrics(g2.getFont());
-
-        g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
-
         /*
             Draw background and border
          */

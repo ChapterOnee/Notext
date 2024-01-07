@@ -1,5 +1,6 @@
 package Widgets.TextEditor;
 
+import Widgets.Placements.ScrollController;
 import Widgets.TextEditor.Highlighting.HighlightGroup;
 import Utility.EventStatus;
 import Utility.Position;
@@ -23,7 +24,7 @@ public class TextEditor extends Widget {
 
     private final Position offset = new Position(60,20);
     final private int LINE_OFFSET = 20;
-    private Position scroll = new Position(0,0);
+    private ScrollController scrollController = new ScrollController(0,0);
     private int contentHeight = 0;
 
     private Selection currentSelection = null;
@@ -90,7 +91,7 @@ public class TextEditor extends Widget {
         //System.out.println((OFFSET.y + pos.y + this.getHeight()/2)+ " " + this.getHeight() + "translate y: " + ((double) this.getHeight() /2 - OFFSET.y + pos.y));
 
         AffineTransform at = new AffineTransform();
-        at.translate(-scroll.x , -scroll.y);
+        at.translate(-scrollController.getScrollX(), -scrollController.getScrollY());
 
         g2.setTransform(at);
 
@@ -202,7 +203,7 @@ public class TextEditor extends Widget {
         }
 
         contentHeight = text.getLines().size()*text_height;
-
+        this.scrollController.setMaxScrollY(contentHeight);
         //
         // Draw cursor
         //
@@ -301,7 +302,7 @@ public class TextEditor extends Widget {
 
         Position cursor_pos = cursor.getRealCursorPosition(fm);
 
-        int display_offset = scroll.y;
+        int display_offset = scrollController.getScrollY();
 
         int y = pos.y - offset.y - this.getY() + display_offset;
         y = y / fm.getHeight();
@@ -328,7 +329,7 @@ public class TextEditor extends Widget {
     }
 
     public void clear(){
-        scroll = new Position(0,0);
+        scrollController.reset();
         activeSelections.clear();
     }
     public void openFile(String filename){
@@ -352,6 +353,7 @@ public class TextEditor extends Widget {
 
     @Override
     public void onMouseClicked(MouseEvent e) {
+        this.clearSelections();
         /*Position pos = realToCursorPosition(eventStatus.getMousePosition(),lastg2);
         Position last_pos = new Position(cursor.getX(), cursor.getY());
 
@@ -368,6 +370,16 @@ public class TextEditor extends Widget {
                 clearSelections();
             }
         }*/
+    }
+
+    @Override
+    public void onMouseReleased(MouseEvent e) {
+        this.endSelection();
+    }
+
+    @Override
+    public void onMouseDragged(MouseEvent e) {
+        this.startSelection();
     }
 
     @Override
@@ -468,10 +480,6 @@ public class TextEditor extends Widget {
             default -> {}
         }
     }
-
-    public void setScrollY(int y){
-        this.scroll.y = Math.max(0, Math.min(this.contentHeight,y));
-    }
     public Cursor getCursor() {
         return cursor;
     }
@@ -488,10 +496,6 @@ public class TextEditor extends Widget {
         return this.getLine(this.cursor.getY());
     }
 
-    public Position getScroll() {
-        return scroll;
-    }
-
     @Override
     public void update(EventStatus eventStatus) {
         super.update(eventStatus);
@@ -506,6 +510,11 @@ public class TextEditor extends Widget {
             }
         }
     }
+
+    public ScrollController getScrollController() {
+        return scrollController;
+    }
+
     public StoredText getText() {
         return text;
     }

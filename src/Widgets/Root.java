@@ -7,6 +7,7 @@ import Widgets.Placements.GridPlacement;
 import Widgets.Placements.HorizontalPlacement;
 import Widgets.Placements.VerticalPlacement;
 import Widgets.TextEditor.EditorLine;
+import Widgets.TextEditor.Scrollbar;
 import Widgets.TextEditor.Selection;
 import Widgets.TextEditor.TextEditor;
 
@@ -21,7 +22,7 @@ public class Root extends Core {
     private TextEditor editorInFocus;
     public Root() {
         GridPlacement placement = new GridPlacement(theme);
-        placement.setColumnTemplateFromString("auto");
+        placement.setColumnTemplateFromString("auto 20px");
         placement.setRowTemplateFromString("40px auto");
 
         core_frame.setChildrenPlacement(placement);
@@ -64,6 +65,7 @@ public class Root extends Core {
         TextEditor primaryEditor = new TextEditor() {
             @Override
             public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
                 Root.this.editorInFocus = this;
             }
         };
@@ -84,9 +86,11 @@ public class Root extends Core {
         editorSpacePlacement.add(primaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
+        Scrollbar scrollbar = new Scrollbar("primary", editorInFocus.getScrollController(), UnitValue.Direction.VERTICAL);
 
-        placement.add(header,0,0,1,1);
+        placement.add(header,0,0,1,2);
         placement.add(editorSpace,1,0,1,1);
+        placement.add(scrollbar, 1, 1, 1, 1);
 
         //core.resize(Size.fromDimension(this.getSize()));
 
@@ -95,49 +99,10 @@ public class Root extends Core {
     }
 
     public void bindEvents(){
-        panel.addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                editorInFocus.startSelection();
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-
-            }
-        });
-        panel.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                editorInFocus.clearSelections();
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                //editor.startSelection();
-                update();
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                editorInFocus.endSelection();
-                update();
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
         panel.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                editorInFocus.setScrollY(Math.max(0, editorInFocus.getScroll().y + e.getWheelRotation()*25));
+                editorInFocus.getScrollController().setScrollY(Math.max(0, editorInFocus.getScrollController().getScrollY() + e.getWheelRotation()*25));
                 Root.this.update();
             }
         });

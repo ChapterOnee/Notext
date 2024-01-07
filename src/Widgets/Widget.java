@@ -22,6 +22,8 @@ public abstract class Widget implements Comparable<Widget>{
 
     protected boolean mouseOver = false;
 
+    protected Position lastMousePosition = new Position(0,0);
+
     protected int zIndex = 0;
 
     protected final boolean DEBUG = false;
@@ -157,6 +159,8 @@ public abstract class Widget implements Comparable<Widget>{
         }
 
         mouseOver = found;
+
+        lastMousePosition = eventStatus.getMousePosition();
 
         for(Widget w: this.getChildren()){
             w.update(eventStatus);
