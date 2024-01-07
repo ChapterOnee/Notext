@@ -74,15 +74,12 @@ public class TextEditor extends Widget {
         Position pos = cursor.getRealCursorPosition(fm);
         offset.x = fm.stringWidth(" ."+text.getLines().size());
 
+        contentHeight = text.getLines().size()*text_height;
+        this.scrollController.setMaxScrollY(contentHeight);
+
         // Draw background
         g2.setColor(theme.getColorByName("primary"));
         g2.fillRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
-
-        g2.setColor(theme.getColorByName("secondary"));
-        g2.fillRect(this.getX(),this.getY(), offset.x+5, this.getHeight());
-
-        g2.setColor(theme.getColorByName("accent"));
-        g2.fillRect(this.getX()+ offset.x+3,this.getY(),2, this.getHeight());
 
 
         //
@@ -154,6 +151,17 @@ public class TextEditor extends Widget {
         }
 
         //
+        //  Draw number backgrounds
+        //
+        int numberBackgrounPadding = 10;
+
+        g2.setColor(theme.getColorByName("secondary"));
+        g2.fillRect(this.getX(),this.getY() + offset.y -  numberBackgrounPadding/2, offset.x+5, this.contentHeight+numberBackgrounPadding);
+
+        g2.setColor(theme.getColorByName("accent"));
+        g2.fillRect(this.getX()+ offset.x+3,this.getY() + offset.y -  numberBackgrounPadding/2,2, this.contentHeight+numberBackgrounPadding);
+
+        //
         // Draw all text
         //
         int line_number = 0;
@@ -201,9 +209,6 @@ public class TextEditor extends Widget {
             g2.setColor(theme.getColorByName(group.getForegroundColor()));
             g2.drawString(group.getContent(), x, y+text_height);
         }
-
-        contentHeight = text.getLines().size()*text_height;
-        this.scrollController.setMaxScrollY(contentHeight);
         //
         // Draw cursor
         //

@@ -1,18 +1,33 @@
 package Widgets;
 
-import Utility.EventStatus;
-import Utility.Position;
-import Utility.Size;
+import Utility.*;
+import Utility.Rectangle;
+import Widgets.Placements.HorizontalPlacement;
 import Widgets.Placements.VerticalPlacement;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 
 public class Core {
     protected final Frame core_frame;
+    protected final Frame core_header;
+
+    public enum RESIZING_DIRECTIONS{
+        UP,
+        UP_RIGTH,
+        UP_LEFT,
+        RIGTH,
+        DOWN,
+        DOWN_RIGHT,
+        DOWN_LEFT,
+        LEFT
+    }
 
     protected Widget element_in_focus;
+
+    private final Frame hiddenCoreFrame;
 
     protected JFrame frame;
 
@@ -27,7 +42,8 @@ public class Core {
         theme = new Theme();
         theme.loadFromFile("themes/default.thm");
 
-        core_frame = new Frame("primary") {
+
+        hiddenCoreFrame = new Frame("primary"){
             @Override
             public Position getPosition() {
                 return new Position(0,0);
@@ -42,19 +58,29 @@ public class Core {
             public int getHeight() {
                 return panel.getPreferredSize().height;
             }
-        };
-        core_frame.setTheme(theme);
+        };;
+        hiddenCoreFrame.setTheme(theme);
+
+        VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme);
+        hiddenCoreFrame.setChildrenPlacement(hiddenCorePlacement);
+
+        core_header = new Frame("secondary");
+        core_frame = new Frame("primary");
         element_in_focus = core_frame;
+
+        hiddenCorePlacement.add(core_header, new UnitValue(20, UnitValue.Unit.PIXELS));
+        hiddenCorePlacement.add(core_frame, new UnitValue(0, UnitValue.Unit.AUTO));
 
         panel = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
-                Core.this.core_frame.draw(g2);
+                hiddenCoreFrame.draw(g2);
 
                 if(!DEBUG) {
                     return;
                 }
+                // Show what is in focus
                 g2.setClip(null);
                 g2.setColor(new Color(255,0,0));
                 g2.drawRect(element_in_focus.getX(), element_in_focus.getY(),element_in_focus.getWidth()-1,element_in_focus.getHeight()-1);
@@ -64,7 +90,7 @@ public class Core {
         panel.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
-                core_frame.getChildrenPlacement().resize(Size.fromDimension(e.getComponent().getSize()));
+                hiddenCoreFrame.getChildrenPlacement().resize(Size.fromDimension(e.getComponent().getSize()));
             }
 
             @Override
@@ -123,7 +149,7 @@ public class Core {
             @Override
             public void mousePressed(MouseEvent e) {
                 update();
-                element_in_focus = core_frame.getChildUnderMouse();
+                element_in_focus = hiddenCoreFrame.getChildUnderMouse();
 
                 eventStatus.setMouseDown(true);
                 //editor.startSelection();
@@ -181,8 +207,6 @@ public class Core {
                 update();
             }
         });
-
-        panel.setFocusable(true);
     }
 
     public void open(){
@@ -190,26 +214,100 @@ public class Core {
         frame.setLayout(new GridBagLayout());
         //frame.setUndecorated(true);
 
+        enableCustomFrame();
+
         GridBagConstraints gb = new GridBagConstraints();
         gb.fill = GridBagConstraints.BOTH;
         gb.weightx = 1;
         gb.weighty = 1;
 
         frame.add(panel,gb);
+        panel.setFocusable(true);
 
+        frame.setLocationRelativeTo(null);
         frame.setSize(800,500);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
         onFrameLoad();
     }
 
-    public void onFrameLoad(){
+    private boolean grabbed = false;
+    private Position grabOffset = new Position(0,0);
 
+    private void enableCustomFrame(){
+        panel.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                Position mousePos = new Position(mouseEvent.getX(),mouseEvent.getY());
+
+                if(onHeader(mousePos)){
+                    grabbed = true;
+                    grabOffset = new Position(mouseEvent.getX(),mouseEvent.getY());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                Position mousePos = new Position(mouseEvent.getX(),mouseEvent.getY());
+
+                grabbed = false;
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+
+            }
+        });
+
+        panel.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent mouseEvent) {
+                if(grabbed){
+                   // System.out.println((mouseEvent.getX()) + "x" + (mouseEvent.getY()));
+
+                    Point location = frame.getLocation();
+                    frame.setLocation((int) (mouseEvent.getX()+location.getX()- grabOffset.x), (int) (mouseEvent.getY()+location.getY()-grabOffset.y));
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent mouseEvent) {
+                //Rectangle inner = new Rectangle(grabWidth,grabWidth, panel.getWidth()-grabWidth*2, panel.getHeight()-grabWidth*2);
+
+                //if(mousePos.inRectangle(header)){
+                //    panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                //}
+                //else{
+                //    panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                //}
+            }
+        });
+        frame.setUndecorated(true);
+    }
+
+    public boolean onHeader(Position pos){
+        Rectangle header = new Rectangle(0,0, panel.getWidth(),20);
+        return pos.inRectangle(header);
+    }
+
+    public void onFrameLoad(){
+        hiddenCoreFrame.getChildrenPlacement().resize(Size.fromDimension(panel.getSize()));
     }
 
     public void update(){
-        core_frame.update(eventStatus);
+        hiddenCoreFrame.update(eventStatus);
         panel.repaint();
     }
 }
