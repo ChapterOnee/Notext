@@ -5,8 +5,6 @@ import Widgets.DropdownMenu.DropdownMenu;
 import Widgets.DropdownMenu.DropdownMenuItem;
 import Widgets.Placements.GridPlacement;
 import Widgets.Placements.HorizontalPlacement;
-import Widgets.Placements.VerticalPlacement;
-import Widgets.TextEditor.EditorLine;
 import Widgets.TextEditor.Scrollbar;
 import Widgets.TextEditor.Selection;
 import Widgets.TextEditor.TextEditor;
@@ -18,19 +16,17 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 
-public class Root extends Core {
+public class Root extends Window {
     private TextEditor editorInFocus;
     public Root() {
         GridPlacement placement = new GridPlacement(theme);
         placement.setColumnTemplateFromString("auto 20px");
-        placement.setRowTemplateFromString("40px auto");
+        placement.setRowTemplateFromString("auto");
 
         core_frame.setChildrenPlacement(placement);
 
-        Frame header = new Frame("secondary");
-
         HorizontalPlacement header_placement = new HorizontalPlacement(theme);
-        header.setChildrenPlacement(header_placement);
+        core_header.setChildrenPlacement(header_placement);
 
         Button open_file = new Button("Open", "small", 0,0) {
             @Override
@@ -88,9 +84,8 @@ public class Root extends Core {
 
         Scrollbar scrollbar = new Scrollbar("primary", editorInFocus.getScrollController(), UnitValue.Direction.VERTICAL);
 
-        placement.add(header,0,0,1,2);
-        placement.add(editorSpace,1,0,1,1);
-        placement.add(scrollbar, 1, 1, 1, 1);
+        placement.add(editorSpace,0,0,1,1);
+        placement.add(scrollbar, 0, 1, 1, 1);
 
         //core.resize(Size.fromDimension(this.getSize()));
 
