@@ -1,5 +1,7 @@
 config for .java
 config name Java
 
-group keywords return|continue|public|static|private|protected|int|float|double|boolean|char|if|else|break|switch|void|class|new|import|package|extends|implements
+group numbers \b(?:([0-9]+))\b
+
+group keywords \b(?:return|continue|public|static|private|protected|int|float|double|boolean|char|if|else|break|switch|void|class|new|import|package|extends|implements|for)\b
 group strings (\"[^\"]*\")|'[^']*'

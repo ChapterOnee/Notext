@@ -1,6 +1,8 @@
 config for .py
 config name Python
 
-group keywords if|else|elif|def|lambda|import|as
+group numbers \b(?:([0-9]+))\b
+
+group keywords \b(?:if|else|elif|def|lambda|import|as|in|for|while)\b
 group comment (?:^|\s)#.*(?:\r?\n|$)
 group strings (\"[^\"]*\")|'[^']*'

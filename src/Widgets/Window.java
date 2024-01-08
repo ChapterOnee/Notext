@@ -2,6 +2,7 @@ package Widgets;
 
 import Utility.*;
 import Utility.Rectangle;
+import Widgets.Placements.HorizontalPlacement;
 import Widgets.Placements.VerticalPlacement;
 
 import javax.swing.*;
@@ -26,7 +27,11 @@ public class Window {
 
     protected Widget element_in_focus;
 
-    private final Frame hiddenCoreFrame;
+    private final Frame innerFrame;
+
+    private final Frame innerHeader;
+
+    private final Frame innerHeaderControlls;
 
     protected JFrame frame;
 
@@ -42,7 +47,7 @@ public class Window {
         theme.loadFromFile("themes/default.thm");
 
 
-        hiddenCoreFrame = new Frame("primary"){
+        innerFrame = new Frame("primary"){
             @Override
             public Position getPosition() {
                 return new Position(0,0);
@@ -58,23 +63,32 @@ public class Window {
                 return panel.getPreferredSize().height;
             }
         };;
-        hiddenCoreFrame.setTheme(theme);
+        innerFrame.setTheme(theme);
 
         VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme);
-        hiddenCoreFrame.setChildrenPlacement(hiddenCorePlacement);
+        innerFrame.setChildrenPlacement(hiddenCorePlacement);
 
-        core_header = new Frame("secondary");
+        innerHeader = new Frame("secondary");
+        HorizontalPlacement innerHeaderPlacement = new HorizontalPlacement(theme);
+        innerHeader.setChildrenPlacement(innerHeaderPlacement);
+
         core_frame = new Frame("primary");
         element_in_focus = core_frame;
 
-        hiddenCorePlacement.add(core_header, new UnitValue(30, UnitValue.Unit.PIXELS));
+        hiddenCorePlacement.add(innerHeader, new UnitValue(30, UnitValue.Unit.PIXELS));
         hiddenCorePlacement.add(core_frame, new UnitValue(0, UnitValue.Unit.AUTO));
+
+
+        core_header = new Frame("secondary");
+        innerHeaderControlls = new Frame("accent");
+        innerHeaderPlacement.add(core_header, new UnitValue(0, UnitValue.Unit.AUTO));
+        innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(100, UnitValue.Unit.PIXELS));
 
         panel = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
-                hiddenCoreFrame.draw(g2);
+                innerFrame.draw(g2);
 
                 if(!DEBUG) {
                     return;
@@ -89,7 +103,7 @@ public class Window {
         panel.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
-                hiddenCoreFrame.getChildrenPlacement().resize(Size.fromDimension(e.getComponent().getSize()));
+                innerFrame.getChildrenPlacement().resize(Size.fromDimension(e.getComponent().getSize()));
             }
 
             @Override
@@ -148,7 +162,7 @@ public class Window {
             @Override
             public void mousePressed(MouseEvent e) {
                 update();
-                element_in_focus = hiddenCoreFrame.getChildUnderMouse();
+                element_in_focus = innerFrame.getChildUnderMouse();
 
                 eventStatus.setMouseDown(true);
                 //editor.startSelection();
@@ -437,11 +451,11 @@ public class Window {
     }
 
     public void onFrameLoad(){
-        hiddenCoreFrame.getChildrenPlacement().resize(Size.fromDimension(panel.getSize()));
+        innerFrame.getChildrenPlacement().resize(Size.fromDimension(panel.getSize()));
     }
 
     public void update(){
-        hiddenCoreFrame.update(eventStatus);
+        innerFrame.update(eventStatus);
         panel.repaint();
     }
 }
