@@ -94,12 +94,12 @@ public class Window {
         PathImage maximizeImage = new PathImage(new Size(20,20));
 
         maximizeImage.add(new PathMove(5,5));
-        maximizeImage.add(new PathLine(10,0,"text1", 2));
-        maximizeImage.add(new PathLine(0,10,"text1", 2));
-        maximizeImage.add(new PathLine(-10,0,"text1", 2));
-        maximizeImage.add(new PathLine(0,-10,"text1", 2));
+        maximizeImage.add(new PathLine(10,0,"text1", 1));
+        maximizeImage.add(new PathLine(0,10,"text1", 1));
+        maximizeImage.add(new PathLine(-10,0,"text1", 1));
+        maximizeImage.add(new PathLine(0,-10,"text1", 1));
 
-        Icon maximize = new Icon("secondary", maximizeImage) {
+        Icon maximize = new Icon("secondary", "accent", maximizeImage) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
@@ -116,12 +116,12 @@ public class Window {
 
         PathImage closeImage = new PathImage(new Size(20,20));
 
-        closeImage.add(new PathMove(0,15));
-        closeImage.add(new PathLine(10,-10,"text1", 2));
+        closeImage.add(new PathMove(5,5));
+        closeImage.add(new PathLine(10,10,"text1", 1));
         closeImage.add(new PathMove(-10,0));
-        closeImage.add(new PathLine(10,10,"text1", 2));
+        closeImage.add(new PathLine(10,-10,"text1", 1));
 
-        Icon close = new Icon("secondary", closeImage) {
+        Icon close = new Icon("secondary", "accent", closeImage) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
@@ -133,14 +133,14 @@ public class Window {
         PathImage minimizeImage = new PathImage(new Size(20,20));
 
         minimizeImage.add(new PathMove(5,10));
-        minimizeImage.add(new PathLine(10,0,"text1", 2));
+        minimizeImage.add(new PathLine(10,0,"text1", 1));
 
-        Icon minimize = new Icon("secondary", minimizeImage) {
+        Icon minimize = new Icon("secondary", "accent", minimizeImage) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
 
-                //frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                frame.setState(JFrame.ICONIFIED);
             }
         };
 
@@ -163,28 +163,6 @@ public class Window {
                 g2.drawRect(element_in_focus.getX(), element_in_focus.getY(),element_in_focus.getWidth()-1,element_in_focus.getHeight()-1);
             }
         };
-
-        panel.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                innerFrame.getChildrenPlacement().resize(Size.fromDimension(e.getComponent().getSize()));
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent componentEvent) {
-
-            }
-
-            @Override
-            public void componentShown(ComponentEvent componentEvent) {
-
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent componentEvent) {
-
-            }
-        });
 
         panel.addMouseMotionListener(new MouseMotionListener() {
             @Override
@@ -289,6 +267,29 @@ public class Window {
     public void open(){
         frame = new JFrame();
         frame.setLayout(new GridBagLayout());
+
+        frame.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                innerFrame.getChildrenPlacement().resize(Size.fromDimension(e.getComponent().getSize()));
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent componentEvent) {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent componentEvent) {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent componentEvent) {
+
+            }
+        });
+
         //frame.setUndecorated(true);
 
         enableCustomFrame();
@@ -476,7 +477,7 @@ public class Window {
         panel.setBackground(theme.getColorByName("primary"));
         frame.setBackground(theme.getColorByName("primary"));
 
-        int grabSize = 5;
+        int grabSize = 6;
 
         Rectangle top = new Rectangle(0,0,panel.getWidth(),grabSize);
         Rectangle bottom = new Rectangle(0,panel.getHeight()-grabSize,panel.getWidth(),grabSize);

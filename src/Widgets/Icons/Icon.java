@@ -1,21 +1,20 @@
 package Widgets.Icons;
 
+import Utility.AdvancedGraphics;
 import Utility.Position;
 import Widgets.Frame;
 import Widgets.Theme;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.io.File;
-import java.io.IOException;
 
 public class Icon extends Frame {
 
-    PathImage image;
+    private PathImage image;
+    private final String backgroundColorHover;
 
-    public Icon(String backgroudColor, PathImage image) {
+    public Icon(String backgroudColor, String backgroundColorHover, PathImage image) {
         super(backgroudColor);
+        this.backgroundColorHover = backgroundColorHover;
         this.image = image;
     }
 
@@ -28,6 +27,11 @@ public class Icon extends Frame {
     @Override
     public void drawSelf(Graphics2D g2) {
         super.drawSelf(g2);
+
+        if(this.mouseOver){
+            g2.setColor(theme.getColorByName(backgroundColorHover));
+            g2.fillRect(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+        }
 
         if(image != null) {
             image.draw(g2, new Position(
