@@ -12,6 +12,8 @@ public class StoredText {
 
     private String currentFile = null;
 
+    private boolean storingBlocked = false;
+
     private class State{
         private final ArrayList<EditorLine> lines;
         private final Position cursorPosition;
@@ -40,6 +42,10 @@ public class StoredText {
     }
 
     public void storeState(){
+        if (storingBlocked){
+            return;
+        }
+
         ArrayList<EditorLine> newlines = new ArrayList<>();
 
         for(EditorLine line: lines){
@@ -155,9 +161,9 @@ public class StoredText {
             return;
         }
 
-
         Cursor from, to;
         ArrayList<String> selected_lines = selection.getSelectedContent();
+        //System.out.println(selected_lines);
         from = selection.getFrom();
         to = selection.getTo();
 
@@ -174,19 +180,21 @@ public class StoredText {
             first_line.removeAllBetween(from.getX(),first_line.size());
         }
 
-        EditorLine second_line = this.lines.get(from.getY()+1);
+        EditorLine second_line = this.lines.get(to.getY());
+        second_line.removeAllBetween(0,to.getX());
+        first_line.addTextAt(second_line.getText(),first_line.size());
+        lines.remove(second_line);
+
         // Only two lines
         if(selected_lines.size() == 2){
-            second_line.removeAllBetween(0,to.getX());
             return;
         }
 
         // All lines in between
         for(int i = 1;i < selected_lines.size()-1;i++){
-            this.lines.remove(from.getY());
+            this.lines.remove(from.getY()+1);
         }
     }
-
 
     public EditorLine getLineAt(int y){
         if(y < 0 || y >= lines.size()){
@@ -220,5 +228,13 @@ public class StoredText {
 
     public String getCurrentFile() {
         return currentFile;
+    }
+
+    public void blockStoring(){
+        storingBlocked = true;
+    }
+
+    public void unblockStoring(){
+        storingBlocked = false;
     }
 }

@@ -469,11 +469,11 @@ public class Window {
         frame.setUndecorated(true);
     }
 
-    public boolean onHeader(Position pos){
+    private boolean onHeader(Position pos){
         Rectangle header = new Rectangle(0,5, panel.getWidth(),20);
         return pos.inRectangle(header);
     }
-    public ResizingDirection getResizing(Position pos){
+    private ResizingDirection getResizing(Position pos){
         panel.setBackground(theme.getColorByName("primary"));
         frame.setBackground(theme.getColorByName("primary"));
 

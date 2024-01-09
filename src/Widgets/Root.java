@@ -15,6 +15,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Root extends Window {
     private TextEditor editorInFocus;
@@ -128,6 +130,9 @@ public class Root extends Window {
             @Override
             public void activated(ActionEvent e) {
                 try {
+                    editorInFocus.getText().storeState();
+                    editorInFocus.getText().blockStoring();
+
                     String data = (String) Toolkit.getDefaultToolkit()
                             .getSystemClipboard().getData(DataFlavor.stringFlavor);
 
@@ -138,17 +143,18 @@ public class Root extends Window {
                             editorInFocus.insertStringOnCursor(formated_data[i]);
                         }
                         else{
-                            editorInFocus.getText().insertNewLine(formated_data[i], editorInFocus.getCursor().getY()+i);
-                        }
-
-                        if(i+1 >= formated_data.length){
-                            editorInFocus.getCursor().setY(editorInFocus.getCursor().getY()+i+1);
-                            editorInFocus.getCursor().upToLineEnd();
+                            editorInFocus.getText().insertNewLine(formated_data[i], editorInFocus.getCursor().getY()+1);
                         }
                     }
+
+                    editorInFocus.getCursor().setY(editorInFocus.getCursor().getY()+1);
+                    editorInFocus.getCursor().upToLineEnd();
+
+                    editorInFocus.getText().unblockStoring();
                 }
                 catch (Exception ex){
-
+                    editorInFocus.getText().unblockStoring();
+                    ex.printStackTrace();
                 }
             }
         };
@@ -159,5 +165,9 @@ public class Root extends Window {
                 editorInFocus.getText().revert();
             }
         };
+    }
+
+    public void openFile(String filename){
+        editorInFocus.openFile(filename);
     }
 }

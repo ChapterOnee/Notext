@@ -1,13 +1,9 @@
 package Widgets.TextEditor.Highlighting;
 
 import Utility.FileLoader;
-import Widgets.TextEditor.EditorLineGroup;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class Highlighter extends FileLoader {
     private ArrayList<HighlightQuery> queries = new ArrayList<>();
@@ -33,7 +29,7 @@ public class Highlighter extends FileLoader {
     public void addQuery(HighlightQuery query){
         this.queries.add(query);
     }
-
+    /*
     @Deprecated
     public ArrayList<EditorLineGroup> generateGroupsFromText(String text){
         ArrayList<HighlightGroup> all_highlight_groups = new ArrayList<>();
@@ -102,7 +98,7 @@ public class Highlighter extends FileLoader {
         }
 
         return output_groups;
-    }
+    }*/
 
 
     public ArrayList<HighlightGroup> generateHighlights(String text){

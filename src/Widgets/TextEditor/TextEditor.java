@@ -420,6 +420,7 @@ public class TextEditor extends Widget {
                 if(!this.activeSelections.isEmpty()){
                     this.text.removeSelection(this.activeSelections.get(0));
                     this.clearSelections();
+                    break;
                 }
 
                 if (!this.cursor.canMove(new Position(-1, 0))) {

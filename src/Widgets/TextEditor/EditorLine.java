@@ -58,4 +58,9 @@ public class EditorLine{
     public int size(){
         return this.raw_content.length();
     }
+
+    @Override
+    public String toString() {
+        return raw_content;
+    }
 }
