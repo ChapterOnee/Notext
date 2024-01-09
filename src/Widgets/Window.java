@@ -2,6 +2,10 @@ package Widgets;
 
 import Utility.*;
 import Utility.Rectangle;
+import Widgets.Icons.Icon;
+import Widgets.Icons.PathImage;
+import Widgets.Icons.PathOperations.PathLine;
+import Widgets.Icons.PathOperations.PathMove;
 import Widgets.Placements.HorizontalPlacement;
 import Widgets.Placements.VerticalPlacement;
 
@@ -81,8 +85,68 @@ public class Window {
 
         core_header = new Frame("secondary");
         innerHeaderControlls = new Frame("accent");
+        HorizontalPlacement innerHeaderControlsPlacement = new HorizontalPlacement(theme);
+        innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
+
         innerHeaderPlacement.add(core_header, new UnitValue(0, UnitValue.Unit.AUTO));
-        innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(100, UnitValue.Unit.PIXELS));
+        innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(150, UnitValue.Unit.PIXELS));
+
+        PathImage maximizeImage = new PathImage(new Size(20,20));
+
+        maximizeImage.add(new PathMove(5,5));
+        maximizeImage.add(new PathLine(10,0,"text1", 2));
+        maximizeImage.add(new PathLine(0,10,"text1", 2));
+        maximizeImage.add(new PathLine(-10,0,"text1", 2));
+        maximizeImage.add(new PathLine(0,-10,"text1", 2));
+
+        Icon maximize = new Icon("secondary", maximizeImage) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+
+                if(frame.getExtendedState() == JFrame.MAXIMIZED_BOTH){
+                    frame.setExtendedState(java.awt.Frame.NORMAL);
+                }
+                else {
+                    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+                }
+                Window.this.update();
+            }
+        };
+
+        PathImage closeImage = new PathImage(new Size(20,20));
+
+        closeImage.add(new PathMove(0,15));
+        closeImage.add(new PathLine(10,-10,"text1", 2));
+        closeImage.add(new PathMove(-10,0));
+        closeImage.add(new PathLine(10,10,"text1", 2));
+
+        Icon close = new Icon("secondary", closeImage) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            }
+        };
+
+        PathImage minimizeImage = new PathImage(new Size(20,20));
+
+        minimizeImage.add(new PathMove(5,10));
+        minimizeImage.add(new PathLine(10,0,"text1", 2));
+
+        Icon minimize = new Icon("secondary", minimizeImage) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+
+                //frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            }
+        };
+
+        innerHeaderControlsPlacement.add(minimize, new UnitValue(0, UnitValue.Unit.AUTO));
+        innerHeaderControlsPlacement.add(maximize, new UnitValue(0, UnitValue.Unit.AUTO));
+        innerHeaderControlsPlacement.add(close, new UnitValue(0, UnitValue.Unit.AUTO));
 
         panel = new JPanel(){
             @Override
@@ -409,6 +473,9 @@ public class Window {
         return pos.inRectangle(header);
     }
     public ResizingDirection getResizing(Position pos){
+        panel.setBackground(theme.getColorByName("primary"));
+        frame.setBackground(theme.getColorByName("primary"));
+
         int grabSize = 5;
 
         Rectangle top = new Rectangle(0,0,panel.getWidth(),grabSize);
