@@ -51,7 +51,7 @@ public class Window {
         theme.loadFromFile("themes/default.thm");
 
 
-        innerFrame = new Frame("primary"){
+        innerFrame = new Frame("primary", 0){
             @Override
             public Position getPosition() {
                 return new Position(0,0);
@@ -72,19 +72,19 @@ public class Window {
         VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme);
         innerFrame.setChildrenPlacement(hiddenCorePlacement);
 
-        innerHeader = new Frame("secondary");
+        innerHeader = new Frame("secondary", 0);
         HorizontalPlacement innerHeaderPlacement = new HorizontalPlacement(theme);
         innerHeader.setChildrenPlacement(innerHeaderPlacement);
 
-        core_frame = new Frame("primary");
+        core_frame = new Frame("primary", 0);
         element_in_focus = core_frame;
 
         hiddenCorePlacement.add(innerHeader, new UnitValue(30, UnitValue.Unit.PIXELS));
         hiddenCorePlacement.add(core_frame, new UnitValue(0, UnitValue.Unit.AUTO));
 
 
-        core_header = new Frame("secondary");
-        innerHeaderControlls = new Frame("accent");
+        core_header = new Frame("secondary", 0);
+        innerHeaderControlls = new Frame("accent", 0);
         HorizontalPlacement innerHeaderControlsPlacement = new HorizontalPlacement(theme);
         innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
 

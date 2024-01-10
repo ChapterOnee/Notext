@@ -4,8 +4,8 @@ import java.awt.*;
 
 public class Button extends Label {
 
-    public Button(String text, String font, int borderWidth) {
-        super(text, font, borderWidth);
+    public Button(String text, String font, int borderWidth, int margin) {
+        super(text, font, borderWidth, margin);
     }
 
     @Override

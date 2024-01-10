@@ -1,7 +1,5 @@
 package Widgets.TextEditor;
 
-import Utility.EventStatus;
-import Utility.Position;
 import Utility.Rectangle;
 import Utility.UnitValue;
 import Widgets.Frame;
@@ -23,7 +21,7 @@ public class Scrollbar extends Frame {
     private boolean grabbed = false;
 
     public Scrollbar(String backgroudColor, ScrollController controller, UnitValue.Direction direction) {
-        super(backgroudColor);
+        super(backgroudColor, 0);
         this.controller = controller;
         this.direction = direction;
 

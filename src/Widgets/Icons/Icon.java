@@ -1,6 +1,5 @@
 package Widgets.Icons;
 
-import Utility.AdvancedGraphics;
 import Utility.Position;
 import Widgets.Frame;
 import Widgets.Theme;
@@ -13,7 +12,7 @@ public class Icon extends Frame {
     private final String backgroundColorHover;
 
     public Icon(String backgroudColor, String backgroundColorHover, PathImage image) {
-        super(backgroudColor);
+        super(backgroudColor, 0);
         this.backgroundColorHover = backgroundColorHover;
         this.image = image;
     }

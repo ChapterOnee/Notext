@@ -17,8 +17,9 @@ public class Frame extends Widget{
 
     protected String borderColor = "accent";
 
-    public Frame(String backgroudColor) {
+    public Frame(String backgroudColor, int margin) {
         this.backgroudColor = backgroudColor;
+        this.margin = margin;
     }
 
     @Override

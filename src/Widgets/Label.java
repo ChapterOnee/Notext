@@ -2,7 +2,6 @@ package Widgets;
 
 import Utility.AdvancedGraphics;
 import Utility.GraphicsBorderModifier;
-import Utility.Rectangle;
 
 import java.awt.*;
 
@@ -14,8 +13,8 @@ public class Label extends Frame{
 
     protected AdvancedGraphics.Side textPlacement = AdvancedGraphics.Side.CENTER;
 
-    public Label(String text, String font, int borderWidth) {
-        super("secondary");
+    public Label(String text, String font, int borderWidth, int margin) {
+        super("secondary", margin);
         this.text = text;
         this.font = font;
         this.borderWidth = borderWidth;
@@ -23,8 +22,8 @@ public class Label extends Frame{
         this.onHoverBackgroundColor = "accent";
     }
 
-    public Label(String text, String foregroundColor, String backgroudColor, String font, GraphicsBorderModifier borderModifier, int borderWidth, String borderColor) {
-        super(backgroudColor);
+    public Label(String text, String foregroundColor, String backgroudColor, String font, GraphicsBorderModifier borderModifier, int borderWidth, int margin, String borderColor) {
+        super(backgroudColor, margin);
         this.text = text;
         this.foregroundColor = foregroundColor;
         this.backgroudColor = backgroudColor;

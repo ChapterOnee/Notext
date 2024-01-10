@@ -18,8 +18,8 @@ public class DropdownMenu extends Label {
 
     private Size itemSize = new Size(40,100);
 
-    public DropdownMenu(String text, String font, int borderWidth, Size itemSize) {
-        super(text, font, borderWidth);
+    public DropdownMenu(String text, String font, int borderWidth, int margin,  Size itemSize) {
+        super(text, font, borderWidth, margin);
         this.itemSize = itemSize;
         this.items = new ArrayList<>();
         this.initilizePlacement();
