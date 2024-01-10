@@ -2,6 +2,7 @@ package Widgets;
 
 import Utility.AdvancedGraphics;
 import Utility.GraphicsBorderModifier;
+import Utility.Rectangle;
 
 import java.awt.*;
 
@@ -13,24 +14,14 @@ public class Label extends Frame{
 
     protected AdvancedGraphics.Side textPlacement = AdvancedGraphics.Side.CENTER;
 
-    public Label(String text, String font, int borderWidth, int margin) {
+    protected int padding = 0;
+
+    public Label(String text, String font, int borderWidth, int margin, int padding) {
         super("secondary", margin);
         this.text = text;
         this.font = font;
         this.borderWidth = borderWidth;
-
-        this.onHoverBackgroundColor = "accent";
-    }
-
-    public Label(String text, String foregroundColor, String backgroudColor, String font, GraphicsBorderModifier borderModifier, int borderWidth, int margin, String borderColor) {
-        super(backgroudColor, margin);
-        this.text = text;
-        this.foregroundColor = foregroundColor;
-        this.backgroudColor = backgroudColor;
-        this.font = font;
-        this.borderModifier = borderModifier;
-        this.borderWidth = borderWidth;
-        this.borderColor = borderColor;
+        this.padding = padding;
 
         this.onHoverBackgroundColor = "accent";
     }
@@ -52,8 +43,10 @@ public class Label extends Frame{
             g2.setColor(theme.getColorByName(onHoverForegroundColor));
         }
 
+        Rectangle rect = new Rectangle(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+        rect.applyMargin(padding);
 
-        AdvancedGraphics.drawText(g2, this.getBoundingRect(), text, textPlacement);
+        AdvancedGraphics.drawText(g2, rect, text, textPlacement);
         //System.out.println(this.getX() + "x" + this.getY() + " " + text + g2.getFont());
     }
 
@@ -81,35 +74,27 @@ public class Label extends Frame{
         this.font = font;
     }
 
-    public String getBackgroudColor() {
-        return backgroudColor;
+    public String getOnHoverForegroundColor() {
+        return onHoverForegroundColor;
     }
 
-    public void setBackgroudColor(String backgroudColor) {
-        this.backgroudColor = backgroudColor;
+    public void setOnHoverForegroundColor(String onHoverForegroundColor) {
+        this.onHoverForegroundColor = onHoverForegroundColor;
     }
 
-    public GraphicsBorderModifier getBorderModifier() {
-        return borderModifier;
+    public AdvancedGraphics.Side getTextPlacement() {
+        return textPlacement;
     }
 
-    public void setBorderModifier(GraphicsBorderModifier borderModifier) {
-        this.borderModifier = borderModifier;
+    public void setTextPlacement(AdvancedGraphics.Side textPlacement) {
+        this.textPlacement = textPlacement;
     }
 
-    public int getBorderWidth() {
-        return borderWidth;
+    public int getPadding() {
+        return padding;
     }
 
-    public void setBorderWidth(int borderWidth) {
-        this.borderWidth = borderWidth;
-    }
-
-    public String getBorderColor() {
-        return borderColor;
-    }
-
-    public void setBorderColor(String borderColor) {
-        this.borderColor = borderColor;
+    public void setPadding(int padding) {
+        this.padding = padding;
     }
 }

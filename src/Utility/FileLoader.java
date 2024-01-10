@@ -38,9 +38,10 @@ public class FileLoader {
                 String name = split_data.get(1).strip();
                 String arguments = split_data.get(2).strip();
 
-                if(arguments.startsWith("\"") && arguments.endsWith("\"")){
-                    arguments = arguments.substring(1,arguments.length()-1);
-                }
+                tag = clean(tag);
+                name = clean(name);
+                arguments = clean(arguments);
+
 
                 this.handleTag(tag, name, arguments);
 
@@ -51,6 +52,13 @@ public class FileLoader {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+    private String clean(String st){
+        if(st.startsWith("\"") && st.endsWith("\"")){
+            st = st .substring(1,st.length()-1);
+        }
+        return st;
     }
 
     public void handleTag(String tag, String name, String arguments){

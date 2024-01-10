@@ -46,7 +46,7 @@ public class Cursor {
         return position.y + offset_y >= 0 && position.y + offset_y < currentLines.size();
     }
 
-    public Position getRealCursorPosition(FontMetrics fm){
+    public Position getRealCursorPosition(FontMetrics fm, int lineHeight){
         if(!this.canMove(new Position(0,0))){
             return new Position(0,0);
         }
@@ -54,7 +54,7 @@ public class Cursor {
         String line = currentLines.get(position.y).getText();
 
         int x = fm.stringWidth(line.substring(0,position.x));
-        int y = fm.getHeight()*position.y;
+        int y = lineHeight*position.y;
 
         return new Position(x,y);
     }

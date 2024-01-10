@@ -34,19 +34,19 @@ public class AdvancedGraphics {
         FontMetrics fm = g2.getFontMetrics(g2.getFont());
 
         int x = bounding_rect.getX();
-        int y = bounding_rect.getY() + fm.getHeight();
+        int y = bounding_rect.getY() + fm.getAscent();
 
         switch (placementSide){
             case CENTER -> {
                 x += bounding_rect.getWidth()/2 - fm.stringWidth(text)/2;
-                y += bounding_rect.getHeight()/2 - fm.getHeight()/2;
+                y += bounding_rect.getHeight()/2 - fm.getAscent()/2;
             }
             case LEFT -> {
-                y += bounding_rect.getHeight()/2 - fm.getHeight()/2;
+                y += bounding_rect.getHeight()/2 - fm.getAscent()/2;
             }
             case RIGTH -> {
                 x += bounding_rect.getWidth() - fm.stringWidth(text);
-                y += bounding_rect.getHeight()/2 - fm.getHeight()/2;
+                y += bounding_rect.getHeight()/2 - fm.getAscent()/2;
             }
             case TOP -> {
                 x += bounding_rect.getWidth()/2 - fm.stringWidth(text)/2;

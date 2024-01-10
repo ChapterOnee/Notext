@@ -19,6 +19,7 @@ public class Frame extends Widget{
 
     public Frame(String backgroudColor, int margin) {
         this.backgroudColor = backgroudColor;
+        this.onHoverBackgroundColor = backgroudColor;
         this.margin = margin;
     }
 
@@ -43,5 +44,45 @@ public class Frame extends Widget{
         );
 
         super.drawSelf(g2);
+    }
+
+    public String getBackgroudColor() {
+        return backgroudColor;
+    }
+
+    public void setBackgroudColor(String backgroudColor) {
+        this.backgroudColor = backgroudColor;
+    }
+
+    public String getOnHoverBackgroundColor() {
+        return onHoverBackgroundColor;
+    }
+
+    public void setOnHoverBackgroundColor(String onHoverBackgroundColor) {
+        this.onHoverBackgroundColor = onHoverBackgroundColor;
+    }
+
+    public GraphicsBorderModifier getBorderModifier() {
+        return borderModifier;
+    }
+
+    public void setBorderModifier(GraphicsBorderModifier borderModifier) {
+        this.borderModifier = borderModifier;
+    }
+
+    public int getBorderWidth() {
+        return borderWidth;
+    }
+
+    public void setBorderWidth(int borderWidth) {
+        this.borderWidth = borderWidth;
+    }
+
+    public String getBorderColor() {
+        return borderColor;
+    }
+
+    public void setBorderColor(String borderColor) {
+        this.borderColor = borderColor;
     }
 }

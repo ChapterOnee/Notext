@@ -5,7 +5,9 @@ import Utility.FileLoader;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -21,6 +23,8 @@ public class Theme extends FileLoader {
 
     private HashMap<String, Color> colors = new HashMap<>();
     private HashMap<String, Font> fonts = new HashMap<>();
+
+    private HashMap<String, Font>  custom_fonts = new HashMap<>();
 
     /*private Font font = new Font("Monospaced", Font.PLAIN, 16);
     private Font fontSmall = new Font("Monospaced", Font.PLAIN, 14);
@@ -57,6 +61,16 @@ public class Theme extends FileLoader {
         return fonts.get(name);
     }
 
+    private void loadFont(String filename, String name){
+        File font_file = new File(filename);
+        try {
+            Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
+            custom_fonts.put(name, font);
+        } catch (FontFormatException | IOException e) {
+            System.out.println("Failed to load font '" + filename + "': " + e);
+        }
+    }
+
     @Override
     public void handleTag(String tag, String name, String args) {
         String[] arguments = args.split(",");
@@ -68,7 +82,16 @@ public class Theme extends FileLoader {
                     return;
                 }
 
-                fonts.put(name,new Font(arguments[0].strip(),Font.PLAIN,Integer.parseInt(arguments[1])));
+                String fontName = arguments[0].strip();
+                int fontSize = Integer.parseInt(arguments[1]);
+
+                if(custom_fonts.containsKey(fontName)){
+                    System.out.println(fontSize);
+                    fonts.put(name, custom_fonts.get(fontName).deriveFont((float) fontSize));
+                }
+                else {
+                    fonts.put(name, new Font(fontName, Font.PLAIN, fontSize));
+                }
             }
             case "color" -> {
                 if(arguments.length < 3
@@ -85,6 +108,14 @@ public class Theme extends FileLoader {
                         Integer.parseInt(arguments[1]),
                         Integer.parseInt(arguments[2])
                 ));
+            }
+            case "load_font" -> {
+                if(arguments.length < 1){
+                    System.out.println("Invalid arguments for load_font.");
+                    return;
+                }
+
+                loadFont(name, arguments[0].strip());
             }
             default -> {}
         }

@@ -64,11 +64,11 @@ public abstract class Widget implements Comparable<Widget>{
         g2.drawLine(this.getX()+this.getWidth(),this.getY(),this.getX(),this.getY()+this.getHeight());
 
         g2.setColor(new Color(0,0,0));
-        g2.fillRect(text_x,text_y,fm.stringWidth(text)+10, fm.getHeight()+2);
+        g2.fillRect(text_x,text_y,fm.stringWidth(text)+10, fm.getAscent()+2);
 
         g2.setColor(new Color(255,0,0));
-        g2.drawRect(text_x,text_y,fm.stringWidth(text)+10, fm.getHeight()+2);
-        g2.drawString(text, text_x,text_y+fm.getHeight());
+        g2.drawRect(text_x,text_y,fm.stringWidth(text)+10, fm.getAscent()+2);
+        g2.drawString(text, text_x,text_y+fm.getAscent());
     }
     public void setupDraw(Graphics2D g2){
         g2.setStroke(new BasicStroke(1));
@@ -225,6 +225,14 @@ public abstract class Widget implements Comparable<Widget>{
     @Override
     public int compareTo(Widget o) {
         return Integer.compare(this.zIndex, o.getzIndex());
+    }
+
+    public int getMargin() {
+        return margin;
+    }
+
+    public void setMargin(int margin) {
+        this.margin = margin;
     }
 
     @Override

@@ -12,21 +12,17 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class TextEditor extends Widget {
     private final StoredText text;
 
     private final Position offset = new Position(60,20);
-    final private int LINE_OFFSET = 20;
+    final private int LINE_OFFSET_X = 20;
+    final private int LINE_VERTICAL_MARGIN = 4;
     private ScrollController scrollController = new ScrollController(0,0);
-    private int contentHeight = 0;
-
     private Selection currentSelection = null;
     private final ArrayList<Selection> activeSelections = new ArrayList<>();
 
@@ -70,11 +66,11 @@ public class TextEditor extends Widget {
         // Calculations
         FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
         //int single_char_width = fm.stringWidth(" " + cursor.getCurrrentCharsUnderCursor().charAt(0));
-        int text_height = fm.getHeight();
-        Position pos = cursor.getRealCursorPosition(fm);
+        int text_height = this.getLineHeight(fm);
+        Position pos = cursor.getRealCursorPosition(fm, this.getLineHeight(fm));
         offset.x = fm.stringWidth(" ."+text.getLines().size());
 
-        contentHeight = text.getLines().size()*text_height;
+        int contentHeight = text.getLines().size() * text_height;
         this.scrollController.setMaxScrollY(contentHeight);
 
         // Draw background
@@ -111,7 +107,7 @@ public class TextEditor extends Widget {
             // First line
             int offset_x = fm.stringWidth(text.getLines().get(from.getY()).getText().substring(0,from.getX()));
             g2.fillRect(
-                    this.getX() + offset.x + LINE_OFFSET + offset_x,
+                    this.getX() + offset.x + LINE_OFFSET_X + offset_x,
                     this.getY() + offset.y + from.getY()*text_height,
                     fm.stringWidth(selected_lines.get(0)),
                     text_height
@@ -122,14 +118,14 @@ public class TextEditor extends Widget {
             }
 
             g2.fillRect(
-                    this.getX() + offset.x + LINE_OFFSET + offset_x,
+                    this.getX() + offset.x + LINE_OFFSET_X + offset_x,
                     this.getY() + offset.y + from.getY()*text_height,
                     this.getWidth()-offset_x,
                     text_height
             );
             // Last line
             g2.fillRect(
-                    this.getX() + offset.x + LINE_OFFSET,
+                    this.getX() + offset.x + LINE_OFFSET_X,
                     this.getY() + offset.y + to.getY()*text_height,
                     fm.stringWidth(selected_lines.get(selected_lines.size()-1)),
                     text_height
@@ -142,7 +138,7 @@ public class TextEditor extends Widget {
             // All lines in between
             for(int i = 1;i < selected_lines.size()-1;i++){
                 g2.fillRect(
-                        this.getX() + offset.x + LINE_OFFSET,
+                        this.getX() + offset.x + LINE_OFFSET_X,
                         this.getY() + offset.y + (from.getY()+i)*text_height,
                         this.getWidth(),
                         text_height
@@ -156,10 +152,10 @@ public class TextEditor extends Widget {
         int numberBackgrounPadding = 10;
 
         g2.setColor(theme.getColorByName("secondary"));
-        g2.fillRect(this.getX(),this.getY() + offset.y -  numberBackgrounPadding/2, offset.x+5, this.contentHeight+numberBackgrounPadding);
+        g2.fillRect(this.getX(),this.getY() + offset.y -  numberBackgrounPadding/2, offset.x+5, contentHeight +numberBackgrounPadding);
 
         g2.setColor(theme.getColorByName("accent"));
-        g2.fillRect(this.getX()+ offset.x+3,this.getY() + offset.y -  numberBackgrounPadding/2,2, this.contentHeight+numberBackgrounPadding);
+        g2.fillRect(this.getX()+ offset.x+3,this.getY() + offset.y -  numberBackgrounPadding/2,2, contentHeight +numberBackgrounPadding);
 
         //
         // Draw all text
@@ -177,7 +173,7 @@ public class TextEditor extends Widget {
             g2.drawString(line_text, x-fm.stringWidth(line_text), y+text_height);
 
             // Draw line content
-            line.draw(g2, x+LINE_OFFSET,y);
+            line.draw(g2, x+ LINE_OFFSET_X,y, text_height);
             line_number += 1;
         }
 
@@ -186,14 +182,14 @@ public class TextEditor extends Widget {
         //
         String[] content;
         for(HighlightGroup group: highlighter.getCurrentHighlighter().generateHighlights(this.getFullContent())){
-            x = this.getX() + offset.x + getRealX(group.getX(),group.getY(),fm) + LINE_OFFSET;
+            x = this.getX() + offset.x + getRealX(group.getX(),group.getY(),fm) + LINE_OFFSET_X;
             y = this.getY() + offset.y + group.getY()*text_height;
 
             content = group.getContent().split("\n");
 
             if(content.length > 1){
                 for(int i = 0;i < content.length;i++){
-                    x = this.getX() + offset.x + getRealX(i == 0 ? group.getX() : 0,group.getY(),fm) + LINE_OFFSET;
+                    x = this.getX() + offset.x + getRealX(i == 0 ? group.getX() : 0,group.getY(),fm) + LINE_OFFSET_X;
                     y = this.getY() + offset.y + (group.getY()+i)*text_height;
 
                     g2.setColor(theme.getColorByName("primary"));
@@ -222,7 +218,7 @@ public class TextEditor extends Widget {
 
         g2.setColor(theme.getColorByName("text1"));
         g2.fillRect(
-                this.getX() + offset.x + pos.x - 1 + LINE_OFFSET,
+                this.getX() + offset.x + pos.x - 1 + LINE_OFFSET_X,
                 this.getY() + offset.y + pos.y,
                 2,
                 text_height
@@ -302,16 +298,20 @@ public class TextEditor extends Widget {
         activeSelections.clear();
     }
 
+    public int getLineHeight(FontMetrics fm){
+        return fm.getAscent() + LINE_VERTICAL_MARGIN;
+    }
+
     public Position realToCursorPosition(Position pos, Graphics2D g2){
         FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
 
-        Position cursor_pos = cursor.getRealCursorPosition(fm);
+        Position cursor_pos = cursor.getRealCursorPosition(fm, this.getLineHeight(fm));
 
         int display_offset = scrollController.getScrollY();
 
         int y = pos.y - offset.y - this.getY() + display_offset;
-        y = y / fm.getHeight();
-        int x = pos.x - offset.x - LINE_OFFSET - this.getX();
+        y = y / this.getLineHeight(fm);
+        int x = pos.x - offset.x - LINE_OFFSET_X - this.getX();
 
         if(y < 0 || y >= text.getLines().size()){
             return cursor_pos;
