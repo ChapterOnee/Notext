@@ -3,44 +3,37 @@ package Widgets;
 import Utility.AdvancedGraphics;
 import Utility.GraphicsBorderModifier;
 import Utility.Rectangle;
-import Utility.UnitValue;
 
 import java.awt.*;
 
-public class Label extends Widget{
+public class Label extends Frame{
     protected String text;
     protected String foregroundColor = "text1";
-    protected String backgroudColor = "secondary";
-
-    protected String onHoverBackgroundColor = "accent";
     protected String onHoverForegroundColor = "text2";
     protected String font;
 
-    protected GraphicsBorderModifier borderModifier = new GraphicsBorderModifier(true, true ,true ,true);
+    protected AdvancedGraphics.Side textPlacement = AdvancedGraphics.Side.CENTER;
 
-    protected int borderWidth = 2;
-    protected int margin = 2;
-
-    protected String borderColor = "accent";
-
-    protected UnitValue.Side textPlacement = UnitValue.Side.CENTER;
-
-    public Label(String text, String font, int borderWidth, int margin) {
+    public Label(String text, String font, int borderWidth) {
+        super("secondary");
         this.text = text;
         this.font = font;
         this.borderWidth = borderWidth;
-        this.margin = margin;
+
+        this.onHoverBackgroundColor = "accent";
     }
 
-    public Label(String text, String foregroundColor, String backgroudColor, String font, GraphicsBorderModifier borderModifier, int borderWidth, int margin, String borderColor) {
+    public Label(String text, String foregroundColor, String backgroudColor, String font, GraphicsBorderModifier borderModifier, int borderWidth, String borderColor) {
+        super(backgroudColor);
         this.text = text;
         this.foregroundColor = foregroundColor;
         this.backgroudColor = backgroudColor;
         this.font = font;
         this.borderModifier = borderModifier;
         this.borderWidth = borderWidth;
-        this.margin = margin;
         this.borderColor = borderColor;
+
+        this.onHoverBackgroundColor = "accent";
     }
     
     @Override
@@ -51,19 +44,7 @@ public class Label extends Widget{
         /*
             Draw background and border
          */
-
-        Rectangle bounding_rect = this.getBoundingRect();
-        bounding_rect.applyMargin(margin);
-
-        String bg = backgroudColor;
-        if(mouseOver){
-            bg = onHoverBackgroundColor;
-        }
-        AdvancedGraphics.borderedRect(g2, bounding_rect, this.borderWidth,
-                theme.getColorByName(bg),
-                theme.getColorByName(borderColor),
-                borderModifier
-        );
+        super.drawSelf(g2);
 
         if(!mouseOver){
             g2.setColor(theme.getColorByName(foregroundColor));
@@ -73,9 +54,7 @@ public class Label extends Widget{
         }
 
 
-        AdvancedGraphics.drawCenteredText(g2, this.getBoundingRect(), text);
-
-        super.drawSelf(g2);
+        AdvancedGraphics.drawText(g2, this.getBoundingRect(), text, textPlacement);
         //System.out.println(this.getX() + "x" + this.getY() + " " + text + g2.getFont());
     }
 
@@ -125,14 +104,6 @@ public class Label extends Widget{
 
     public void setBorderWidth(int borderWidth) {
         this.borderWidth = borderWidth;
-    }
-
-    public int getMargin() {
-        return margin;
-    }
-
-    public void setMargin(int margin) {
-        this.margin = margin;
     }
 
     public String getBorderColor() {

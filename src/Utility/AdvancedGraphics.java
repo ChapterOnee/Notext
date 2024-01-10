@@ -3,6 +3,16 @@ package Utility;
 import java.awt.*;
 
 public class AdvancedGraphics {
+
+    public enum Side{
+        TOP,
+        RIGTH,
+        BOTTOM,
+        LEFT,
+        CENTER
+    }
+
+
     public static final GraphicsBorderModifier BORDER_FULL = new GraphicsBorderModifier(true,true,true,true);
     public static void borderedRect(Graphics2D g2, int x, int y, int width, int height, int borderWidth, Color fill, Color border, GraphicsBorderModifier borderModifier){
         g2.setColor(border);
@@ -20,11 +30,33 @@ public class AdvancedGraphics {
         AdvancedGraphics.borderedRect(g2,rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),borderWidth,fill,border, borderModifier);
     }
 
-    public static void drawCenteredText(Graphics2D g2, Rectangle bounding_rect, String text){
+    public static void drawText(Graphics2D g2, Rectangle bounding_rect, String text, Side placementSide){
         FontMetrics fm = g2.getFontMetrics(g2.getFont());
-        g2.drawString(text,
-                bounding_rect.getX()+ bounding_rect.getWidth()/2 - fm.stringWidth(text)/2,
-                bounding_rect.getY()+ bounding_rect.getHeight()/2 + fm.getHeight()/2
-        );
+
+        int x = bounding_rect.getX();
+        int y = bounding_rect.getY() + fm.getHeight();
+
+        switch (placementSide){
+            case CENTER -> {
+                x += bounding_rect.getWidth()/2 - fm.stringWidth(text)/2;
+                y += bounding_rect.getHeight()/2 - fm.getHeight()/2;
+            }
+            case LEFT -> {
+                y += bounding_rect.getHeight()/2 - fm.getHeight()/2;
+            }
+            case RIGTH -> {
+                x += bounding_rect.getWidth() - fm.stringWidth(text);
+                y += bounding_rect.getHeight()/2 - fm.getHeight()/2;
+            }
+            case TOP -> {
+                x += bounding_rect.getWidth()/2 - fm.stringWidth(text)/2;
+            }
+            case BOTTOM -> {
+                x += bounding_rect.getWidth()/2 - fm.stringWidth(text)/2;
+                y += bounding_rect.getHeight();
+            }
+        }
+
+        g2.drawString(text, x, y);
     }
 }

@@ -26,6 +26,8 @@ public abstract class Widget implements Comparable<Widget>{
 
     protected int zIndex = 0;
 
+    protected int margin = 0;
+
     protected final boolean DEBUG = false;
 
     public void draw(Graphics2D g2) {
@@ -76,13 +78,13 @@ public abstract class Widget implements Comparable<Widget>{
         g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
     }
     public Position getPosition(){
-        return placement.getPosition(placementIndex);
+        return placement.getPosition(placementIndex).getOffset(margin, margin);
     }
     public int getWidth(){
-        return placement.getWidth(placementIndex);
+        return placement.getWidth(placementIndex) - margin*2;
     }
     public int getHeight(){
-        return placement.getHeight(placementIndex);
+        return placement.getHeight(placementIndex) - margin*2;
     }
 
     public int getX(){
@@ -149,6 +151,12 @@ public abstract class Widget implements Comparable<Widget>{
         return output;
     }
 
+    public void fullUpdate(EventStatus eventStatus){
+        this.mouseOver = false;
+        this.getChildUnderMouse().mouseOver = true;
+        this.update(eventStatus);
+    }
+
     public void update(EventStatus eventStatus){
         boolean found = false;
 
@@ -165,6 +173,10 @@ public abstract class Widget implements Comparable<Widget>{
 
         for(Widget w: this.getChildren()){
             w.update(eventStatus);
+
+            if(w.mouseOver){
+                this.mouseOver = false;
+            }
         }
     }
 

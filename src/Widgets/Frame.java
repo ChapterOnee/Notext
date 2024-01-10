@@ -1,9 +1,21 @@
 package Widgets;
 
+import Utility.AdvancedGraphics;
+import Utility.GraphicsBorderModifier;
+import Utility.Rectangle;
+
 import java.awt.*;
 
 public class Frame extends Widget{
-    private String backgroudColor;
+    protected String backgroudColor = "secondary";
+
+    protected String onHoverBackgroundColor = "secondary";
+
+    protected GraphicsBorderModifier borderModifier = new GraphicsBorderModifier(true, true ,true ,true);
+
+    protected int borderWidth = 0;
+
+    protected String borderColor = "accent";
 
     public Frame(String backgroudColor) {
         this.backgroudColor = backgroudColor;
@@ -17,8 +29,18 @@ public class Frame extends Widget{
         //if(mouseOver){
         //    g2.setColor(new Color(255,0,0));
         //}
+        Rectangle bounding_rect = this.getBoundingRect();
 
-        g2.fillRect(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+        String bg = backgroudColor;
+        if(mouseOver){
+            bg = onHoverBackgroundColor;
+        }
+        AdvancedGraphics.borderedRect(g2, bounding_rect, this.borderWidth,
+                theme.getColorByName(bg),
+                theme.getColorByName(borderColor),
+                borderModifier
+        );
+
         super.drawSelf(g2);
     }
 }

@@ -17,15 +17,6 @@ public class UnitValue {
         VERTICAL,
         HORIZONTAL
     }
-
-    public enum Side{
-        TOP,
-        RIGTH,
-        BOTTOM,
-        LEFT,
-        CENTER
-    }
-
     public UnitValue(int value, Unit unit) {
         this.value = value;
         this.unit = unit;

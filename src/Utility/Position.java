@@ -22,6 +22,9 @@ public class Position {
     public Position getOffset(Position pos){
         return new Position(pos.x+x,pos.y+y);
     }
+    public Position getOffset(int x, int y){
+        return new Position(this.x+x,this.y+y);
+    }
 
     public boolean inRectangle(Position position, Size size){
         return x > position.x && x < position.x + size.width &&

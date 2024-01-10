@@ -523,7 +523,7 @@ public class Window {
     }
 
     public void update(){
-        innerFrame.update(eventStatus);
+        innerFrame.fullUpdate(eventStatus);
         panel.repaint();
     }
 }

@@ -26,6 +26,8 @@ public class Scrollbar extends Frame {
         super(backgroudColor);
         this.controller = controller;
         this.direction = direction;
+
+        this.onHoverBackgroundColor = backgroudColor;
     }
 
     @Override

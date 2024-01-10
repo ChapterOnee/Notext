@@ -18,8 +18,8 @@ public class DropdownMenu extends Label {
 
     private Size itemSize = new Size(40,100);
 
-    public DropdownMenu(String text, String font, int borderWidth, int margin, Size itemSize) {
-        super(text, font, borderWidth, margin);
+    public DropdownMenu(String text, String font, int borderWidth, Size itemSize) {
+        super(text, font, borderWidth);
         this.itemSize = itemSize;
         this.items = new ArrayList<>();
         this.initilizePlacement();
@@ -59,6 +59,26 @@ public class DropdownMenu extends Label {
                     2, theme.getColorByName("secondary"), theme.getColorByName("primary"), AdvancedGraphics.BORDER_FULL
             );
             //g2.fillRect(this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size());
+        }
+    }
+
+    @Override
+    public void update(EventStatus eventStatus) {
+        boolean found = false;
+
+        for(Rectangle rect: this.getMouseHoverRectangles()){
+            if(eventStatus.getMousePosition().inRectangle(rect)){
+                found = true;
+                break;
+            }
+        }
+
+        mouseOver = found;
+
+        lastMousePosition = eventStatus.getMousePosition();
+
+        for(Widget w: this.getChildren()){
+            w.update(eventStatus);
         }
     }
 

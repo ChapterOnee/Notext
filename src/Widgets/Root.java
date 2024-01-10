@@ -30,7 +30,7 @@ public class Root extends Window {
         HorizontalPlacement header_placement = new HorizontalPlacement(theme);
         core_header.setChildrenPlacement(header_placement);
 
-        Button open_file = new Button("Open", "small", 0,0) {
+        Button open_file = new Button("Open", "small", 0) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 FileDialog fd = new FileDialog(frame, "Choose a file", FileDialog.LOAD);
@@ -43,7 +43,7 @@ public class Root extends Window {
                 editorInFocus.openFile(filename);
             }
         };
-        Button save_file = new Button("Save", "small", 0, 0) {
+        Button save_file = new Button("Save", "small", 0) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 editorInFocus.saveToCurrentlyOpenFile();
@@ -51,17 +51,17 @@ public class Root extends Window {
             }
         };
 
-        DropdownMenu menu = new DropdownMenu("File", "small",0,0, new Size(100,30));
+        DropdownMenu menu = new DropdownMenu("File", "small",0, new Size(100,30));
         menu.setzIndex(1);
 
-        Button set_theme = new Button("Themes...", "small", 0,0) {
+        Button set_theme = new Button("Themes...", "small", 0) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 Window w = new Window();
                 w.open();
             }
         };
-        Button set_highlighting = new Button("Highlighting...", "small", 0, 0) {
+        Button set_highlighting = new Button("Highlighting...", "small", 0) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 editorInFocus.saveToCurrentlyOpenFile();
@@ -69,7 +69,7 @@ public class Root extends Window {
             }
         };
 
-        DropdownMenu view_menu = new DropdownMenu("Settings", "small",0,0, new Size(200,30));
+        DropdownMenu view_menu = new DropdownMenu("Settings", "small",0, new Size(200,30));
         view_menu.setzIndex(1);
 
         header_placement.add(menu, new UnitValue(50, UnitValue.Unit.PIXELS));
