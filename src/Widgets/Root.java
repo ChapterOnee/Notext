@@ -54,11 +54,32 @@ public class Root extends Window {
         DropdownMenu menu = new DropdownMenu("File", "small",0,0, new Size(100,30));
         menu.setzIndex(1);
 
+        Button set_theme = new Button("Themes...", "small", 0,0) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                Window w = new Window();
+                w.open();
+            }
+        };
+        Button set_highlighting = new Button("Highlighting...", "small", 0, 0) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                editorInFocus.saveToCurrentlyOpenFile();
+                editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
+            }
+        };
+
+        DropdownMenu view_menu = new DropdownMenu("Settings", "small",0,0, new Size(200,30));
+        view_menu.setzIndex(1);
 
         header_placement.add(menu, new UnitValue(50, UnitValue.Unit.PIXELS));
+        header_placement.add(view_menu, new UnitValue(80, UnitValue.Unit.PIXELS));
 
         menu.addMenuItem(new DropdownMenuItem(open_file));
         menu.addMenuItem(new DropdownMenuItem(save_file));
+
+        view_menu.addMenuItem(new DropdownMenuItem(set_theme));
+        view_menu.addMenuItem(new DropdownMenuItem(set_highlighting));
 
         TextEditor primaryEditor = new TextEditor() {
             @Override
@@ -107,7 +128,7 @@ public class Root extends Window {
         Keybind save = new Keybind("Save", panel, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)) {
             @Override
             public void activated(ActionEvent e) {
-                System.out.println("Save action performed");
+                editorInFocus.saveToCurrentlyOpenFile();
             }
         };
 

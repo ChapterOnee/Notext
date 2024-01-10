@@ -305,7 +305,7 @@ public class Window {
         frame.setLocationRelativeTo(null);
         frame.setSize(800,500);
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
 
         onFrameLoad();

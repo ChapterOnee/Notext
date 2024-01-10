@@ -3,6 +3,7 @@ package Widgets;
 import Utility.AdvancedGraphics;
 import Utility.GraphicsBorderModifier;
 import Utility.Rectangle;
+import Utility.UnitValue;
 
 import java.awt.*;
 
@@ -22,6 +23,8 @@ public class Label extends Widget{
 
     protected String borderColor = "accent";
 
+    protected UnitValue.Side textPlacement = UnitValue.Side.CENTER;
+
     public Label(String text, String font, int borderWidth, int margin) {
         this.text = text;
         this.font = font;
@@ -39,7 +42,7 @@ public class Label extends Widget{
         this.margin = margin;
         this.borderColor = borderColor;
     }
-
+    
     @Override
     public void drawSelf(Graphics2D g2) {
         setupDraw(g2);

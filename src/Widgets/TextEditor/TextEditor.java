@@ -240,7 +240,7 @@ public class TextEditor extends Widget {
         //
         //g2.drawString(cursor.getCurrrentCharsUnderCursor(), this.getWidth() - 50, this.getHeight() - 50);
 
-        String cursorPosition = cursor.getX() + ":" + cursor.getY() + " " + highlighter.getCurrentHighlighter().getName() + " " + text.getCurrentFile();
+        String cursorPosition = cursor.getX() + ":" + cursor.getY()  + " " + highlighter.getCurrentHighlighter().getName() + (text.getCurrentFile().equals("null") ? "" : " " + text.getCurrentFile() );
         int cursorPositionWidth = fm.stringWidth(cursorPosition);
         int cursorPositionDisplayMargin = 5;
 

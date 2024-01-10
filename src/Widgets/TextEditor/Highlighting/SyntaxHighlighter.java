@@ -12,7 +12,7 @@ public class SyntaxHighlighter {
     public SyntaxHighlighter(String name) {
         this.name = name;
 
-        this.highlighters.add(new Highlighter("Default"));
+        this.highlighters.add(new Highlighter("PlainText"));
     }
 
     public void loadFromDirectory(String directory){

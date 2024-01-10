@@ -1,7 +1,7 @@
-color primary 35,35,35
+color primary 40,40,40
 color secondary 50,50,50 
-color accent 100,100,200
-color accent2 100,100,255
+color accent 200,100,100
+color accent2 255,100,100
 color text1 150,150,150
 color text2 0,0,0
 
