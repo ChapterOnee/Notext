@@ -1,14 +1,16 @@
 package App;
 
-import Utility.*;
-import Widgets.DropdownMenu.DropdownMenu;
-import Widgets.DropdownMenu.DropdownMenuItem;
-import Widgets.Frame;
-import Widgets.Placements.GridPlacement;
-import Widgets.Placements.HorizontalPlacement;
-import Widgets.TextEditor.Scrollbar;
-import Widgets.TextEditor.Selection;
-import Widgets.TextEditor.TextEditor;
+import AmbrosiaUI.Widgets.Button;
+import AmbrosiaUI.Widgets.Window;
+import AmbrosiaUI.Utility.*;
+import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
+import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenuItem;
+import AmbrosiaUI.Widgets.Frame;
+import AmbrosiaUI.Widgets.Placements.GridPlacement;
+import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
+import AmbrosiaUI.Widgets.TextEditor.Scrollbar;
+import AmbrosiaUI.Widgets.TextEditor.Selection;
+import AmbrosiaUI.Widgets.TextEditor.TextEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,26 +19,26 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 
-public class Root extends Widgets.Window {
+public class Root extends Window {
     private TextEditor editorInFocus;
     public Root() {
-        GridPlacement placement = new GridPlacement(theme);
+        GridPlacement placement = new GridPlacement(Theme);
         placement.setColumnTemplateFromString("auto 20px");
         placement.setRowTemplateFromString("auto");
 
-        core_frame.setChildrenPlacement(placement);
+        core_A_frame.setChildrenPlacement(placement);
 
-        HorizontalPlacement header_placement = new HorizontalPlacement(theme);
+        HorizontalPlacement header_placement = new HorizontalPlacement(Theme);
         core_header.setChildrenPlacement(header_placement);
 
-        Widgets.Button save_file = new Widgets.Button("Save", "small", 0,0,4) {
+        Button save_file = new Button("Save", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 editorInFocus.saveToCurrentlyOpenFile();
                 editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
             }
         };
-        Widgets.Button open_file = new Widgets.Button("Open", "small", 0,0,4) {
+        Button open_file = new Button("Open", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 FileDialog fd = new FileDialog(frame, "Choose a file", FileDialog.LOAD);
@@ -53,11 +55,19 @@ public class Root extends Widgets.Window {
         save_file.setDisabled(true);
         save_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-        Widgets.Button save_file_as = new Widgets.Button("Save as..", "small", 0,0,4) {
+        Button save_file_as = new Button("Save as..", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                //editorInFocus.saveToCurrentlyOpenFile();
-                //editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
+                FileDialog fd = new FileDialog(frame, "Choose a file", FileDialog.LOAD);
+                fd.setDirectory("C:\\");
+                fd.setFile("*.*");
+                fd.setVisible(true);
+
+                String filename = fd.getDirectory() + fd.getFile();
+                if(!filename.equals("nullnull")) {
+                    editorInFocus.getText().setCurrentFile(filename);
+                    editorInFocus.saveToCurrentlyOpenFile();
+                }
             }
         };
         save_file_as.setTextPlacement(AdvancedGraphics.Side.LEFT);
@@ -65,35 +75,12 @@ public class Root extends Widgets.Window {
         DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(100,30));
         menu.setzIndex(1);
 
-        Widgets.Button set_theme = new Widgets.Button("Themes...", "small", 0,0, 4) {
-            @Override
-            public void onMouseClicked(MouseEvent e) {
-                Widgets.Window w = new Widgets.Window();
-                w.open();
-            }
-        };
-        set_theme.setTextPlacement(AdvancedGraphics.Side.LEFT);
-        Widgets.Button set_highlighting = new Widgets.Button("Highlighting...", "small", 0,0, 4) {
-            @Override
-            public void onMouseClicked(MouseEvent e) {
-                editorInFocus.saveToCurrentlyOpenFile();
-                editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
-            }
-        };
-        set_highlighting.setTextPlacement(AdvancedGraphics.Side.LEFT);
-
-        DropdownMenu view_menu = new DropdownMenu("Settings", "small",0, 0, 4, new Size(200,30));
-        view_menu.setzIndex(1);
-
         header_placement.add(menu, new UnitValue(50, UnitValue.Unit.PIXELS));
-        header_placement.add(view_menu, new UnitValue(100, UnitValue.Unit.PIXELS));
 
         menu.addMenuItem(new DropdownMenuItem(open_file));
         menu.addMenuItem(new DropdownMenuItem(save_file));
         menu.addMenuItem(new DropdownMenuItem(save_file_as));
 
-        view_menu.addMenuItem(new DropdownMenuItem(set_theme));
-        view_menu.addMenuItem(new DropdownMenuItem(set_highlighting));
         /*TextEditor secondaryEditor = new TextEditor(){
             @Override
             public void onClicked(EventStatus eventStatus) {
@@ -111,15 +98,17 @@ public class Root extends Widgets.Window {
 
             @Override
             public void onCurrentFileChanged() {
-                save_file.setDisabled(editorInFocus.getText().getCurrentFile().equals(null+""));
+                super.onCurrentFileChanged();
+                //System.out.println("A"+ editorInFocus.getText().hasFile());
+                save_file.setDisabled(!editorInFocus.getText().hasFile());
             }
         };
 
         editorInFocus = primaryEditor;
 
-        Widgets.Frame editorSpace = new Frame("accent2", 0);
+        Frame editorSpace = new Frame("accent2", 0);
 
-        HorizontalPlacement editorSpacePlacement = new HorizontalPlacement(theme);
+        HorizontalPlacement editorSpacePlacement = new HorizontalPlacement(Theme);
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorSpacePlacement.add(primaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
@@ -148,7 +137,9 @@ public class Root extends Widgets.Window {
         Keybind save = new Keybind("Save", panel, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)) {
             @Override
             public void activated(ActionEvent e) {
-                editorInFocus.saveToCurrentlyOpenFile();
+                if(editorInFocus.getText().hasFile()) {
+                    editorInFocus.saveToCurrentlyOpenFile();
+                }
             }
         };
 
