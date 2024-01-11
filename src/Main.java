@@ -1,5 +1,4 @@
-import Widgets.Root;
-import Widgets.Window;
+import App.Root;
 
 public class Main {
     public static void main(String[] args) {

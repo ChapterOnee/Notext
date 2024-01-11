@@ -9,6 +9,7 @@ import java.awt.*;
 public class Label extends Frame{
     protected String text;
     protected String foregroundColor = "text1";
+    protected String disabledForegroundColor = "text1_disabled";
     protected String onHoverForegroundColor = "text2";
     protected String font;
 
@@ -41,6 +42,10 @@ public class Label extends Frame{
         }
         else{
             g2.setColor(theme.getColorByName(onHoverForegroundColor));
+        }
+
+        if(disabled){
+            g2.setColor(theme.getColorByName(disabledForegroundColor));
         }
 
         Rectangle rect = new Rectangle(this.getX(),this.getY(),this.getWidth(),this.getHeight());

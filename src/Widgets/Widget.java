@@ -28,6 +28,8 @@ public abstract class Widget implements Comparable<Widget>{
 
     protected int margin = 0;
 
+    protected boolean disabled = false;
+
     protected final boolean DEBUG = false;
 
     public void draw(Graphics2D g2) {
@@ -168,7 +170,6 @@ public abstract class Widget implements Comparable<Widget>{
         }
 
         mouseOver = found;
-
         lastMousePosition = eventStatus.getMousePosition();
 
         for(Widget w: this.getChildren()){
@@ -177,6 +178,10 @@ public abstract class Widget implements Comparable<Widget>{
             if(w.mouseOver){
                 this.mouseOver = false;
             }
+        }
+
+        if(disabled){
+            mouseOver = false;
         }
     }
 
@@ -233,6 +238,14 @@ public abstract class Widget implements Comparable<Widget>{
 
     public void setMargin(int margin) {
         this.margin = margin;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
     @Override

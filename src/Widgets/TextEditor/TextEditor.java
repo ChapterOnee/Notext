@@ -35,7 +35,12 @@ public class TextEditor extends Widget {
     public TextEditor() {
         super();
         this.cursor = new Cursor(new Position(0, 0));
-        this.text = new StoredText(this.cursor);
+        this.text = new StoredText(this.cursor) {
+            @Override
+            public void reverted() {
+                onCurrentFileChanged();
+            }
+        };
         //this.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
 
         /*this.highlighter = new Highlighter("Simple");
@@ -341,7 +346,12 @@ public class TextEditor extends Widget {
         if(text.fromFile(filename)){
             highlighter.toDetectedHighlighterFromFilename(filename);
             clear();
+            onCurrentFileChanged();
         }
+    }
+
+    public void onCurrentFileChanged(){
+
     }
 
     public void saveToCurrentlyOpenFile(){
@@ -350,7 +360,6 @@ public class TextEditor extends Widget {
                 myWriter.write(line.getText() + "\n");
             }
             myWriter.close();
-            System.out.println("Successfully wrote to the file.");
         } catch (IOException ignored) {
 
         }
@@ -505,6 +514,7 @@ public class TextEditor extends Widget {
     @Override
     public void update(EventStatus eventStatus) {
         super.update(eventStatus);
+
         if(eventStatus.isMouseDown()){
             Position pos = realToCursorPosition(eventStatus.getMousePosition(),lastg2);
             Position last_pos = new Position(cursor.getX(), cursor.getY());

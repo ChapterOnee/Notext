@@ -123,6 +123,11 @@ public class StoredText {
         this.currentFile = st.filename;
 
         this.pastText.remove(pastText.size()-1);
+        reverted();
+    }
+
+    public void reverted(){
+
     }
 
     public void removeCharAt(int x, int y){

@@ -1,8 +1,9 @@
-package Widgets;
+package App;
 
 import Utility.*;
 import Widgets.DropdownMenu.DropdownMenu;
 import Widgets.DropdownMenu.DropdownMenuItem;
+import Widgets.Frame;
 import Widgets.Placements.GridPlacement;
 import Widgets.Placements.HorizontalPlacement;
 import Widgets.TextEditor.Scrollbar;
@@ -16,7 +17,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 
-public class Root extends Window {
+public class Root extends Widgets.Window {
     private TextEditor editorInFocus;
     public Root() {
         GridPlacement placement = new GridPlacement(theme);
@@ -28,7 +29,14 @@ public class Root extends Window {
         HorizontalPlacement header_placement = new HorizontalPlacement(theme);
         core_header.setChildrenPlacement(header_placement);
 
-        Button open_file = new Button("Open", "small", 0,0,4) {
+        Widgets.Button save_file = new Widgets.Button("Save", "small", 0,0,4) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                editorInFocus.saveToCurrentlyOpenFile();
+                editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
+            }
+        };
+        Widgets.Button open_file = new Widgets.Button("Open", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 FileDialog fd = new FileDialog(frame, "Choose a file", FileDialog.LOAD);
@@ -42,27 +50,30 @@ public class Root extends Window {
             }
         };
         open_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
-        Button save_file = new Button("Save", "small", 0,0,4) {
+        save_file.setDisabled(true);
+        save_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
+        Widgets.Button save_file_as = new Widgets.Button("Save as..", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                editorInFocus.saveToCurrentlyOpenFile();
-                editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
+                //editorInFocus.saveToCurrentlyOpenFile();
+                //editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
             }
         };
-        save_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
+        save_file_as.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
         DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(100,30));
         menu.setzIndex(1);
 
-        Button set_theme = new Button("Themes...", "small", 0,0, 4) {
+        Widgets.Button set_theme = new Widgets.Button("Themes...", "small", 0,0, 4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                Window w = new Window();
+                Widgets.Window w = new Widgets.Window();
                 w.open();
             }
         };
         set_theme.setTextPlacement(AdvancedGraphics.Side.LEFT);
-        Button set_highlighting = new Button("Highlighting...", "small", 0,0, 4) {
+        Widgets.Button set_highlighting = new Widgets.Button("Highlighting...", "small", 0,0, 4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 editorInFocus.saveToCurrentlyOpenFile();
@@ -79,17 +90,10 @@ public class Root extends Window {
 
         menu.addMenuItem(new DropdownMenuItem(open_file));
         menu.addMenuItem(new DropdownMenuItem(save_file));
+        menu.addMenuItem(new DropdownMenuItem(save_file_as));
 
         view_menu.addMenuItem(new DropdownMenuItem(set_theme));
         view_menu.addMenuItem(new DropdownMenuItem(set_highlighting));
-
-        TextEditor primaryEditor = new TextEditor() {
-            @Override
-            public void onMouseClicked(MouseEvent e) {
-                super.onMouseClicked(e);
-                Root.this.editorInFocus = this;
-            }
-        };
         /*TextEditor secondaryEditor = new TextEditor(){
             @Override
             public void onClicked(EventStatus eventStatus) {
@@ -97,9 +101,23 @@ public class Root extends Window {
             }
         };*/
 
+
+        TextEditor primaryEditor = new TextEditor() {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+                Root.this.editorInFocus = this;
+            }
+
+            @Override
+            public void onCurrentFileChanged() {
+                save_file.setDisabled(editorInFocus.getText().getCurrentFile().equals(null+""));
+            }
+        };
+
         editorInFocus = primaryEditor;
 
-        Frame editorSpace = new Frame("accent2", 0);
+        Widgets.Frame editorSpace = new Frame("accent2", 0);
 
         HorizontalPlacement editorSpacePlacement = new HorizontalPlacement(theme);
         editorSpace.setChildrenPlacement(editorSpacePlacement);

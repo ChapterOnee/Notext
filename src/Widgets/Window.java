@@ -174,6 +174,9 @@ public class Window {
                 if(element_in_focus == null){
                     return;
                 }
+                if(element_in_focus.isDisabled()){
+                    return;
+                }
 
                 element_in_focus.onMouseDragged(e);
             }
@@ -186,6 +189,9 @@ public class Window {
                 if(element_in_focus == null){
                     return;
                 }
+                if(element_in_focus.isDisabled()){
+                    return;
+                }
 
                 element_in_focus.onMouseMoved(e);
             }
@@ -196,6 +202,9 @@ public class Window {
             public void mouseClicked(MouseEvent e) {
 
                 if(element_in_focus == null){
+                    return;
+                }
+                if(element_in_focus.isDisabled()){
                     return;
                 }
                 element_in_focus.onMouseClicked(e);
@@ -213,6 +222,9 @@ public class Window {
                 if(element_in_focus == null){
                     return;
                 }
+                if(element_in_focus.isDisabled()){
+                    return;
+                }
                 element_in_focus.onMousePressed(e);
             }
 
@@ -222,6 +234,9 @@ public class Window {
                 update();
 
                 if(element_in_focus == null){
+                    return;
+                }
+                if(element_in_focus.isDisabled()){
                     return;
                 }
                 element_in_focus.onMouseReleased(e);
@@ -249,6 +264,9 @@ public class Window {
                 if(element_in_focus == null){
                     return;
                 }
+                if(element_in_focus.isDisabled()){
+                    return;
+                }
                 element_in_focus.onKeyPressed(e);
                 update();
             }
@@ -256,6 +274,9 @@ public class Window {
             @Override
             public void keyReleased(KeyEvent e) {
                 if(element_in_focus == null){
+                    return;
+                }
+                if(element_in_focus.isDisabled()){
                     return;
                 }
                 element_in_focus.onKeyReleased(e);

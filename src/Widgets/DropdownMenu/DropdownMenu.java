@@ -80,6 +80,10 @@ public class DropdownMenu extends Label {
         for(Widget w: this.getChildren()){
             w.update(eventStatus);
         }
+
+        if(disabled){
+            mouseOver = false;
+        }
     }
 
     @Override
