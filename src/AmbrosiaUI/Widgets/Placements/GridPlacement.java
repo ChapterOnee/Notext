@@ -50,7 +50,7 @@ public class GridPlacement extends Placement{
     public GridPlacement(Theme Theme) {
         this.rootPosition = new Position(0,0);
         this.rootSize = new Size(0,0);
-        this.Theme = Theme;
+        this.theme = Theme;
     }
 
     public void setRowTemplateFromString(String template){
@@ -126,7 +126,7 @@ public class GridPlacement extends Placement{
 
     public void add(Widget w, int row, int column, int rowspan, int columnspan){
         w.setPlacement(this);
-        w.setTheme(this.Theme);
+        w.setTheme(this.theme);
         w.setPlacementIndex(this.children.size());
         this.children.add(new GridPlacementCell(w, row, column, rowspan, columnspan));
         this.recalculate();

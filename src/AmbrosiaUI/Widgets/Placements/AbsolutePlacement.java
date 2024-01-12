@@ -29,7 +29,7 @@ public class AbsolutePlacement extends Placement {
     }
     public void add(Widget w, Position pos, Size size){
         w.setPlacement(this);
-        w.setTheme(this.Theme);
+        w.setTheme(this.theme);
         w.setPlacementIndex(this.children.size());
         this.children.add(new AbsolutePlacementCell(w, pos, size));
     }

@@ -17,7 +17,7 @@ public abstract class Widget implements Comparable<Widget>{
     protected Placement placement;
     protected Placement childrenPlacement;
 
-    protected Theme Theme;
+    protected Theme theme;
     protected int placementIndex;
 
     protected boolean mouseOver = false;
@@ -76,7 +76,7 @@ public abstract class Widget implements Comparable<Widget>{
         g2.setStroke(new BasicStroke(1));
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setFont(Theme.getFontByName("normal"));
+        g2.setFont(theme.getFontByName("normal"));
         g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
     }
     public Position getPosition(){
@@ -121,11 +121,11 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public Theme getTheme() {
-        return Theme;
+        return theme;
     }
 
     public void setTheme(Theme Theme) {
-        this.Theme = Theme;
+        this.theme = Theme;
     }
 
     public ArrayList<Widget> getChildren(){
@@ -253,7 +253,7 @@ public abstract class Widget implements Comparable<Widget>{
         return "Widget{" +
                 "placement=" + placement +
                 ", childrenPlacement=" + childrenPlacement +
-                ", theme=" + Theme +
+                ", theme=" + theme +
                 ", placementIndex=" + placementIndex +
                 ", mouseOver=" + mouseOver +
                 ", zIndex=" + zIndex +

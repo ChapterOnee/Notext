@@ -26,7 +26,7 @@ public class Frame extends Widget{
     @Override
     public void drawSelf(Graphics2D g2) {
         setupDraw(g2);
-        g2.setColor(Theme.getColorByName(backgroudColor));
+        g2.setColor(theme.getColorByName(backgroudColor));
 
         //if(mouseOver){
         //    g2.setColor(new Color(255,0,0));
@@ -38,8 +38,8 @@ public class Frame extends Widget{
             bg = onHoverBackgroundColor;
         }
         AdvancedGraphics.borderedRect(g2, bounding_rect, this.borderWidth,
-                Theme.getColorByName(bg),
-                Theme.getColorByName(borderColor),
+                theme.getColorByName(bg),
+                theme.getColorByName(borderColor),
                 borderModifier
         );
 

@@ -21,10 +21,10 @@ public class VerticalPlacement extends Placement{
         }
     }
 
-    public VerticalPlacement(Theme Theme) {
+    public VerticalPlacement(Theme theme) {
         this.rootPosition = new Position(0,0);
         this.rootSize = new Size(0,0);
-        this.Theme = Theme;
+        this.theme = theme;
         this.itemMargin = 0;
     }
 
@@ -37,7 +37,7 @@ public class VerticalPlacement extends Placement{
 
     public void add(Widget w, UnitValue unit){
         w.setPlacement(this);
-        w.setTheme(this.Theme);
+        w.setTheme(this.theme);
         w.setPlacementIndex(this.children.size());
         this.children.add(new VerticalPlacementCell(w, unit));
         this.recalculate();

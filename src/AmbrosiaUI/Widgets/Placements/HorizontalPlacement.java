@@ -24,7 +24,7 @@ public class HorizontalPlacement extends Placement{
     public HorizontalPlacement(Theme Theme) {
         this.rootPosition = new Position(0,0);
         this.rootSize = new Size(0,0);
-        this.Theme = Theme;
+        this.theme = Theme;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class HorizontalPlacement extends Placement{
 
     public void add(Widget w, UnitValue unit){
         w.setPlacement(this);
-        w.setTheme(this.Theme);
+        w.setTheme(this.theme);
         w.setPlacementIndex(this.children.size());
         this.children.add(new HorizontalPlacementCell(w, unit));
         this.recalculate();

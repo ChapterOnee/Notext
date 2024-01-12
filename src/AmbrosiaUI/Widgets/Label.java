@@ -29,7 +29,7 @@ public class Label extends Frame {
     @Override
     public void drawSelf(Graphics2D g2) {
         setupDraw(g2);
-        g2.setFont(Theme.getFontByName(font));
+        g2.setFont(theme.getFontByName(font));
 
         /*
             Draw background and border
@@ -37,14 +37,14 @@ public class Label extends Frame {
         super.drawSelf(g2);
 
         if(!mouseOver){
-            g2.setColor(Theme.getColorByName(foregroundColor));
+            g2.setColor(theme.getColorByName(foregroundColor));
         }
         else{
-            g2.setColor(Theme.getColorByName(onHoverForegroundColor));
+            g2.setColor(theme.getColorByName(onHoverForegroundColor));
         }
 
         if(disabled){
-            g2.setColor(Theme.getColorByName(disabledForegroundColor));
+            g2.setColor(theme.getColorByName(disabledForegroundColor));
         }
 
         Rectangle rect = new Rectangle(this.getX(),this.getY(),this.getWidth(),this.getHeight());

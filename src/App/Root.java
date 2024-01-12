@@ -1,6 +1,7 @@
 package App;
 
 import AmbrosiaUI.Widgets.Button;
+import AmbrosiaUI.Widgets.SelectBox;
 import AmbrosiaUI.Widgets.Window;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
@@ -22,14 +23,14 @@ import java.awt.event.*;
 public class Root extends Window {
     private TextEditor editorInFocus;
     public Root() {
-        GridPlacement placement = new GridPlacement(Theme);
+        GridPlacement placement = new GridPlacement(theme);
         placement.setColumnTemplateFromString("auto 20px");
         placement.setRowTemplateFromString("auto");
 
-        core_A_frame.setChildrenPlacement(placement);
+        coreFrame.setChildrenPlacement(placement);
 
-        HorizontalPlacement header_placement = new HorizontalPlacement(Theme);
-        core_header.setChildrenPlacement(header_placement);
+        HorizontalPlacement header_placement = new HorizontalPlacement(theme);
+        coreHeader.setChildrenPlacement(header_placement);
 
         Button save_file = new Button("Save", "small", 0,0,4) {
             @Override
@@ -71,6 +72,32 @@ public class Root extends Window {
             }
         };
         save_file_as.setTextPlacement(AdvancedGraphics.Side.LEFT);
+        Button settings = new Button("Setttings", "small", 0,0,4) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                Window swindow = new Window();
+
+                GridPlacement grid = new GridPlacement(theme);
+                grid.setColumnTemplateFromString("100px auto");
+                grid.setRowTemplateFromString("40px auto");
+
+                SelectBox selection = new SelectBox("accent",0);
+                selection.addOption("Hello World!!");
+                selection.addOption("Hello World!!");
+                selection.addOption("Hello World!!");
+                selection.addOption("Hello World!!");
+                selection.addOption("Hello World!!");
+
+
+                swindow.getCoreFrame().setChildrenPlacement(grid);
+
+                grid.add(selection,0,0,1,1);
+
+                swindow.open();
+            }
+        };
+        settings.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
 
         DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(100,30));
         menu.setzIndex(1);
@@ -80,6 +107,8 @@ public class Root extends Window {
         menu.addMenuItem(new DropdownMenuItem(open_file));
         menu.addMenuItem(new DropdownMenuItem(save_file));
         menu.addMenuItem(new DropdownMenuItem(save_file_as));
+        menu.addMenuItem(new DropdownMenuItem(new Frame("secondary",0)));
+        menu.addMenuItem(new DropdownMenuItem(settings));
 
         /*TextEditor secondaryEditor = new TextEditor(){
             @Override
@@ -108,7 +137,7 @@ public class Root extends Window {
 
         Frame editorSpace = new Frame("accent2", 0);
 
-        HorizontalPlacement editorSpacePlacement = new HorizontalPlacement(Theme);
+        HorizontalPlacement editorSpacePlacement = new HorizontalPlacement(theme);
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorSpacePlacement.add(primaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));

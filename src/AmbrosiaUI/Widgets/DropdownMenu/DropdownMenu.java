@@ -52,11 +52,11 @@ public class DropdownMenu extends Label {
         g2.setClip(null);
 
         if(mouseOver){
-            g2.setColor(Theme.getColorByName(this.getBackgroudColor()));
+            g2.setColor(theme.getColorByName(this.getBackgroudColor()));
 
             AdvancedGraphics.borderedRect(g2,
                     this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size(),
-                    2, Theme.getColorByName("secondary"), Theme.getColorByName("primary"), AdvancedGraphics.BORDER_FULL
+                    2, theme.getColorByName("secondary"), theme.getColorByName("primary"), AdvancedGraphics.BORDER_FULL
             );
             //g2.fillRect(this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size());
         }

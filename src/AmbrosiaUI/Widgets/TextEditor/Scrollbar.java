@@ -36,10 +36,10 @@ public class Scrollbar extends Frame {
         Rectangle handle = getHandle();
 
 
-        g2.setColor(Theme.getColorByName(handleColor));
+        g2.setColor(theme.getColorByName(handleColor));
 
         if(lastMousePosition.inRectangle(handle)){
-            g2.setColor(Theme.getColorByName(handleColorHover));
+            g2.setColor(theme.getColorByName(handleColorHover));
         }
 
         g2.fillRect(handle.getX()+handleMargin,handle.getY()+handleMargin,handle.getWidth() - handleMargin*2,handle.getHeight() - handleMargin*2);

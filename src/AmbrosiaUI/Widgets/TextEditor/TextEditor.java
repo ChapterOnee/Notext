@@ -69,7 +69,7 @@ public class TextEditor extends Widget {
         setupDraw(g2);
 
         // Calculations
-        FontMetrics fm = g2.getFontMetrics(Theme.getFontByName("normal"));
+        FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
         //int single_char_width = fm.stringWidth(" " + cursor.getCurrrentCharsUnderCursor().charAt(0));
         int text_height = this.getLineHeight(fm);
         Position pos = cursor.getRealCursorPosition(fm, this.getLineHeight(fm));
@@ -79,7 +79,7 @@ public class TextEditor extends Widget {
         this.scrollController.setMaxScrollY(contentHeight);
 
         // Draw background
-        g2.setColor(Theme.getColorByName("primary"));
+        g2.setColor(theme.getColorByName("primary"));
         g2.fillRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
 
@@ -97,7 +97,7 @@ public class TextEditor extends Widget {
         // Draw selections
         //
 
-        g2.setColor(Theme.getColorByName("selection"));
+        g2.setColor(theme.getColorByName("selection"));
         Cursor from, to;
         for(Selection selection: activeSelections){
             selection = selection.getReorganized();
@@ -156,10 +156,10 @@ public class TextEditor extends Widget {
         //
         int numberBackgrounPadding = 10;
 
-        g2.setColor(Theme.getColorByName("secondary"));
+        g2.setColor(theme.getColorByName("secondary"));
         g2.fillRect(this.getX(),this.getY() + offset.y -  numberBackgrounPadding/2, offset.x+5, contentHeight +numberBackgrounPadding);
 
-        g2.setColor(Theme.getColorByName("accent"));
+        g2.setColor(theme.getColorByName("accent"));
         g2.fillRect(this.getX()+ offset.x+3,this.getY() + offset.y -  numberBackgrounPadding/2,2, contentHeight +numberBackgrounPadding);
 
         //
@@ -174,7 +174,7 @@ public class TextEditor extends Widget {
             y = this.getY() + offset.y+line_number*text_height;
 
             // Draw line number
-            g2.setColor(Theme.getColorByName("text1"));
+            g2.setColor(theme.getColorByName("text1"));
             g2.drawString(line_text, x-fm.stringWidth(line_text), y+text_height);
 
             // Draw line content
@@ -197,17 +197,17 @@ public class TextEditor extends Widget {
                     x = this.getX() + offset.x + getRealX(i == 0 ? group.getX() : 0,group.getY(),fm) + LINE_OFFSET_X;
                     y = this.getY() + offset.y + (group.getY()+i)*text_height;
 
-                    g2.setColor(Theme.getColorByName("primary"));
+                    g2.setColor(theme.getColorByName("primary"));
                     g2.drawString(content[i], x, y+text_height);
-                    g2.setColor(Theme.getColorByName(group.getForegroundColor()));
+                    g2.setColor(theme.getColorByName(group.getForegroundColor()));
                     g2.drawString(content[i], x, y+text_height);
                 }
                 continue;
             }
 
-            g2.setColor(Theme.getColorByName("primary"));
+            g2.setColor(theme.getColorByName("primary"));
             g2.drawString(group.getContent(), x, y+text_height);
-            g2.setColor(Theme.getColorByName(group.getForegroundColor()));
+            g2.setColor(theme.getColorByName(group.getForegroundColor()));
             g2.drawString(group.getContent(), x, y+text_height);
         }
         //
@@ -221,7 +221,7 @@ public class TextEditor extends Widget {
             setScrollY(scroll.y - height);
         }*/
 
-        g2.setColor(Theme.getColorByName("text1"));
+        g2.setColor(theme.getColorByName("text1"));
         g2.fillRect(
                 this.getX() + offset.x + pos.x - 1 + LINE_OFFSET_X,
                 this.getY() + offset.y + pos.y,
@@ -251,14 +251,14 @@ public class TextEditor extends Widget {
         int cursorPositionWidth = fm.stringWidth(cursorPosition);
         int cursorPositionDisplayMargin = 5;
 
-        g2.setColor(Theme.getColorByName("secondary"));
+        g2.setColor(theme.getColorByName("secondary"));
         g2.fillRect(
                 this.getX() + this.getWidth() - cursorPositionWidth - cursorPositionDisplayMargin*2,
                 this.getY() + this.getHeight() - cursorPositionDisplayMargin - text_height,
                 cursorPositionWidth+cursorPositionDisplayMargin*2,
                 text_height+cursorPositionDisplayMargin
         );
-        g2.setColor(Theme.getColorByName("text1"));
+        g2.setColor(theme.getColorByName("text1"));
         g2.drawString(cursorPosition,
                 this.getX() + this.getWidth() - cursorPositionWidth - 5,
                 this.getY() + this.getHeight() - 5
@@ -314,7 +314,7 @@ public class TextEditor extends Widget {
     }
 
     public Position realToCursorPosition(Position pos, Graphics2D g2){
-        FontMetrics fm = g2.getFontMetrics(Theme.getFontByName("normal"));
+        FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
 
         Position cursor_pos = cursor.getRealCursorPosition(fm, this.getLineHeight(fm));
 
@@ -507,7 +507,7 @@ public class TextEditor extends Widget {
     }
 
     public void setTheme(Theme Theme) {
-        this.Theme = Theme;
+        this.theme = Theme;
     }
 
     public EditorLine getLine(int y){

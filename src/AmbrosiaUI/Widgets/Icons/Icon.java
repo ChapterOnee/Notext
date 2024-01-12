@@ -28,7 +28,7 @@ public class Icon extends Frame {
         super.drawSelf(g2);
 
         if(this.mouseOver){
-            g2.setColor(Theme.getColorByName(backgroundColorHover));
+            g2.setColor(theme.getColorByName(backgroundColorHover));
             g2.fillRect(this.getX(),this.getY(),this.getWidth(),this.getHeight());
         }
 

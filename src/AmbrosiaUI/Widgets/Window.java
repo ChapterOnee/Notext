@@ -14,8 +14,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Window {
-    protected final Frame core_A_frame;
-    protected final Frame core_header;
+    protected final Frame coreFrame;
+    protected final Frame coreHeader;
 
     private enum ResizingDirection {
         UP,
@@ -41,14 +41,14 @@ public class Window {
 
     protected JPanel panel;
 
-    protected Theme Theme;
+    protected Theme theme;
 
     private final boolean DEBUG = false;
 
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
-        Theme = new Theme();
-        Theme.loadFromFile("themes/default.thm");
+        theme = new Theme();
+        theme.loadFromFile("themes/default.thm");
 
 
         innerFrame = new Frame("primary", 0){
@@ -67,28 +67,28 @@ public class Window {
                 return panel.getPreferredSize().height;
             }
         };;
-        innerFrame.setTheme(Theme);
+        innerFrame.setTheme(theme);
 
-        VerticalPlacement hiddenCorePlacement = new VerticalPlacement(Theme);
+        VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme);
         innerFrame.setChildrenPlacement(hiddenCorePlacement);
 
         innerHeader = new Frame("secondary", 0);
-        HorizontalPlacement innerHeaderPlacement = new HorizontalPlacement(Theme);
+        HorizontalPlacement innerHeaderPlacement = new HorizontalPlacement(theme);
         innerHeader.setChildrenPlacement(innerHeaderPlacement);
 
-        core_A_frame = new Frame("primary", 0);
-        element_in_focus = core_A_frame;
+        coreFrame = new Frame("primary", 0);
+        element_in_focus = coreFrame;
 
         hiddenCorePlacement.add(innerHeader, new UnitValue(30, UnitValue.Unit.PIXELS));
-        hiddenCorePlacement.add(core_A_frame, new UnitValue(0, UnitValue.Unit.AUTO));
+        hiddenCorePlacement.add(coreFrame, new UnitValue(0, UnitValue.Unit.AUTO));
 
 
-        core_header = new Frame("secondary", 0);
+        coreHeader = new Frame("secondary", 0);
         innerHeaderControlls = new Frame("accent", 0);
-        HorizontalPlacement innerHeaderControlsPlacement = new HorizontalPlacement(Theme);
+        HorizontalPlacement innerHeaderControlsPlacement = new HorizontalPlacement(theme);
         innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
 
-        innerHeaderPlacement.add(core_header, new UnitValue(0, UnitValue.Unit.AUTO));
+        innerHeaderPlacement.add(coreHeader, new UnitValue(0, UnitValue.Unit.AUTO));
         innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(150, UnitValue.Unit.PIXELS));
 
         PathImage maximizeImage = new PathImage(new Size(20,20));
@@ -495,8 +495,8 @@ public class Window {
         return pos.inRectangle(header);
     }
     private ResizingDirection getResizing(Position pos){
-        panel.setBackground(Theme.getColorByName("primary"));
-        frame.setBackground(Theme.getColorByName("primary"));
+        panel.setBackground(theme.getColorByName("primary"));
+        frame.setBackground(theme.getColorByName("primary"));
 
         int grabSize = 6;
 
@@ -546,5 +546,13 @@ public class Window {
     public void update(){
         innerFrame.fullUpdate(eventStatus);
         panel.repaint();
+    }
+
+    public Frame getCoreFrame() {
+        return coreFrame;
+    }
+
+    public Frame getCoreHeader() {
+        return coreHeader;
     }
 }

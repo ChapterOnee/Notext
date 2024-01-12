@@ -12,7 +12,7 @@ public abstract class Placement {
 
     protected ArrayList<PlacementCell> children = new ArrayList<>();
 
-    protected Theme Theme;
+    protected Theme theme;
 
     protected int itemMargin = 0;
 
@@ -58,11 +58,11 @@ public abstract class Placement {
     }
 
     public Theme getTheme() {
-        return Theme;
+        return theme;
     }
 
     public void setTheme(Theme Theme) {
-        this.Theme = Theme;
+        this.theme = Theme;
     }
 
     public int getItemMargin() {
