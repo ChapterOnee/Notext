@@ -2,6 +2,7 @@ package AmbrosiaUI.Widgets;
 
 import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.GraphicsBorderModifier;
+import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Utility.Rectangle;
 
 import java.awt.*;

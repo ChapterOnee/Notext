@@ -2,6 +2,7 @@ package AmbrosiaUI.Widgets.DropdownMenu;
 
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
+import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Widgets.Label;
 import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 public class DropdownMenu extends Label {
 
     private ArrayList<DropdownMenuItem> items;
+
+    private final int spacerHeight = 8;
 
     private VerticalPlacement verticalPlacement;
 
@@ -55,11 +58,24 @@ public class DropdownMenu extends Label {
             g2.setColor(theme.getColorByName(this.getBackgroudColor()));
 
             AdvancedGraphics.borderedRect(g2,
-                    this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size(),
+                    this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), getContentHeight(),
                     2, theme.getColorByName("secondary"), theme.getColorByName("primary"), AdvancedGraphics.BORDER_FULL
             );
             //g2.fillRect(this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size());
         }
+    }
+
+    public int getContentHeight(){
+        int total = 0;
+        for(DropdownMenuItem item: items){
+            if(item.isSpacer()){
+                total += spacerHeight;
+                continue;
+            }
+            total += itemSize.height;
+        }
+
+        return total;
     }
 
     @Override
@@ -90,7 +106,7 @@ public class DropdownMenu extends Label {
     public ArrayList<Rectangle> getMouseHoverRectangles() {
         ArrayList<Rectangle> rects = super.getMouseHoverRectangles();
         if(mouseOver){
-            rects.add(new Rectangle(this.getX(),this.getY()+this.getHeight()-5,Math.max(this.getWidth(), itemSize.width),itemSize.height*items.size()));
+            rects.add(new Rectangle(this.getX(),this.getY()+this.getHeight()-5,Math.max(this.getWidth(), itemSize.width),getContentHeight()));
         }
         //System.out.println(rects + " " + mouseOver);
         return rects;
@@ -98,7 +114,13 @@ public class DropdownMenu extends Label {
 
     public void addMenuItem(DropdownMenuItem item){
         this.items.add(item);
-        verticalPlacement.add(item.getBoundWidget(), new UnitValue(itemSize.height, UnitValue.Unit.PIXELS));
+        int height = itemSize.height;
+        if(item.isSpacer()){
+            height = spacerHeight;
+            item.setBoundWidget(new Frame(foregroundColor,1));
+        }
+
+        verticalPlacement.add(item.getBoundWidget(), new UnitValue(height, UnitValue.Unit.PIXELS));
     }
 
     @Override

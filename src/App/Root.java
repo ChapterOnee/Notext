@@ -10,11 +10,10 @@ import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenuItem;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
-import AmbrosiaUI.Widgets.TextEditor.Scrollbar;
+import AmbrosiaUI.Widgets.Scrollbar;
 import AmbrosiaUI.Widgets.TextEditor.Selection;
 import AmbrosiaUI.Widgets.TextEditor.TextEditor;
 
-import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -77,7 +76,7 @@ public class Root extends Window {
             }
         };
         save_file_as.setTextPlacement(AdvancedGraphics.Side.LEFT);
-        Button settings = new Button("Setttings", "small", 0,0,4) {
+        Button settings = new Button("Settings", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 settingsWindow.show();
@@ -94,21 +93,33 @@ public class Root extends Window {
         menu.addMenuItem(new DropdownMenuItem(open_file));
         menu.addMenuItem(new DropdownMenuItem(save_file));
         menu.addMenuItem(new DropdownMenuItem(save_file_as));
-        menu.addMenuItem(new DropdownMenuItem(new Frame("secondary",0)));
+        menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(settings));
 
-        /*TextEditor secondaryEditor = new TextEditor(){
+        Scrollbar scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
+
+        TextEditor secondaryEditor = new TextEditor(){
             @Override
-            public void onClicked(EventStatus eventStatus) {
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+                scrollbar.setController(this.getScrollController());
                 Root.this.editorInFocus = this;
             }
-        };*/
+
+            @Override
+            public void onCurrentFileChanged() {
+                super.onCurrentFileChanged();
+                //System.out.println("A"+ editorInFocus.getText().hasFile());
+                save_file.setDisabled(!editorInFocus.getText().hasFile());
+            }
+        };
 
 
         TextEditor primaryEditor = new TextEditor() {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
+                scrollbar.setController(this.getScrollController());
                 Root.this.editorInFocus = this;
             }
 
@@ -121,6 +132,7 @@ public class Root extends Window {
         };
 
         editorInFocus = primaryEditor;
+        scrollbar.setController(editorInFocus.getScrollController());
 
         Frame editorSpace = new Frame("accent2", 0);
 
@@ -128,9 +140,7 @@ public class Root extends Window {
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorSpacePlacement.add(primaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
-        //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
-
-        Scrollbar scrollbar = new Scrollbar("primary", editorInFocus.getScrollController(), UnitValue.Direction.VERTICAL);
+        editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
         placement.add(editorSpace,0,0,1,1);
         placement.add(scrollbar, 0, 1, 1, 1);
@@ -160,16 +170,25 @@ public class Root extends Window {
             @Override
             public void onSelected() {
                 theme.loadFromFile("themes/default.thm");
+                Root.this.update();
             }
         });
         selection.addOption(new SelectBoxOption("Light") {
             @Override
             public void onSelected() {
                 theme.loadFromFile("themes/white.thm");
+                Root.this.update();
+            }
+        });
+        selection.addOption(new SelectBoxOption("Moonlight") {
+            @Override
+            public void onSelected() {
+                theme.loadFromFile("themes/moonlight.thm");
+                Root.this.update();
             }
         });
 
-        selection.setSelected(0);
+        selection.setSelected(2);
 
 
         settingsWindow.getCoreFrame().setChildrenPlacement(grid);
@@ -249,6 +268,12 @@ public class Root extends Window {
                 editorInFocus.getText().revert();
             }
         };
+    }
+
+    @Override
+    public void close() {
+        destroy();
+        settingsWindow.destroy();
     }
 
     public void openFile(String filename){

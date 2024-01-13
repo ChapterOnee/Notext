@@ -1,9 +1,16 @@
 package AmbrosiaUI.Widgets.DropdownMenu;
 
+import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Widget;
 
 public class DropdownMenuItem {
     private Widget boundWidget;
+
+    private boolean isSpacer = false;
+
+    public DropdownMenuItem() {
+        isSpacer = true;
+    }
 
     public DropdownMenuItem(Widget boundWidget) {
         this.boundWidget = boundWidget;
@@ -15,5 +22,9 @@ public class DropdownMenuItem {
 
     public void setBoundWidget(Widget boundWidget) {
         this.boundWidget = boundWidget;
+    }
+
+    public boolean isSpacer() {
+        return isSpacer;
     }
 }

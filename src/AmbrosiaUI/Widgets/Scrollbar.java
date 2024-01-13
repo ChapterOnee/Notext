@@ -1,4 +1,4 @@
-package AmbrosiaUI.Widgets.TextEditor;
+package AmbrosiaUI.Widgets;
 
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Utility.UnitValue;
@@ -91,5 +91,9 @@ public class Scrollbar extends Frame {
         }
 
         return new Rectangle((int) handleX, (int) handleY, handleWidth, handleHeight);
+    }
+
+    public void setController(ScrollController controller) {
+        this.controller = controller;
     }
 }

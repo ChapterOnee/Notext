@@ -44,7 +44,7 @@ public class Window {
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
-        theme.loadFromFile("themes/default.thm");
+        theme.loadFromFile("themes/moonlight.thm");
         initialize();
     }
 
@@ -91,6 +91,9 @@ public class Window {
         innerHeader.setChildrenPlacement(innerHeaderPlacement);
 
         coreFrame = new Frame("primary", 0);
+        coreFrame.setBorderWidth(2);
+        coreFrame.setBorderColor("secondary");
+        coreFrame.setBorderModifier(new GraphicsBorderModifier(false,true,true,true));
         element_in_focus = coreFrame;
 
         hiddenCorePlacement.add(innerHeader, new UnitValue(30, UnitValue.Unit.PIXELS));
@@ -300,6 +303,10 @@ public class Window {
     }
 
     public void open(){
+        if(frame != null){
+            return;
+        }
+
         frame = new JFrame();
         frame.setLayout(new GridBagLayout());
 
@@ -504,6 +511,10 @@ public class Window {
     }
 
     public void close(){
+        destroy();
+    }
+
+    public void destroy(){
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
