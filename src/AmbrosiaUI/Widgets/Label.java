@@ -50,7 +50,7 @@ public class Label extends Frame {
         Rectangle rect = new Rectangle(this.getX(),this.getY(),this.getWidth(),this.getHeight());
         rect.applyMargin(padding);
 
-        AdvancedGraphics.drawText(g2, rect, text, textPlacement);
+        AdvancedGraphics.drawText(g2, rect, getText(), textPlacement);
         //System.out.println(this.getX() + "x" + this.getY() + " " + text + g2.getFont());
     }
 

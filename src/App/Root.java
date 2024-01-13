@@ -1,7 +1,8 @@
 package App;
 
 import AmbrosiaUI.Widgets.Button;
-import AmbrosiaUI.Widgets.SelectBox;
+import AmbrosiaUI.Widgets.SelectBox.SelectBox;
+import AmbrosiaUI.Widgets.SelectBox.SelectBoxOption;
 import AmbrosiaUI.Widgets.Window;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
@@ -13,6 +14,7 @@ import AmbrosiaUI.Widgets.TextEditor.Scrollbar;
 import AmbrosiaUI.Widgets.TextEditor.Selection;
 import AmbrosiaUI.Widgets.TextEditor.TextEditor;
 
+import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -22,7 +24,10 @@ import java.awt.event.*;
 
 public class Root extends Window {
     private TextEditor editorInFocus;
+
+    private Window settingsWindow;
     public Root() {
+        super();
         GridPlacement placement = new GridPlacement(theme);
         placement.setColumnTemplateFromString("auto 20px");
         placement.setRowTemplateFromString("auto");
@@ -75,25 +80,7 @@ public class Root extends Window {
         Button settings = new Button("Setttings", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                Window swindow = new Window();
-
-                GridPlacement grid = new GridPlacement(theme);
-                grid.setColumnTemplateFromString("100px auto");
-                grid.setRowTemplateFromString("40px auto");
-
-                SelectBox selection = new SelectBox("accent",0);
-                selection.addOption("Hello World!!");
-                selection.addOption("Hello World!!");
-                selection.addOption("Hello World!!");
-                selection.addOption("Hello World!!");
-                selection.addOption("Hello World!!");
-
-
-                swindow.getCoreFrame().setChildrenPlacement(grid);
-
-                grid.add(selection,0,0,1,1);
-
-                swindow.open();
+                settingsWindow.show();
             }
         };
         settings.setTextPlacement(AdvancedGraphics.Side.LEFT);
@@ -152,6 +139,42 @@ public class Root extends Window {
 
         panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
         this.bindEvents();
+
+        initializeSettings();
+    }
+
+    public void initializeSettings(){
+        settingsWindow = new Window(theme) {
+            @Override
+            public void close() {
+                settingsWindow.hide();
+            }
+        };
+
+        GridPlacement grid = new GridPlacement(theme);
+        grid.setColumnTemplateFromString("100px auto");
+        grid.setRowTemplateFromString("40px auto");
+
+        SelectBox selection = new SelectBox("normal", 0,0,4);
+        selection.addOption(new SelectBoxOption("Dark"){
+            @Override
+            public void onSelected() {
+                theme.loadFromFile("themes/default.thm");
+            }
+        });
+        selection.addOption(new SelectBoxOption("Light") {
+            @Override
+            public void onSelected() {
+                theme.loadFromFile("themes/white.thm");
+            }
+        });
+
+        selection.setSelected(0);
+
+
+        settingsWindow.getCoreFrame().setChildrenPlacement(grid);
+
+        grid.add(selection,0,0,1,1);
     }
 
     public void bindEvents(){

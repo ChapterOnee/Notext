@@ -14,8 +14,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Window {
-    protected final Frame coreFrame;
-    protected final Frame coreHeader;
+    protected Frame coreFrame;
+    protected Frame coreHeader;
 
     private enum ResizingDirection {
         UP,
@@ -31,11 +31,7 @@ public class Window {
 
     protected Widget element_in_focus;
 
-    private final Frame innerFrame;
-
-    private final Frame innerHeader;
-
-    private final Frame innerHeaderControlls;
+    private Frame innerFrame;
 
     protected JFrame frame;
 
@@ -49,8 +45,26 @@ public class Window {
     public Window() {
         theme = new Theme();
         theme.loadFromFile("themes/default.thm");
+        initialize();
+    }
 
+    public Window(Theme theme) {
+        this.theme = theme;
+        initialize();
+    }
 
+    public void hide(){
+        frame.setVisible(false);
+    }
+
+    public void show(){
+        if(frame == null){
+            this.open();
+        }
+        frame.setVisible(true);
+    }
+
+    private void initialize(){
         innerFrame = new Frame("primary", 0){
             @Override
             public Position getPosition() {
@@ -72,7 +86,7 @@ public class Window {
         VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme);
         innerFrame.setChildrenPlacement(hiddenCorePlacement);
 
-        innerHeader = new Frame("secondary", 0);
+        Frame innerHeader = new Frame("secondary", 0);
         HorizontalPlacement innerHeaderPlacement = new HorizontalPlacement(theme);
         innerHeader.setChildrenPlacement(innerHeaderPlacement);
 
@@ -84,7 +98,7 @@ public class Window {
 
 
         coreHeader = new Frame("secondary", 0);
-        innerHeaderControlls = new Frame("accent", 0);
+        Frame innerHeaderControlls = new Frame("accent", 0);
         HorizontalPlacement innerHeaderControlsPlacement = new HorizontalPlacement(theme);
         innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
 
@@ -126,7 +140,7 @@ public class Window {
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
 
-                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                Window.this.close();
             }
         };
 
@@ -327,7 +341,6 @@ public class Window {
         frame.setSize(800,500);
 
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
 
         onFrameLoad();
     }
@@ -488,6 +501,10 @@ public class Window {
             }
         });
         frame.setUndecorated(true);
+    }
+
+    public void close(){
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
     private boolean onHeader(Position pos){

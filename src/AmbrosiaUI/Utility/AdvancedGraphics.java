@@ -56,7 +56,6 @@ public class AdvancedGraphics {
                 y += bounding_rect.getHeight();
             }
         }
-
         g2.drawString(text, x, y);
     }
 }
