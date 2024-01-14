@@ -39,8 +39,24 @@ public class VerticalPlacement extends Placement{
         w.setPlacement(this);
         w.setTheme(this.theme);
         w.setPlacementIndex(this.children.size());
+        w.setParrent(this.parrent);
         this.children.add(new VerticalPlacementCell(w, unit));
         this.recalculate();
+    }
+
+    public int getMinimalHeight(){
+        int taken_up_scape = 0;
+
+        VerticalPlacementCell cell;
+        for(PlacementCell cel: children){
+            cell = ((VerticalPlacementCell) cel);
+
+            if(cell.getHeight().getUnit() != UnitValue.Unit.AUTO){
+                taken_up_scape += cell.getHeight().toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
+            }
+        }
+
+        return taken_up_scape;
     }
 
     private void recalculate(){

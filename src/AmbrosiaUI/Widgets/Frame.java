@@ -4,6 +4,7 @@ import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.GraphicsBorderModifier;
 import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Utility.Rectangle;
+import AmbrosiaUI.Widgets.Placements.ScrollController;
 
 import java.awt.*;
 
@@ -16,7 +17,11 @@ public class Frame extends Widget{
 
     protected int borderWidth = 0;
 
+    protected boolean disableHoverEffect = false;
+
     protected String borderColor = "accent";
+
+    protected ScrollController scrollController = new ScrollController(0,0);
 
     public Frame(String backgroudColor, int margin) {
         this.backgroudColor = backgroudColor;
@@ -35,7 +40,7 @@ public class Frame extends Widget{
         Rectangle bounding_rect = this.getBoundingRect();
 
         String bg = backgroudColor;
-        if(mouseOver){
+        if(mouseOver && !disableHoverEffect){
             bg = onHoverBackgroundColor;
         }
         AdvancedGraphics.borderedRect(g2, bounding_rect, this.borderWidth,
@@ -50,8 +55,8 @@ public class Frame extends Widget{
     @Override
     public Position getContentPosition() {
         return super.getContentPosition().getOffset(
-                borderWidth * (borderModifier.isLeft() ? 1 : 0)
-                ,borderWidth * (borderModifier.isTop() ? 1 : 0)
+                borderWidth * (borderModifier.isLeft() ? 1 : 0) - scrollController.getScrollX(),
+                borderWidth * (borderModifier.isTop() ? 1 : 0) - scrollController.getScrollY()
         );
     }
 
@@ -104,4 +109,18 @@ public class Frame extends Widget{
     public void setBorderColor(String borderColor) {
         this.borderColor = borderColor;
     }
+
+    public boolean isHoverEffectDisabled() {
+        return disableHoverEffect;
+    }
+
+    public void setHoverEffectDisabled(boolean disableHoverEffect) {
+        this.disableHoverEffect = disableHoverEffect;
+    }
+
+    public ScrollController getScrollController() {
+        return scrollController;
+    }
+
+
 }

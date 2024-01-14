@@ -15,6 +15,8 @@ import java.util.Collections;
 
 public abstract class Widget implements Comparable<Widget>{
     protected Placement placement;
+
+    protected Widget parrent;
     protected Placement childrenPlacement;
 
     protected Theme theme;
@@ -30,7 +32,10 @@ public abstract class Widget implements Comparable<Widget>{
 
     protected boolean disabled = false;
 
+    protected boolean lockedToParrentView = false;
+
     protected final boolean DEBUG = false;
+
 
     public void draw(Graphics2D g2) {
         ArrayList<Widget> toBeDrawn = this.getAllChildren();
@@ -77,7 +82,13 @@ public abstract class Widget implements Comparable<Widget>{
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setFont(theme.getFontByName("normal"));
-        g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+        if(lockedToParrentView && this.parrent != null){
+            g2.setClip(this.parrent.getX(),this.parrent.getY(),this.parrent.getWidth(),this.parrent.getHeight());
+        }
+        else {
+            g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+        }
+
     }
     public Position getPosition(){
         return placement.getPosition(placementIndex).getOffset(margin, margin);
@@ -135,6 +146,7 @@ public abstract class Widget implements Comparable<Widget>{
 
     public void setChildrenPlacement(Placement childrenPlacement) {
         this.childrenPlacement = childrenPlacement;
+        this.childrenPlacement.setParrent(this);
     }
 
     public Theme getTheme() {
@@ -186,7 +198,12 @@ public abstract class Widget implements Comparable<Widget>{
             }
         }
 
-        mouseOver = found;
+        if(!lockedToParrentView) {
+            mouseOver = found;
+        }
+        else{
+            mouseOver = found && eventStatus.getMousePosition().inRectangle(this.getParrent().getBoundingRect());
+        }
         lastMousePosition = eventStatus.getMousePosition();
 
         for(Widget w: this.getChildren()){
@@ -257,12 +274,28 @@ public abstract class Widget implements Comparable<Widget>{
         this.margin = margin;
     }
 
+    public Widget getParrent() {
+        return parrent;
+    }
+
+    public void setParrent(Widget parrent) {
+        this.parrent = parrent;
+    }
+
     public boolean isDisabled() {
         return disabled;
     }
 
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+
+    public boolean isLockedToParrentView() {
+        return lockedToParrentView;
+    }
+
+    public void setLockedToParrentView(boolean lockedToParrentView) {
+        this.lockedToParrentView = lockedToParrentView;
     }
 
     @Override

@@ -44,7 +44,7 @@ public class Window {
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
-        theme.loadFromFile("themes/moonlight.thm");
+        theme.loadFromFile("themes/default.thm");
         initialize();
     }
 
@@ -573,6 +573,7 @@ public class Window {
 
     public void update(){
         innerFrame.fullUpdate(eventStatus);
+        innerFrame.getChildrenPlacement().resize(innerFrame.getChildrenPlacement().getRootSize());
         panel.repaint();
     }
 
@@ -582,5 +583,17 @@ public class Window {
 
     public Frame getCoreHeader() {
         return coreHeader;
+    }
+
+    public JFrame getFrame() {
+        return frame;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public JPanel getPanel() {
+        return panel;
     }
 }

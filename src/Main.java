@@ -1,3 +1,4 @@
+import AmbrosiaUI.Prompts.FilePrompt;
 import AmbrosiaUI.Prompts.Prompt;
 import App.Root;
 
@@ -6,6 +7,14 @@ public class Main {
         //Root root = new Root();
         //root.show();
         //root.openFile("testFiles/test.txt");
+
+        FilePrompt f = new FilePrompt(){
+            @Override
+            public void onSubmited() {
+                System.out.println("AAAAAAA");
+            }
+        };
+        f.ask();
 
         //Window w = new Window();
         //w.open();

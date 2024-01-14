@@ -2,6 +2,7 @@ package AmbrosiaUI.Widgets.Placements;
 import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Utility.Size;
+import AmbrosiaUI.Widgets.Widget;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 public abstract class Placement {
     protected Position rootPosition;
     protected Size rootSize;
+
+    protected Widget parrent;
 
     protected ArrayList<PlacementCell> children = new ArrayList<>();
 
@@ -53,6 +56,9 @@ public abstract class Placement {
         this.rootSize = rootSize;
     }
 
+    public void clear(){
+        children.clear();
+    }
     public ArrayList<PlacementCell> getChildren() {
         return children;
     }
@@ -75,5 +81,13 @@ public abstract class Placement {
 
     public void setItemMargin(int itemMargin) {
         this.itemMargin = itemMargin;
+    }
+
+    public Widget getParrent() {
+        return parrent;
+    }
+
+    public void setParrent(Widget parrent) {
+        this.parrent = parrent;
     }
 }

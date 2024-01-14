@@ -36,7 +36,7 @@ public class Label extends Frame {
          */
         super.drawSelf(g2);
 
-        if(!mouseOver){
+        if(!mouseOver || disableHoverEffect){
             g2.setColor(theme.getColorByName(foregroundColor));
         }
         else{

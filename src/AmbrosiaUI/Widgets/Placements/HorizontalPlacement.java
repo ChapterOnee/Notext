@@ -38,6 +38,7 @@ public class HorizontalPlacement extends Placement{
         w.setPlacement(this);
         w.setTheme(this.theme);
         w.setPlacementIndex(this.children.size());
+        w.setParrent(this.parrent);
         this.children.add(new HorizontalPlacementCell(w, unit));
         this.recalculate();
     }
