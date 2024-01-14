@@ -128,7 +128,7 @@ public class GridPlacement extends Placement{
         w.setPlacement(this);
         w.setTheme(this.theme);
         w.setPlacementIndex(this.children.size());
-        w.setParrent(this.parrent);
+        w.setParent(this.parent);
         this.children.add(new GridPlacementCell(w, row, column, rowspan, columnspan));
         this.recalculate();
     }

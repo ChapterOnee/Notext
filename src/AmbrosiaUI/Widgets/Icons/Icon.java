@@ -25,6 +25,7 @@ public class Icon extends Frame {
 
     @Override
     public void drawSelf(Graphics2D g2) {
+        setupDraw(g2);
         super.drawSelf(g2);
 
         if(this.mouseOver){
@@ -38,5 +39,13 @@ public class Icon extends Frame {
                     this.getY()+this.getHeight()/2-image.getHeight()/2
             ));
         }
+    }
+
+    public PathImage getImage() {
+        return image;
+    }
+
+    public void setImage(PathImage image) {
+        this.image = image;
     }
 }

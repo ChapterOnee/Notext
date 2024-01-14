@@ -44,7 +44,7 @@ public class Window {
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
-        theme.loadFromFile("themes/default.thm");
+        theme.loadFromFile("themes/white.thm");
         initialize();
     }
 
@@ -572,8 +572,8 @@ public class Window {
     }
 
     public void update(){
-        innerFrame.fullUpdate(eventStatus);
         innerFrame.getChildrenPlacement().resize(innerFrame.getChildrenPlacement().getRootSize());
+        innerFrame.fullUpdate(eventStatus);
         panel.repaint();
     }
 

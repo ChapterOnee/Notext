@@ -30,7 +30,7 @@ public class AbsolutePlacement extends Placement {
         w.setPlacement(this);
         w.setTheme(this.theme);
         w.setPlacementIndex(this.children.size());
-        w.setParrent(this.parrent);
+        w.setParent(this.parent);
         this.children.add(new AbsolutePlacementCell(w, pos, size));
     }
 

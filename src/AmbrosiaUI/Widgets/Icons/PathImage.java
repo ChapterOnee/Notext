@@ -41,7 +41,7 @@ public class PathImage {
             return;
         }
 
-        g2.setClip(startPosition.x, startPosition.y, size.width,size.height);
+        //g2.setClip(startPosition.x, startPosition.y, size.width,size.height);
         Position position = new Position(startPosition.x,startPosition.y);
 
         for(PathDrawable operation: oparations){

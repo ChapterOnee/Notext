@@ -11,7 +11,7 @@ public abstract class Placement {
     protected Position rootPosition;
     protected Size rootSize;
 
-    protected Widget parrent;
+    protected Widget parent;
 
     protected ArrayList<PlacementCell> children = new ArrayList<>();
 
@@ -83,11 +83,11 @@ public abstract class Placement {
         this.itemMargin = itemMargin;
     }
 
-    public Widget getParrent() {
-        return parrent;
+    public Widget getParent() {
+        return parent;
     }
 
-    public void setParrent(Widget parrent) {
-        this.parrent = parrent;
+    public void setParent(Widget parent) {
+        this.parent = parent;
     }
 }

@@ -16,7 +16,7 @@ import java.util.Collections;
 public abstract class Widget implements Comparable<Widget>{
     protected Placement placement;
 
-    protected Widget parrent;
+    protected Widget parent;
     protected Placement childrenPlacement;
 
     protected Theme theme;
@@ -32,7 +32,7 @@ public abstract class Widget implements Comparable<Widget>{
 
     protected boolean disabled = false;
 
-    protected boolean lockedToParrentView = false;
+    protected Widget lockedToView;
 
     protected final boolean DEBUG = false;
 
@@ -82,8 +82,8 @@ public abstract class Widget implements Comparable<Widget>{
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setFont(theme.getFontByName("normal"));
-        if(lockedToParrentView && this.parrent != null){
-            g2.setClip(this.parrent.getX(),this.parrent.getY(),this.parrent.getWidth(),this.parrent.getHeight());
+        if(lockedToView != null){
+            g2.setClip(lockedToView.getX(),lockedToView.getY(),lockedToView.getWidth(),lockedToView.getHeight());
         }
         else {
             g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
@@ -146,7 +146,7 @@ public abstract class Widget implements Comparable<Widget>{
 
     public void setChildrenPlacement(Placement childrenPlacement) {
         this.childrenPlacement = childrenPlacement;
-        this.childrenPlacement.setParrent(this);
+        this.childrenPlacement.setParent(this);
     }
 
     public Theme getTheme() {
@@ -198,11 +198,11 @@ public abstract class Widget implements Comparable<Widget>{
             }
         }
 
-        if(!lockedToParrentView) {
+        if(lockedToView == null) {
             mouseOver = found;
         }
         else{
-            mouseOver = found && eventStatus.getMousePosition().inRectangle(this.getParrent().getBoundingRect());
+            mouseOver = found && eventStatus.getMousePosition().inRectangle(lockedToView.getBoundingRect());
         }
         lastMousePosition = eventStatus.getMousePosition();
 
@@ -274,12 +274,12 @@ public abstract class Widget implements Comparable<Widget>{
         this.margin = margin;
     }
 
-    public Widget getParrent() {
-        return parrent;
+    public Widget getParent() {
+        return parent;
     }
 
-    public void setParrent(Widget parrent) {
-        this.parrent = parrent;
+    public void setParent(Widget parent) {
+        this.parent = parent;
     }
 
     public boolean isDisabled() {
@@ -290,12 +290,12 @@ public abstract class Widget implements Comparable<Widget>{
         this.disabled = disabled;
     }
 
-    public boolean isLockedToParrentView() {
-        return lockedToParrentView;
+    public Widget getLockedToView() {
+        return lockedToView;
     }
 
-    public void setLockedToParrentView(boolean lockedToParrentView) {
-        this.lockedToParrentView = lockedToParrentView;
+    public void setLockedToView(Widget lockedToView) {
+        this.lockedToView = lockedToView;
     }
 
     @Override

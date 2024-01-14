@@ -5,6 +5,11 @@ import AmbrosiaUI.Utility.Logger;
 import AmbrosiaUI.Utility.Size;
 import AmbrosiaUI.Utility.UnitValue;
 import AmbrosiaUI.Widgets.Frame;
+import AmbrosiaUI.Widgets.Icons.Icon;
+import AmbrosiaUI.Widgets.Icons.PathImage;
+import AmbrosiaUI.Widgets.Icons.PathOperations.PathLine;
+import AmbrosiaUI.Widgets.Icons.PathOperations.PathMove;
+import AmbrosiaUI.Widgets.Icons.PathOperations.PathRectangle;
 import AmbrosiaUI.Widgets.Label;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
@@ -13,6 +18,7 @@ import AmbrosiaUI.Widgets.Scrollbar;
 import AmbrosiaUI.Widgets.TextEditor.Highlighting.Highlighter;
 import App.Root;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -62,6 +68,7 @@ public class FilePrompt extends Prompt{
             public void mouseWheelMoved(MouseWheelEvent e) {
                 filesDisplayFrame.getScrollController().setScrollY(Math.max(0, filesDisplayFrame.getScrollController().getScrollY() + e.getWheelRotation()*25));
                 win.update();
+                win.update(); // Idk why this works but it fixes a visual bug :>
             }
         });
 
@@ -130,21 +137,72 @@ public class FilePrompt extends Prompt{
             if (!file.isHidden() && !file.getName().startsWith(".")) {
                 String name = file.getName();
 
-                Label temp = new Label(name, "normal",0,1,4);
+                Frame temp = new Frame("secondary",1);
+
+                temp.setLockedToView(filesDisplayFrame);
+
+                HorizontalPlacement tempPlacement = new HorizontalPlacement(win.getTheme());
+                temp.setChildrenPlacement(tempPlacement);
+
+                Icon icon = new Icon("secondary", "secondary", null);
+
+                Label tempLabel = new Label(name, "normal",0,0,4);
 
                 if(file.isDirectory()){
-                    name = ">" + name;
-                    temp = new Label(name, "normal",0,1,4) {
+                    tempLabel = new Label(name, "normal",0,0,4){
                         @Override
                         public void onMouseClicked(MouseEvent e) {
                             path = file.getAbsolutePath();
                             updateFiles();
                         }
                     };
+                    PathImage dirImage = new PathImage(new Size(40,40));
+
+                    // HAHAHAHAHAHA
+
+                    dirImage.add(new PathMove(5,10));
+                    dirImage.add(new PathLine(5,0,"text1",1));
+                    dirImage.add(new PathLine(5,5,"text1",1));
+                    dirImage.add(new PathLine(10,0,"text1",1));
+                    dirImage.add(new PathLine(0,5,"text1",1));
+                    dirImage.add(new PathLine(5,0,"text1",1));
+                    dirImage.add(new PathLine(-5,10,"text1",1));
+                    dirImage.add(new PathLine(-20,0,"text1",1));
+                    dirImage.add(new PathLine(0,-20,"text1",1));
+                    dirImage.add(new PathMove(0,20));
+                    dirImage.add(new PathLine(5,-10,"text1",1));
+                    dirImage.add(new PathLine(15,0,"text1",1));
+
+
+                    icon.setImage(dirImage);
+                }
+                else{
+                    PathImage fileImage = new PathImage(new Size(40,40));
+
+                    fileImage.add(new PathMove(7,7));
+                    fileImage.add(new PathLine(10,0,"text1",1));
+                    fileImage.add(new PathLine(5,5,"text1",1));
+                    fileImage.add(new PathLine(0,20,"text1",1));
+                    fileImage.add(new PathLine(-15,0,"text1",1));
+                    fileImage.add(new PathLine(0,-25,"text1",1));
+
+                    fileImage.add(new PathMove(5,10));
+                    fileImage.add(new PathLine(5,0,"text1",1));
+                    fileImage.add(new PathMove(0,3));
+                    fileImage.add(new PathLine(-5,0,"text1",1));
+                    fileImage.add(new PathMove(0,3));
+                    fileImage.add(new PathLine(5,0,"text1",1));
+
+                    icon.setImage(fileImage);
                 }
 
-                temp.setLockedToParrentView(true);
-                temp.setTextPlacement(AdvancedGraphics.Side.LEFT);
+                icon.setLockedToView(filesDisplayFrame);
+                tempLabel.setLockedToView(filesDisplayFrame);
+                tempLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
+                tempPlacement.add(icon, new UnitValue(40, UnitValue.Unit.PIXELS));
+                tempPlacement.add(tempLabel, new UnitValue(0, UnitValue.Unit.AUTO));
+                //temp.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
                 filesDisplayPlacement.add(temp, new UnitValue(40, UnitValue.Unit.PIXELS));
             }
