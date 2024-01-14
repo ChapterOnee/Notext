@@ -11,7 +11,7 @@ public class Keybind {
 
     public Keybind(String name, JPanel bound_element, KeyStroke keybinds) {
         if(names_in_use.contains(name)){
-            System.out.println("Warning: An already existing keybind was overwritten '" + name + "'.");
+            Logger.printWarning("An already existing keybind was overwritten '" + name + "'.");
         }
         this.name = name;
 

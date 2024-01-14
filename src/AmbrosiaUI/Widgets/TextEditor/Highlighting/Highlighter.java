@@ -1,6 +1,7 @@
 package AmbrosiaUI.Widgets.TextEditor.Highlighting;
 
 import AmbrosiaUI.Utility.FileLoader;
+import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +129,7 @@ public class Highlighter extends FileLoader {
                 switch (name){
                     case "for" -> {
                         if(arguments.length < 1){
-                            System.out.println("Invalid arguments for 'for'.");
+                            Logger.printError("Invalid arguments for 'for'.");
                             return;
                         }
 
@@ -136,7 +137,7 @@ public class Highlighter extends FileLoader {
                     }
                     case "name" -> {
                         if(arguments.length < 1){
-                            System.out.println("Invalid arguments for 'name'.");
+                            Logger.printError("Invalid arguments for 'name'.");
                             return;
                         }
 

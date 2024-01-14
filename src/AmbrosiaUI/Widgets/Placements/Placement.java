@@ -32,8 +32,8 @@ public abstract class Placement {
     public void resize(Size new_size) {
         for(PlacementCell cell: children){
             if(cell.boundElement.getChildrenPlacement() != null){
-                cell.boundElement.getChildrenPlacement().resize(new Size(cell.boundElement.getWidth(),cell.boundElement.getHeight()));
-                cell.boundElement.getChildrenPlacement().setRootPosition(new Position(cell.boundElement.getX(),cell.boundElement.getY()));
+                cell.boundElement.getChildrenPlacement().resize(new Size(cell.boundElement.getContentWidth(),cell.boundElement.getContentHeight()));
+                cell.boundElement.getChildrenPlacement().setRootPosition(new Position(cell.boundElement.getContentX(),cell.boundElement.getContentY()));
             }
         }
     }

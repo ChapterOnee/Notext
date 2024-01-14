@@ -47,7 +47,7 @@ public class FileLoader {
             myReader.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+            Logger.printError("An error occurred.");
             e.printStackTrace();
         }
     }

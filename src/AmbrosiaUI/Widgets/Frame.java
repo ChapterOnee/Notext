@@ -47,6 +47,24 @@ public class Frame extends Widget{
         super.drawSelf(g2);
     }
 
+    @Override
+    public Position getContentPosition() {
+        return super.getContentPosition().getOffset(
+                borderWidth * (borderModifier.isLeft() ? 1 : 0)
+                ,borderWidth * (borderModifier.isTop() ? 1 : 0)
+        );
+    }
+
+    @Override
+    public int getContentWidth() {
+        return super.getContentWidth() - ((borderModifier.isLeft() ? 1 : 0) + (borderModifier.isRight() ? 1 : 0)) * borderWidth;
+    }
+
+    @Override
+    public int getContentHeight() {
+        return super.getContentHeight() - ((borderModifier.isTop() ? 1 : 0) + (borderModifier.isBottom() ? 1 : 0)) * borderWidth;
+    }
+
     public String getBackgroudColor() {
         return backgroudColor;
     }

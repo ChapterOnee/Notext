@@ -1,5 +1,6 @@
 package AmbrosiaUI.Widgets.TextEditor;
 
+import AmbrosiaUI.Utility.Logger;
 import AmbrosiaUI.Utility.Position;
 
 import java.io.File;
@@ -96,7 +97,7 @@ public class StoredText {
                 lines += 1;
 
                 if (lines > 5000){
-                    System.out.println("Max amount of lines reached. For safety reasons cutting reading of text");
+                    Logger.printWarning("Max amount of lines reached. For safety reasons cutting reading of text");
                 }
             }
 
@@ -247,6 +248,13 @@ public class StoredText {
         }
 
         return content.toString();
+    }
+
+    public void clear(){
+        storeState();
+        lines.clear();
+        lines.add(new EditorLine(""));
+        setCurrentFile(null);
     }
 
     public String getCurrentFile() {

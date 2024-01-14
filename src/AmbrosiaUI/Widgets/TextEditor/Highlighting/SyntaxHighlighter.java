@@ -1,5 +1,7 @@
 package AmbrosiaUI.Widgets.TextEditor.Highlighting;
 
+import AmbrosiaUI.Utility.Logger;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -17,6 +19,11 @@ public class SyntaxHighlighter {
     public void loadFromDirectory(String directory){
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
+
+        if(listOfFiles == null){
+            Logger.printWarning("No syntax highlighters loaded, folder is empty.");
+            return;
+        }
 
         for (File listOfFile : listOfFiles) {
             if (listOfFile.isFile() && listOfFile.getName().endsWith(".snx")) {

@@ -6,7 +6,6 @@ import AmbrosiaUI.Widgets.Widget;
 
 public class AbsolutePlacement extends Placement {
     private static class AbsolutePlacementCell extends PlacementCell {
-
         private final Position position;
         private final Size size;
         public AbsolutePlacementCell(Widget bound_element, Position position, Size size) {

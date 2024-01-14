@@ -1,6 +1,7 @@
 package AmbrosiaUI.Widgets;
 
 import AmbrosiaUI.Utility.FileLoader;
+import AmbrosiaUI.Utility.Logger;
 
 import java.awt.*;
 import java.io.File;
@@ -41,7 +42,7 @@ public class Theme extends FileLoader {
             return colors.get(name);
         }
 
-        System.out.println("Color: '" + name + "' not found, setting to default instead.");
+        Logger.printWarning("Color: '" + name + "' not found, setting to default instead.");
         colors.put(name, colors.get("default"));
 
         return colors.get(name);
@@ -51,7 +52,7 @@ public class Theme extends FileLoader {
             return fonts.get(name);
         }
 
-        System.out.println("Font: '" + name + "' not found, setting to default instead.");
+        Logger.printWarning("Font: '" + name + "' not found, setting to default instead.");
         fonts.put(name, fonts.get("default"));
 
         return fonts.get(name);
@@ -63,7 +64,7 @@ public class Theme extends FileLoader {
             Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
             custom_fonts.put(name, font);
         } catch (FontFormatException | IOException e) {
-            System.out.println("Failed to load font '" + filename + "': " + e);
+            Logger.printError("Failed to load font '" + filename + "': " + e);
         }
     }
 
@@ -74,7 +75,7 @@ public class Theme extends FileLoader {
             case "font" -> {
                 //System.out.println(Arrays.toString(arguments));
                 if(arguments.length < 2 || !arguments[1].matches("\\d+")){
-                    System.out.println("Invalid arguments for font.");
+                    Logger.printError("Invalid arguments for font.");
                     return;
                 }
 
@@ -95,7 +96,7 @@ public class Theme extends FileLoader {
                         || !arguments[1].matches("\\d+")
                         || !arguments[2].matches("\\d+")
                 ){
-                    System.out.println("Invalid arguments for color.");
+                    Logger.printError("Invalid arguments for color.");
                     return;
                 }
 
@@ -107,7 +108,7 @@ public class Theme extends FileLoader {
             }
             case "load_font" -> {
                 if(arguments.length < 1){
-                    System.out.println("Invalid arguments for load_font.");
+                    Logger.printError("Invalid arguments for load_font.");
                     return;
                 }
 

@@ -96,6 +96,23 @@ public abstract class Widget implements Comparable<Widget>{
         return this.getPosition().y;
     }
 
+    public Position getContentPosition(){
+        return this.getPosition().getOffset(margin,margin);
+    }
+    public int getContentX(){
+        return this.getContentPosition().x;
+    }
+    public int getContentY(){
+        return this.getContentPosition().y;
+    }
+
+    public int getContentWidth(){
+        return this.getWidth()-margin*2;
+    }
+    public int getContentHeight(){
+        return this.getHeight()-margin*2;
+    }
+
     public Placement getPlacement() {
         return placement;
     }

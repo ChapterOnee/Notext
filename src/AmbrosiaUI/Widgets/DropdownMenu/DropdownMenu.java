@@ -58,14 +58,14 @@ public class DropdownMenu extends Label {
             g2.setColor(theme.getColorByName(this.getBackgroudColor()));
 
             AdvancedGraphics.borderedRect(g2,
-                    this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), getContentHeight(),
+                    this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width),  getFullItemHeight(),
                     2, theme.getColorByName("secondary"), theme.getColorByName("primary"), AdvancedGraphics.BORDER_FULL
             );
             //g2.fillRect(this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size());
         }
     }
 
-    public int getContentHeight(){
+    public int getFullItemHeight(){
         int total = 0;
         for(DropdownMenuItem item: items){
             if(item.isSpacer()){
@@ -106,7 +106,7 @@ public class DropdownMenu extends Label {
     public ArrayList<Rectangle> getMouseHoverRectangles() {
         ArrayList<Rectangle> rects = super.getMouseHoverRectangles();
         if(mouseOver){
-            rects.add(new Rectangle(this.getX(),this.getY()+this.getHeight()-5,Math.max(this.getWidth(), itemSize.width),getContentHeight()));
+            rects.add(new Rectangle(this.getX(),this.getY()+this.getHeight()-5,Math.max(this.getWidth(), itemSize.width), getFullItemHeight()));
         }
         //System.out.println(rects + " " + mouseOver);
         return rects;

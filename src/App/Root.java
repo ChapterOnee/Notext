@@ -36,6 +36,14 @@ public class Root extends Window {
         HorizontalPlacement header_placement = new HorizontalPlacement(theme);
         coreHeader.setChildrenPlacement(header_placement);
 
+        Button new_file = new Button("New", "small", 0,0,4) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                editorInFocus.getText().clear();
+            }
+        };
+        new_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
         Button save_file = new Button("Save", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
@@ -52,7 +60,6 @@ public class Root extends Window {
                 fd.setVisible(true);
 
                 String filename = fd.getDirectory() + fd.getFile();
-                System.out.println(filename);
                 editorInFocus.openFile(filename);
             }
         };
@@ -90,6 +97,7 @@ public class Root extends Window {
 
         header_placement.add(menu, new UnitValue(50, UnitValue.Unit.PIXELS));
 
+        menu.addMenuItem(new DropdownMenuItem(new_file));
         menu.addMenuItem(new DropdownMenuItem(open_file));
         menu.addMenuItem(new DropdownMenuItem(save_file));
         menu.addMenuItem(new DropdownMenuItem(save_file_as));
@@ -98,7 +106,7 @@ public class Root extends Window {
 
         Scrollbar scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
 
-        TextEditor secondaryEditor = new TextEditor(){
+        /*TextEditor secondaryEditor = new TextEditor(){
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
@@ -112,7 +120,7 @@ public class Root extends Window {
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
                 save_file.setDisabled(!editorInFocus.getText().hasFile());
             }
-        };
+        };*/
 
 
         TextEditor primaryEditor = new TextEditor() {
@@ -140,7 +148,7 @@ public class Root extends Window {
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorSpacePlacement.add(primaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
-        editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
+        //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
         placement.add(editorSpace,0,0,1,1);
         placement.add(scrollbar, 0, 1, 1, 1);
@@ -165,7 +173,7 @@ public class Root extends Window {
         grid.setColumnTemplateFromString("100px auto");
         grid.setRowTemplateFromString("40px auto");
 
-        SelectBox selection = new SelectBox("normal", 0,0,4);
+        SelectBox selection = new SelectBox("normal", 0,2,4);
         selection.addOption(new SelectBoxOption("Dark"){
             @Override
             public void onSelected() {
