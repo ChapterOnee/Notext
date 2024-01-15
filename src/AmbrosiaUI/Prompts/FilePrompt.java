@@ -178,17 +178,17 @@ public class FilePrompt extends Prompt{
                     // HAHAHAHAHAHA
 
                     dirImage.add(new PathMove(5,10));
-                    dirImage.add(new PathLine(5,0,"text1",1));
-                    dirImage.add(new PathLine(5,5,"text1",1));
-                    dirImage.add(new PathLine(10,0,"text1",1));
-                    dirImage.add(new PathLine(0,5,"text1",1));
-                    dirImage.add(new PathLine(5,0,"text1",1));
-                    dirImage.add(new PathLine(-5,10,"text1",1));
-                    dirImage.add(new PathLine(-20,0,"text1",1));
-                    dirImage.add(new PathLine(0,-20,"text1",1));
+                    dirImage.add(new PathLine(5,0,"text2",1));
+                    dirImage.add(new PathLine(5,5,"text2",1));
+                    dirImage.add(new PathLine(10,0,"text2",1));
+                    dirImage.add(new PathLine(0,5,"text2",1));
+                    dirImage.add(new PathLine(5,0,"text2",1));
+                    dirImage.add(new PathLine(-5,10,"text2",1));
+                    dirImage.add(new PathLine(-20,0,"text2",1));
+                    dirImage.add(new PathLine(0,-20,"text2",1));
                     dirImage.add(new PathMove(0,20));
-                    dirImage.add(new PathLine(5,-10,"text1",1));
-                    dirImage.add(new PathLine(15,0,"text1",1));
+                    dirImage.add(new PathLine(5,-10,"text2",1));
+                    dirImage.add(new PathLine(15,0,"text2",1));
 
 
                     icon.setImage(dirImage);
@@ -204,24 +204,25 @@ public class FilePrompt extends Prompt{
                     };
 
                     fileImage.add(new PathMove(7,7));
-                    fileImage.add(new PathLine(10,0,"text1",1));
-                    fileImage.add(new PathLine(5,5,"text1",1));
-                    fileImage.add(new PathLine(0,20,"text1",1));
-                    fileImage.add(new PathLine(-15,0,"text1",1));
-                    fileImage.add(new PathLine(0,-25,"text1",1));
+                    fileImage.add(new PathLine(10,0,"text2",1));
+                    fileImage.add(new PathLine(5,5,"text2",1));
+                    fileImage.add(new PathLine(0,20,"text2",1));
+                    fileImage.add(new PathLine(-15,0,"text2",1));
+                    fileImage.add(new PathLine(0,-25,"text2",1));
 
                     fileImage.add(new PathMove(5,10));
-                    fileImage.add(new PathLine(5,0,"text1",1));
+                    fileImage.add(new PathLine(5,0,"text2",1));
                     fileImage.add(new PathMove(0,3));
-                    fileImage.add(new PathLine(-5,0,"text1",1));
+                    fileImage.add(new PathLine(-5,0,"text2",1));
                     fileImage.add(new PathMove(0,3));
-                    fileImage.add(new PathLine(5,0,"text1",1));
+                    fileImage.add(new PathLine(5,0,"text2",1));
 
                     icon.setImage(fileImage);
                 }
 
                 icon.setLockedToView(filesDisplayFrame);
                 tempLabel.setBackgroudColor("primary");
+                tempLabel.setForegroundColor("text2");
                 tempLabel.setLockedToView(filesDisplayFrame);
                 tempLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
 

@@ -1,9 +1,9 @@
-color primary 10,10,40
-color secondary 30,30,80
-color accent 200,200,100
-color accent2 255,200,100
+color primary 39,40,59
+color secondary 208,188,88
+color accent 157,27,33
+color accent2 225,58,75
 
-color text1 150,150,150
+color text1 0,0,0
 color text1_disabled 80,80,80
 color text2 150,150,150
 

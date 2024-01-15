@@ -178,6 +178,7 @@ public class TextEditor extends Widget {
             g2.setColor(theme.getColorByName("text1"));
             g2.drawString(line_text, x-fm.stringWidth(line_text), y+text_height-fm.getDescent());
 
+            g2.setColor(theme.getColorByName("text2"));
             // Draw line content
             text.getLines().get(i).draw(g2, x+ LINE_OFFSET_X,y-fm.getDescent(), text_height);
         }
@@ -221,7 +222,7 @@ public class TextEditor extends Widget {
             setScrollY(scroll.y - height);
         }*/
 
-        g2.setColor(theme.getColorByName("text1"));
+        g2.setColor(theme.getColorByName("text2"));
         g2.fillRect(
                 this.getX() + offset.x + pos.x - 1 + LINE_OFFSET_X,
                 this.getY() + offset.y + pos.y,

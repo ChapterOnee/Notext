@@ -198,8 +198,15 @@ public class Root extends Window {
                 Root.this.update();
             }
         });
+        selection.addOption(new SelectBoxOption("Ainz") {
+            @Override
+            public void onSelected() {
+                theme.loadFromFile("themes/Ainz.thm");
+                Root.this.update();
+            }
+        });
 
-        selection.setSelected(2);
+        selection.setSelected(3);
 
 
         settingsWindow.getCoreFrame().setChildrenPlacement(grid);
