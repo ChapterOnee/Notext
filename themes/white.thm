@@ -1,6 +1,8 @@
 color primary 255,255,255
 color secondary 230,230,230
+
 color accent 100,10,100
+color accentText 255,255,255
 color accent2 200,200,255
 
 color text2 50,50,50

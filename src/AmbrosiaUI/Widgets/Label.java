@@ -9,7 +9,7 @@ public class Label extends Frame {
     protected String text;
     protected String foregroundColor = "text1";
     protected String disabledForegroundColor = "text1_disabled";
-    protected String onHoverForegroundColor = "text2";
+    protected String onHoverForegroundColor = "accentText";
     protected String font;
 
     protected AdvancedGraphics.Side textPlacement = AdvancedGraphics.Side.CENTER;

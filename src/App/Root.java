@@ -62,7 +62,7 @@ public class Root extends Window {
                         editorInFocus.openFile(result.getContent());
                     }
                 };
-                f.addAllowed(".*\\.(txt|py|java|json)");
+                f.addAllowed(".*\\.(txt|py|java|json|thm|snx)");
                 f.ask();
             }
         };

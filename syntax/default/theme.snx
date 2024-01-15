@@ -1,6 +1,7 @@
 config for .thm
 config name Theme
 
-group accent color
-group accent2 font
+group accent \b(?:color)\b
+group accent2  \b(?:font)\b
+group accent2  \b(?:load_font)\b
 group accent [0-9]{1,3},[0-9]{1,3},[0-9]{1,3}

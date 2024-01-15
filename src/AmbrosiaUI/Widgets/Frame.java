@@ -9,9 +9,9 @@ import AmbrosiaUI.Widgets.Placements.ScrollController;
 import java.awt.*;
 
 public class Frame extends Widget{
-    protected String backgroudColor = "secondary";
+    protected String backgroudColor;
 
-    protected String onHoverBackgroundColor = "secondary";
+    protected String onHoverBackgroundColor;
 
     protected GraphicsBorderModifier borderModifier = new GraphicsBorderModifier(true, true ,true ,true);
 
