@@ -515,7 +515,12 @@ public class Window {
     }
 
     public void destroy(){
-        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+        try {
+            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+        }
+        catch (Exception ex){
+            System.out.println(ex);
+        }
     }
 
     private boolean onHeader(Position pos){

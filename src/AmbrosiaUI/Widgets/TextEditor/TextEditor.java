@@ -21,7 +21,7 @@ public class TextEditor extends Widget {
 
     private final Position offset = new Position(60,20);
     final private int LINE_OFFSET_X = 20;
-    final private int LINE_VERTICAL_MARGIN = 4;
+    final private int LINE_VERTICAL_MARGIN = 0;
     private ScrollController scrollController = new ScrollController(0,0);
     private Selection currentSelection = null;
     private final ArrayList<Selection> activeSelections = new ArrayList<>();
@@ -71,8 +71,8 @@ public class TextEditor extends Widget {
         // Calculations
         FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
         //int single_char_width = fm.stringWidth(" " + cursor.getCurrrentCharsUnderCursor().charAt(0));
-        int text_height = this.getLineHeight(fm);
-        Position pos = cursor.getRealCursorPosition(fm, this.getLineHeight(fm));
+        int text_height = this.getLineHeight();
+        Position pos = cursor.getRealCursorPosition(fm, this.getLineHeight());
         offset.x = fm.stringWidth(" ."+text.getLines().size());
 
         int contentHeight = text.getLines().size() * text_height;
@@ -168,25 +168,25 @@ public class TextEditor extends Widget {
         int line_number = 0;
         String line_text;
         int x,y;
-        for (EditorLine line : text.getLines()) {
-            line_text = line_number + ".";
+
+        for (int i = getFirstVisibleLine();i < getLastVisibleLine();i++) {
+            line_text = i + ".";
             x = this.getX() + offset.x;
-            y = this.getY() + offset.y+line_number*text_height;
+            y = this.getY() + offset.y+i*text_height;
 
             // Draw line number
             g2.setColor(theme.getColorByName("text1"));
-            g2.drawString(line_text, x-fm.stringWidth(line_text), y+text_height);
+            g2.drawString(line_text, x-fm.stringWidth(line_text), y+text_height-fm.getDescent());
 
             // Draw line content
-            line.draw(g2, x+ LINE_OFFSET_X,y, text_height);
-            line_number += 1;
+            text.getLines().get(i).draw(g2, x+ LINE_OFFSET_X,y-fm.getDescent(), text_height);
         }
 
         //
         // Draw all highlights
         //
         String[] content;
-        for(HighlightGroup group: highlighter.getCurrentHighlighter().generateHighlights(this.getFullContent())){
+        for(HighlightGroup group: highlighter.getCurrentHighlighter().generateHighlights(this.getVisibleContent(),getFirstVisibleLine())){
             x = this.getX() + offset.x + getRealX(group.getX(),group.getY(),fm) + LINE_OFFSET_X;
             y = this.getY() + offset.y + group.getY()*text_height;
 
@@ -198,17 +198,17 @@ public class TextEditor extends Widget {
                     y = this.getY() + offset.y + (group.getY()+i)*text_height;
 
                     g2.setColor(theme.getColorByName("primary"));
-                    g2.drawString(content[i], x, y+text_height);
+                    g2.drawString(content[i], x, y+text_height-fm.getDescent());
                     g2.setColor(theme.getColorByName(group.getForegroundColor()));
-                    g2.drawString(content[i], x, y+text_height);
+                    g2.drawString(content[i], x, y+text_height-fm.getDescent());
                 }
                 continue;
             }
 
             g2.setColor(theme.getColorByName("primary"));
-            g2.drawString(group.getContent(), x, y+text_height);
+            g2.drawString(group.getContent(), x, y+text_height-fm.getDescent());
             g2.setColor(theme.getColorByName(group.getForegroundColor()));
-            g2.drawString(group.getContent(), x, y+text_height);
+            g2.drawString(group.getContent(), x, y+text_height-fm.getDescent());
         }
         //
         // Draw cursor
@@ -279,6 +279,13 @@ public class TextEditor extends Widget {
         return fm.stringWidth(text.getLines().get(y).getText().substring(0,x));
     }
 
+    public int getFirstVisibleLine(){
+        return Math.max(0, scrollController.getScrollY()/getLineHeight()-1);
+    }
+    public int getLastVisibleLine(){
+        return Math.min(text.getLines().size(),getFirstVisibleLine()+this.getHeight()/getLineHeight()+1);
+    }
+
     public void startSelection(){
         if(currentSelection != null){
             return;
@@ -309,19 +316,24 @@ public class TextEditor extends Widget {
         activeSelections.clear();
     }
 
-    public int getLineHeight(FontMetrics fm){
-        return fm.getAscent() + LINE_VERTICAL_MARGIN;
+    public String getVisibleContent(){
+        return this.text.getContentBetween(getFirstVisibleLine(),getLastVisibleLine());
+    }
+
+    private final Canvas fontsizecanvas = new Canvas();
+    public int getLineHeight(){
+        return fontsizecanvas.getFontMetrics(theme.getFontByName("normal")).getAscent() + LINE_VERTICAL_MARGIN + fontsizecanvas.getFontMetrics(theme.getFontByName("normal")).getDescent();
     }
 
     public Position realToCursorPosition(Position pos, Graphics2D g2){
         FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
 
-        Position cursor_pos = cursor.getRealCursorPosition(fm, this.getLineHeight(fm));
+        Position cursor_pos = cursor.getRealCursorPosition(fm, this.getLineHeight());
 
         int display_offset = scrollController.getScrollY();
 
         int y = pos.y - offset.y - this.getY() + display_offset;
-        y = y / this.getLineHeight(fm);
+        y = y / this.getLineHeight();
         int x = pos.x - offset.x - LINE_OFFSET_X - this.getX();
 
         if(y < 0 || y >= text.getLines().size()){

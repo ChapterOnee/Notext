@@ -2,6 +2,7 @@ package AmbrosiaUI.Widgets.TextEditor.Highlighting;
 
 import AmbrosiaUI.Utility.FileLoader;
 import AmbrosiaUI.Utility.Logger;
+import AmbrosiaUI.Utility.Position;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,12 +103,12 @@ public class Highlighter extends FileLoader {
     }*/
 
 
-    public ArrayList<HighlightGroup> generateHighlights(String text){
+    public ArrayList<HighlightGroup> generateHighlights(String text, int offsetY){
         ArrayList<HighlightGroup> all_highlight_groups = new ArrayList<>();
         //ArrayList<HighlightGroup> output_groups = new ArrayList<>();
 
         for(HighlightQuery qer: queries){
-            all_highlight_groups.addAll(qer.findGroupsInText(text));
+            all_highlight_groups.addAll(qer.findGroupsInText(text,offsetY));
         }
 
         return all_highlight_groups;

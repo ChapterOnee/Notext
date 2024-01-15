@@ -96,8 +96,9 @@ public class StoredText {
 
                 lines += 1;
 
-                if (lines > 5000){
+                if (lines > 50000){
                     Logger.printWarning("Max amount of lines reached. For safety reasons cutting reading of text");
+                    break;
                 }
             }
 
@@ -245,6 +246,16 @@ public class StoredText {
 
         for(EditorLine line: this.lines){
             content.append(line.getText()).append("\n");
+        }
+
+        return content.toString();
+    }
+
+    public String getContentBetween(int startY, int endY){
+        StringBuilder content = new StringBuilder();
+
+        for(int i = startY; i < Math.min(endY,this.lines.size());i++){
+            content.append(lines.get(i).getText()).append("\n");
         }
 
         return content.toString();

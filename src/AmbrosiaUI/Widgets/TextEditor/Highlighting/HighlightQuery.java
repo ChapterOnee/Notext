@@ -17,7 +17,7 @@ public class HighlightQuery {
         this.foregroundColor = foregroundColor;
     }
 
-    public ArrayList<HighlightGroup> findGroupsInText(String text){
+    public ArrayList<HighlightGroup> findGroupsInText(String text, int offsetY){
         Pattern pattern = Pattern.compile(this.pattern);
         Matcher matcher = pattern.matcher(text);
 
@@ -42,7 +42,7 @@ public class HighlightQuery {
                 }
 
 
-                found.add(new HighlightGroup(found_group, backgroundColor, foregroundColor, matcher.start(), new Position(x,y)));
+                found.add(new HighlightGroup(found_group, backgroundColor, foregroundColor, matcher.start(), new Position(x,y+offsetY)));
             } while (matcher.find());
         }
 

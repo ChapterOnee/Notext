@@ -1,5 +1,7 @@
 package App;
 
+import AmbrosiaUI.Prompts.FilePrompt;
+import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Widgets.Button;
 import AmbrosiaUI.Widgets.SelectBox.SelectBox;
 import AmbrosiaUI.Widgets.SelectBox.SelectBoxOption;
@@ -54,13 +56,14 @@ public class Root extends Window {
         Button open_file = new Button("Open", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                FileDialog fd = new FileDialog(frame, "Choose a file", FileDialog.LOAD);
-                fd.setDirectory("C:\\");
-                fd.setFile("*.*");
-                fd.setVisible(true);
-
-                String filename = fd.getDirectory() + fd.getFile();
-                editorInFocus.openFile(filename);
+                FilePrompt f = new FilePrompt(theme){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        editorInFocus.openFile(result.getContent());
+                    }
+                };
+                f.addAllowed(".*\\.(txt|py|java|json)");
+                f.ask();
             }
         };
         open_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
