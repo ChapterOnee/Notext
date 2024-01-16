@@ -3,6 +3,7 @@ package App;
 import AmbrosiaUI.Prompts.FilePrompt;
 import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Widgets.Button;
+import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
 import AmbrosiaUI.Widgets.SelectBox.SelectBox;
 import AmbrosiaUI.Widgets.SelectBox.SelectBoxOption;
 import AmbrosiaUI.Widgets.Window;
@@ -26,6 +27,11 @@ import java.awt.event.*;
 public class Root extends Window {
     private TextEditor editorInFocus;
 
+    private final HorizontalPlacement editorSpacePlacement;
+    private final Scrollbar scrollbar;
+
+    private final Button save_file;
+
     private Window settingsWindow;
     public Root() {
         super();
@@ -46,7 +52,7 @@ public class Root extends Window {
         };
         new_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-        Button save_file = new Button("Save", "small", 0,0,4) {
+        save_file = new Button("Save", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 editorInFocus.saveToCurrentlyOpenFile();
@@ -94,7 +100,6 @@ public class Root extends Window {
         };
         settings.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-
         DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(100,30));
         menu.setzIndex(1);
 
@@ -107,7 +112,7 @@ public class Root extends Window {
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(settings));
 
-        Scrollbar scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
+        scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
 
         /*TextEditor secondaryEditor = new TextEditor(){
             @Override
@@ -125,8 +130,31 @@ public class Root extends Window {
             }
         };*/
 
+        Frame editorSpace = new Frame("accent2", 0);
 
-        TextEditor primaryEditor = new TextEditor() {
+        editorSpacePlacement = new HorizontalPlacement(theme);
+        editorSpace.setChildrenPlacement(editorSpacePlacement);
+
+        editorInFocus = addEditor();
+        addEditor();
+        addEditor();
+        scrollbar.setController(editorInFocus.getScrollController());
+
+        //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
+
+        placement.add(editorSpace,0,0,1,1);
+        placement.add(scrollbar, 0, 1, 1, 1);
+
+        //core.resize(Size.fromDimension(this.getSize()));
+
+        panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
+        this.bindEvents();
+
+        initializeSettings();
+    }
+
+    public TextEditor addEditor(){
+        TextEditor editor = new TextEditor() {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
@@ -142,26 +170,9 @@ public class Root extends Window {
             }
         };
 
-        editorInFocus = primaryEditor;
-        scrollbar.setController(editorInFocus.getScrollController());
+        editorSpacePlacement.add(editor, new UnitValue(0, UnitValue.Unit.AUTO));
 
-        Frame editorSpace = new Frame("accent2", 0);
-
-        HorizontalPlacement editorSpacePlacement = new HorizontalPlacement(theme);
-        editorSpace.setChildrenPlacement(editorSpacePlacement);
-
-        editorSpacePlacement.add(primaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
-        //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
-
-        placement.add(editorSpace,0,0,1,1);
-        placement.add(scrollbar, 0, 1, 1, 1);
-
-        //core.resize(Size.fromDimension(this.getSize()));
-
-        panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
-        this.bindEvents();
-
-        initializeSettings();
+        return editor;
     }
 
     public void initializeSettings(){

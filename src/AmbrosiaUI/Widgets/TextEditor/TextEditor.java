@@ -28,8 +28,6 @@ public class TextEditor extends Widget {
 
     private final Cursor cursor;
 
-    private Graphics2D lastg2;
-
     private final SyntaxHighlighter highlighter;
 
     public TextEditor() {
@@ -234,7 +232,6 @@ public class TextEditor extends Widget {
         at2.translate(0 , 0);
 
         g2.setTransform(at2);
-        lastg2 = g2;
 
 
         //
@@ -326,8 +323,8 @@ public class TextEditor extends Widget {
         return fontsizecanvas.getFontMetrics(theme.getFontByName("normal")).getAscent() + LINE_VERTICAL_MARGIN + fontsizecanvas.getFontMetrics(theme.getFontByName("normal")).getDescent();
     }
 
-    public Position realToCursorPosition(Position pos, Graphics2D g2){
-        FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
+    public Position realToCursorPosition(Position pos){
+        FontMetrics fm = fontsizecanvas.getFontMetrics(theme.getFontByName("normal"));
 
         Position cursor_pos = cursor.getRealCursorPosition(fm, this.getLineHeight());
 
@@ -535,8 +532,8 @@ public class TextEditor extends Widget {
     public void update(EventStatus eventStatus) {
         super.update(eventStatus);
 
-        if(eventStatus.isMouseDown()){
-            Position pos = realToCursorPosition(eventStatus.getMousePosition(),lastg2);
+        if(eventStatus.isMouseDown() && mouseOver){
+            Position pos = realToCursorPosition(eventStatus.getMousePosition());
             Position last_pos = new Position(cursor.getX(), cursor.getY());
 
             cursor.setPosition(pos);

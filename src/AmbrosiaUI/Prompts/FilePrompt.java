@@ -66,8 +66,10 @@ public class FilePrompt extends Prompt{
         filesDisplayPlacement = new VerticalPlacement(win.getTheme()){
             @Override
             public void onResize() {
-                System.out.println(filesDisplayFrame.getScrollController().getMaxScrollY() + " " + filesDisplayPlacement.getMinimalHeight() + " " + filesDisplayFrame.getContentHeight());
-                filesDisplayFrame.getScrollController().setMaxScrollY(Math.max(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight(),0));
+                //System.out.println(filesDisplayFrame.getScrollController().getMaxScrollY() + " " + filesDisplayPlacement.getMinimalHeight() + " " + filesDisplayFrame.getContentHeight());
+                filesDisplayFrame.getScrollController().setMaxScrollY(
+                        Math.max(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight(),0)
+                );
             }
         };
         filesDisplayPlacement.setMinColumnWidth(300);
@@ -241,7 +243,7 @@ public class FilePrompt extends Prompt{
             }
         }
         filesDisplayFrame.getScrollController().setScrollY(0);
-        filesDisplayFrame.getScrollController().setMaxScrollY(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight());
+        filesDisplayFrame.getScrollController().setMaxScrollY(Math.max(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight(),0));
 
         win.update();
     }
