@@ -284,7 +284,7 @@ public class TextEditor extends Widget {
         return Math.max(0, scrollController.getScrollY()/getLineHeight()-1);
     }
     public int getLastVisibleLine(){
-        return Math.min(text.getLines().size(),getFirstVisibleLine()+this.getHeight()/getLineHeight()+1);
+        return Math.min(text.getLines().size(),getFirstVisibleLine()+this.getHeight()/getLineHeight()+2);
     }
 
     public void startSelection(){

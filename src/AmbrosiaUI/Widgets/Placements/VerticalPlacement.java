@@ -6,6 +6,9 @@ import AmbrosiaUI.Utility.UnitValue;
 import AmbrosiaUI.Widgets.Widget;
 import AmbrosiaUI.Widgets.Theme;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class VerticalPlacement extends Placement{
     private static class VerticalPlacementCell extends PlacementCell{
         UnitValue height;
@@ -20,6 +23,9 @@ public class VerticalPlacement extends Placement{
             return height;
         }
     }
+
+    private int columns = 1;
+    private int minColumnWidth = -1;
 
     public VerticalPlacement(Theme theme) {
         this.rootPosition = new Position(0,0);
@@ -45,21 +51,33 @@ public class VerticalPlacement extends Placement{
     }
 
     public int getMinimalHeight(){
-        int taken_up_scape = 0;
+        ArrayList<Integer> column_heights = new ArrayList<>();
+        for(int i = 0;i < columns;i++){
+            column_heights.add(0);
+        }
 
         VerticalPlacementCell cell;
-        for(PlacementCell cel: children){
-            cell = ((VerticalPlacementCell) cel);
+        int temp;
+        for(int i = 0;i < children.size();i++){
+            int column = i%columns;
+
+            cell = ((VerticalPlacementCell) children.get(i));
 
             if(cell.getHeight().getUnit() != UnitValue.Unit.AUTO){
-                taken_up_scape += cell.getHeight().toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
+                temp = cell.getHeight().toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
+                column_heights.set(column, column_heights.get(column)+temp);
             }
         }
 
-        return taken_up_scape;
-    }
+        Collections.sort(column_heights);
 
+        return column_heights.get(columns-1);
+    }
     private void recalculate(){
+        if(minColumnWidth > 0){
+            columns = Math.max(this.getRootSize().width/minColumnWidth,1);
+        }
+
         int filling = 0;
         int taken_up_scape = 0;
         VerticalPlacementCell cell;
@@ -75,10 +93,26 @@ public class VerticalPlacement extends Placement{
             }
         }
 
-        int current_y = 0;
-        for(PlacementCell cel: children){
-            cell = ((VerticalPlacementCell) cel);
-            cell.setLastCalculatedPosition(new Position(itemMargin,current_y+ itemMargin));
+        int column_width = this.getRootSize().width / columns;
+
+        ArrayList<Integer> column_heights = new ArrayList<>();
+        for(int i = 0;i < columns;i++){
+            column_heights.add(0);
+        }
+
+        for(int i = 0;i < children.size();i++){
+            int column = i%columns;
+
+            if (column > column_heights.size()){
+                break;
+            }
+
+            int current_y = column_heights.get(column);
+
+            //System.out.println(current_y);
+
+            cell = ((VerticalPlacementCell) children.get(i));
+            cell.setLastCalculatedPosition(new Position(itemMargin+column_width*column,current_y+itemMargin));
 
             int calculated_height = cell.getHeight().toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
 
@@ -86,11 +120,27 @@ public class VerticalPlacement extends Placement{
                 calculated_height = (this.getRootSize().height-taken_up_scape)/filling;
             }
 
-            cell.setLastCalculatedSize(new Size(this.getRootSize().width- itemMargin *2, calculated_height- itemMargin *2));
+            cell.setLastCalculatedSize(new Size(column_width-itemMargin*2, calculated_height- itemMargin *2));
 
             //System.out.println(new Position(0,current_y) + " " + new Size(this.getRootSize().width, calculated_height));
 
-            current_y += calculated_height;
+            column_heights.set(column, column_heights.get(column)+calculated_height);
         }
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
+
+    public int getMinColumnWidth() {
+        return minColumnWidth;
+    }
+
+    public void setMinColumnWidth(int minColumnWidth) {
+        this.minColumnWidth = minColumnWidth;
     }
 }

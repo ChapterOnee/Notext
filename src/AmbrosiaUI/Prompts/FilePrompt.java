@@ -63,7 +63,14 @@ public class FilePrompt extends Prompt{
 
         filesDisplayFrame = new Frame("primary", 1);
         
-        filesDisplayPlacement = new VerticalPlacement(win.getTheme());
+        filesDisplayPlacement = new VerticalPlacement(win.getTheme()){
+            @Override
+            public void onResize() {
+                System.out.println(filesDisplayFrame.getScrollController().getMaxScrollY() + " " + filesDisplayPlacement.getMinimalHeight() + " " + filesDisplayFrame.getContentHeight());
+                filesDisplayFrame.getScrollController().setMaxScrollY(Math.max(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight(),0));
+            }
+        };
+        filesDisplayPlacement.setMinColumnWidth(300);
         filesDisplayFrame.setChildrenPlacement(filesDisplayPlacement);
 
         win.getPanel().addMouseWheelListener(new MouseWheelListener() {
@@ -234,7 +241,8 @@ public class FilePrompt extends Prompt{
             }
         }
         filesDisplayFrame.getScrollController().setScrollY(0);
-        filesDisplayFrame.getScrollController().setMaxScrollY(filesDisplayPlacement.getMinimalHeight());
+        filesDisplayFrame.getScrollController().setMaxScrollY(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight());
+
         win.update();
     }
 

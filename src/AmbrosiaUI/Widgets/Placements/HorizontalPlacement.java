@@ -20,7 +20,6 @@ public class HorizontalPlacement extends Placement{
             return width;
         }
     }
-
     public HorizontalPlacement(Theme Theme) {
         this.rootPosition = new Position(0,0);
         this.rootSize = new Size(0,0);

@@ -31,10 +31,14 @@ public class ScrollController {
     }
 
     public int getMaxScrollX() {
+
         return maxScrollX;
     }
 
     public void setMaxScrollX(int maxScrollX) {
+        if(currentScroll.x > maxScrollX){
+            currentScroll.x = maxScrollX;
+        }
         this.maxScrollX = maxScrollX;
     }
 
@@ -43,6 +47,9 @@ public class ScrollController {
     }
 
     public void setMaxScrollY(int maxScrollY) {
+        if(currentScroll.y > maxScrollY){
+            currentScroll.y = maxScrollY;
+        }
         this.maxScrollY = maxScrollY;
     }
 }

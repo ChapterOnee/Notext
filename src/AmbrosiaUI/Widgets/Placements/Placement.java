@@ -39,6 +39,11 @@ public abstract class Placement {
                 cell.boundElement.getChildrenPlacement().setRootPosition(new Position(cell.boundElement.getContentX(),cell.boundElement.getContentY()));
             }
         }
+        onResize();
+    }
+
+    public void onResize(){
+
     }
     public Position getRootPosition() {
         return rootPosition;

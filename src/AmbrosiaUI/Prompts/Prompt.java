@@ -12,6 +12,9 @@ public abstract class Prompt {
             @Override
             public void close() {
                 super.close();
+                if(result == null){
+                    return;
+                }
                 onSubmited(result);
             }
         };
