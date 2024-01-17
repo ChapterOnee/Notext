@@ -117,4 +117,16 @@ public class SelectBox extends Label {
         //System.out.println(rects + " " + mouseOver);
         return rects;
     }
+
+    public Size getItemSize() {
+        return itemSize;
+    }
+
+    public void setItemSize(Size itemSize) {
+        this.itemSize = itemSize;
+    }
+
+    public void selectLast() {
+        this.setSelected(this.options.size()-1);
+    }
 }

@@ -75,12 +75,12 @@ public class GridPlacement extends Placement{
             if(value.getUnit() == UnitValue.Unit.AUTO){
                 filling += 1;
             }
-            taken_up_scape += value.toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
+            taken_up_scape += value.toPixels(this.getRootSize(), null, UnitValue.Direction.VERTICAL);
         }
 
         int current_y = 0;
         for(UnitValue value: rowTemplate){
-            int calculatedHeight = value.toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
+            int calculatedHeight = value.toPixels(this.getRootSize(), null, UnitValue.Direction.VERTICAL);
 
             if(value.getUnit() == UnitValue.Unit.AUTO){
                 calculatedHeight = (this.getRootSize().height-taken_up_scape)/filling;
@@ -100,12 +100,12 @@ public class GridPlacement extends Placement{
             if(value.getUnit() == UnitValue.Unit.AUTO){
                 filling += 1;
             }
-            taken_up_scape += value.toPixels(this.getRootSize(), UnitValue.Direction.HORIZONTAL);
+            taken_up_scape += value.toPixels(this.getRootSize(), null, UnitValue.Direction.HORIZONTAL);
         }
 
         int current_x = 0;
         for(UnitValue value: columnTemplate){
-            int calculatedWidth = value.toPixels(this.getRootSize(), UnitValue.Direction.HORIZONTAL);
+            int calculatedWidth = value.toPixels(this.getRootSize(),null, UnitValue.Direction.HORIZONTAL);
 
             if(value.getUnit() == UnitValue.Unit.AUTO){
                 calculatedWidth = (this.getRootSize().width-taken_up_scape)/filling;

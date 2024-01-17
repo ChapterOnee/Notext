@@ -146,4 +146,8 @@ public class Input extends Label{
     public String getContent(){
         return storedText.getLines().get(0).getText();
     }
+
+    public void setContent(String content) {
+        storedText.setText(content);
+    }
 }

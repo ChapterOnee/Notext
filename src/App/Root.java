@@ -3,20 +3,22 @@ package App;
 import AmbrosiaUI.Prompts.CreateFilePrompt;
 import AmbrosiaUI.Prompts.FilePrompt;
 import AmbrosiaUI.Prompts.PromptResult;
+import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Button;
+import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
+import AmbrosiaUI.Widgets.Scrollbar;
 import AmbrosiaUI.Widgets.SelectBox.SelectBox;
 import AmbrosiaUI.Widgets.SelectBox.SelectBoxOption;
-import AmbrosiaUI.Widgets.Window;
+import AmbrosiaUI.Widgets.TextEditor.Highlighting.Highlighter;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenuItem;
-import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
-import AmbrosiaUI.Widgets.Scrollbar;
 import AmbrosiaUI.Widgets.TextEditor.Selection;
 import AmbrosiaUI.Widgets.TextEditor.TextEditor;
+import AmbrosiaUI.Widgets.Window;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,6 +26,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
+import java.io.File;
 
 public class Root extends Window {
     private TextEditor editorInFocus;
@@ -186,24 +189,49 @@ public class Root extends Window {
         grid.setRowTemplateFromString("40px auto");
 
         SelectBox selection = new SelectBox("normal", 0,2,4);
-        selection.addOption(new SelectBoxOption("Dark"){
-            @Override
-            public void onSelected() {
-                theme.loadFromFile("themes/default.thm");
-                Root.this.update();
+        selection.setItemSize(new Size(200,40));
+
+        File folder = new File("themes");
+        File[] listOfFiles = folder.listFiles();
+
+        if(listOfFiles == null){
+            Logger.printWarning("No themes, folder is empty.");
+            return;
+        }
+
+        for (File listOfFile : listOfFiles) {
+            if (listOfFile.isFile() && listOfFile.getName().endsWith(".thm")) {
+                String nm = listOfFile.getName().split("\\.")[0];
+                int w = Widget.getStringWidth(nm, theme.getFontByName(selection.getFont()));
+
+                if(w > selection.getItemSize().width){
+                    selection.getItemSize().width = w;
+                }
+
+                selection.addOption(new SelectBoxOption(nm){
+                    @Override
+                    public void onSelected() {
+                        theme.loadFromFile(listOfFile.getAbsolutePath());
+                        Root.this.update();
+                    }
+                });
+
+
+                selection.selectLast();
             }
-        });
-        selection.addOption(new SelectBoxOption("Light") {
+        }
+
+        /*selection.addOption(new SelectBoxOption("Light") {
             @Override
             public void onSelected() {
-                theme.loadFromFile("themes/white.thm");
+                theme.loadFromFile("themes/Light.thm");
                 Root.this.update();
             }
         });
         selection.addOption(new SelectBoxOption("Moonlight") {
             @Override
             public void onSelected() {
-                theme.loadFromFile("themes/moonlight.thm");
+                theme.loadFromFile("themes/Moonlight.thm");
                 Root.this.update();
             }
         });
@@ -213,9 +241,7 @@ public class Root extends Window {
                 theme.loadFromFile("themes/Ainz.thm");
                 Root.this.update();
             }
-        });
-
-        selection.setSelected(3);
+        });*/
 
 
         settingsWindow.getCoreFrame().setChildrenPlacement(grid);

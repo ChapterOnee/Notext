@@ -64,7 +64,7 @@ public class VerticalPlacement extends Placement{
             cell = ((VerticalPlacementCell) children.get(i));
 
             if(cell.getHeight().getUnit() != UnitValue.Unit.AUTO){
-                temp = cell.getHeight().toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
+                temp = cell.getHeight().toPixels(this.getRootSize(), cell.getBoundElement(), UnitValue.Direction.VERTICAL);
                 column_heights.set(column, column_heights.get(column)+temp);
             }
         }
@@ -89,7 +89,7 @@ public class VerticalPlacement extends Placement{
                 filling += 1;
             }
             else{
-                taken_up_scape += cell.getHeight().toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
+                taken_up_scape += cell.getHeight().toPixels(this.getRootSize(), cell.getBoundElement(), UnitValue.Direction.VERTICAL);
             }
         }
 
@@ -114,7 +114,7 @@ public class VerticalPlacement extends Placement{
             cell = ((VerticalPlacementCell) children.get(i));
             cell.setLastCalculatedPosition(new Position(itemMargin+column_width*column,current_y+itemMargin));
 
-            int calculated_height = cell.getHeight().toPixels(this.getRootSize(), UnitValue.Direction.VERTICAL);
+            int calculated_height = cell.getHeight().toPixels(this.getRootSize(), cell.getBoundElement(),UnitValue.Direction.VERTICAL);
 
             if(cell.getHeight().getUnit() == UnitValue.Unit.AUTO){
                 calculated_height = (this.getRootSize().height-taken_up_scape)/filling;

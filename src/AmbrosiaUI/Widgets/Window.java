@@ -48,7 +48,7 @@ public class Window {
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
-        theme.loadFromFile("themes/white.thm");
+        theme.loadFromFile("themes/Light.thm");
         initialize();
     }
 

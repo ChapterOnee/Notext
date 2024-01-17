@@ -54,7 +54,7 @@ public class HorizontalPlacement extends Placement{
                 filling += 1;
             }
             else{
-                taken_up_scape += cell.getWidth().toPixels(this.getRootSize(), UnitValue.Direction.HORIZONTAL);
+                taken_up_scape += cell.getWidth().toPixels(this.getRootSize(), cell.getBoundElement(), UnitValue.Direction.HORIZONTAL);
             }
         }
 
@@ -63,7 +63,7 @@ public class HorizontalPlacement extends Placement{
             cell = ((HorizontalPlacementCell) cel);
             cell.setLastCalculatedPosition(new Position(current_x ,0));
 
-            int calculated_width = cell.getWidth().toPixels(this.getRootSize(), UnitValue.Direction.HORIZONTAL);
+            int calculated_width = cell.getWidth().toPixels(this.getRootSize(),  cell.getBoundElement(), UnitValue.Direction.HORIZONTAL);
 
             if(cell.getWidth().getUnit() == UnitValue.Unit.AUTO){
                 calculated_width = (this.getRootSize().width-taken_up_scape)/filling;

@@ -1,5 +1,7 @@
 package AmbrosiaUI.Utility;
 
+import AmbrosiaUI.Widgets.Widget;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,6 +10,7 @@ public class UnitValue {
     private int value;
     private Unit unit;
     public enum Unit {
+        FIT, // Fit to minimal size
         PIXELS, // Value in pixels
         FRACTION, // Percentage of parent size
         AUTO // Automatically set to fill remaining space
@@ -22,12 +25,16 @@ public class UnitValue {
         this.unit = unit;
     }
 
-    public int toPixels(Size parent_size, Direction direction){
+    public int toPixels(Size parent_size, Widget widget, Direction direction){
         return switch (this.unit){
             case PIXELS -> this.value;
             case FRACTION -> switch (direction){
                 case VERTICAL -> (parent_size.height / 100) * this.value;
                 case HORIZONTAL -> (parent_size.width / 100) * this.value;
+            };
+            case FIT -> switch (direction){
+                case VERTICAL -> widget.getMinHeight();
+                case HORIZONTAL -> widget.getMinWidth();
             };
             case AUTO -> 0;
         };
@@ -68,6 +75,7 @@ public class UnitValue {
         return switch (unit){
             case PIXELS -> value + "px";
             case FRACTION -> value + "%";
+            case FIT -> "min";
             case AUTO -> "auto";
         };
     }

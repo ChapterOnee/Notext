@@ -98,6 +98,13 @@ public abstract class Widget implements Comparable<Widget>{
         return placement.getHeight(placementIndex) - margin*2;
     }
 
+    public int getMinWidth(){
+        return 0;
+    }
+    public int getMinHeight(){
+        return 0;
+    }
+
     public int getX(){
         return this.getPosition().x;
     }
@@ -294,6 +301,10 @@ public abstract class Widget implements Comparable<Widget>{
 
     public void setLockedToView(Widget lockedToView) {
         this.lockedToView = lockedToView;
+    }
+
+    public static int getStringWidth(String text, Font font){
+        return fontsizecanvas.getFontMetrics(font).stringWidth(text);
     }
 
     @Override
