@@ -1,5 +1,5 @@
-config for .thm
-config name Theme
+for .thm
+name Theme
 
 group accent \b(?:color)\b
 group accent2  \b(?:font)\b

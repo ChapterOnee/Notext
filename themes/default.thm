@@ -1,29 +1,29 @@
-color primary 40,40,40
-color secondary 50,50,50
+color primary 40 40 40
+color secondary 50 50 50
 
-color accent 200,100,100
-color accentText 255,255,255
-color accent2 255,100,100
+color accent 200 100 100
+color accentText 255 255 255
+color accent2 255 100 100
 
-color text1 150,150,150
-color text1_disabled 80,80,80
-color text2 150,150,150
+color text1 150 150 150
+color text1_disabled 80 80 80
+color text2 150 150 150
 
-color selection 50,50,200
+color selection 50 50 200
 
-color keywords 200,200,100
-color strings 100,100,100
-color comment 50,50,50
-color numbers 150,150,200
+color keywords 200 200 100
+color strings 100 100 100
+color comment 50 50 50
+color numbers 150 150 200
 
 Copperplate Gothic Bold
 
 load_font "fonts/Roboto/Roboto-Regular.ttf" roboto
 
-font normal "Monospaced,16"
-font small "Monospaced,14"
-font big "Monospaced,24"
+font normal Monospaced 16
+font small Monospaced 14
+font big Monospaced 24
 
-font normal "roboto,16"
-font small "roboto,14"
-font big "roboto,24"
+font normal roboto 16
+font small roboto 14
+font big roboto 24

@@ -1,0 +1,21 @@
+size 40 40
+
+move 5 10
+
+fillRect 0 5 20 15 "accent"
+fillPoly4 0 0 5 0 10 5 0 5 "accent"
+
+lineTo 5 0 "text2" 1
+lineTo 5 5 "text2" 1
+lineTo 10 0 "text2" 1
+lineTo 0 5 "text2" 1
+
+fillPoly4 0 0 5 0 0 10 0 10 "accent"
+
+lineTo 5 0 "text2" 1
+lineTo -5 10 "text2" 1
+lineTo -20 0 "text2" 1
+lineTo 0 -20 "text2" 1
+move 0 20
+lineTo 5 -10 "text2" 1
+lineTo 15 0 "text2" 1

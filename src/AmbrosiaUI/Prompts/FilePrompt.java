@@ -46,6 +46,9 @@ public class FilePrompt extends Prompt{
         initializeWindow();
     }
 
+    private final PathImage dirImage = new PathImage("icons/folder.pimg");
+    private final PathImage fileImage = new PathImage("icons/file.pimg");
+
 
     private void initializeWindow(){
         GridPlacement corePlacement = new GridPlacement(win.getTheme());
@@ -170,7 +173,7 @@ public class FilePrompt extends Prompt{
                 HorizontalPlacement tempPlacement = new HorizontalPlacement(win.getTheme());
                 temp.setChildrenPlacement(tempPlacement);
 
-                Icon icon = new Icon("primary", "primary", null);
+                Icon icon = new Icon("primary", "primary", new PathImage(new Size(0,0)));
 
                 Label tempLabel;
 
@@ -182,28 +185,10 @@ public class FilePrompt extends Prompt{
                             updateFiles();
                         }
                     };
-                    PathImage dirImage = new PathImage(new Size(40,40));
-
-                    // HAHAHAHAHAHA
-
-                    dirImage.add(new PathMove(5,10));
-                    dirImage.add(new PathLine(5,0,"text2",1));
-                    dirImage.add(new PathLine(5,5,"text2",1));
-                    dirImage.add(new PathLine(10,0,"text2",1));
-                    dirImage.add(new PathLine(0,5,"text2",1));
-                    dirImage.add(new PathLine(5,0,"text2",1));
-                    dirImage.add(new PathLine(-5,10,"text2",1));
-                    dirImage.add(new PathLine(-20,0,"text2",1));
-                    dirImage.add(new PathLine(0,-20,"text2",1));
-                    dirImage.add(new PathMove(0,20));
-                    dirImage.add(new PathLine(5,-10,"text2",1));
-                    dirImage.add(new PathLine(15,0,"text2",1));
-
 
                     icon.setImage(dirImage);
                 }
                 else{
-                    PathImage fileImage = new PathImage(new Size(40,40));
                     tempLabel = new Label(name, "normal",0,0,4){
                         @Override
                         public void onMouseClicked(MouseEvent e) {
@@ -211,20 +196,6 @@ public class FilePrompt extends Prompt{
                             win.close();
                         }
                     };
-
-                    fileImage.add(new PathMove(7,7));
-                    fileImage.add(new PathLine(10,0,"text2",1));
-                    fileImage.add(new PathLine(5,5,"text2",1));
-                    fileImage.add(new PathLine(0,20,"text2",1));
-                    fileImage.add(new PathLine(-15,0,"text2",1));
-                    fileImage.add(new PathLine(0,-25,"text2",1));
-
-                    fileImage.add(new PathMove(5,10));
-                    fileImage.add(new PathLine(5,0,"text2",1));
-                    fileImage.add(new PathMove(0,3));
-                    fileImage.add(new PathLine(-5,0,"text2",1));
-                    fileImage.add(new PathMove(0,3));
-                    fileImage.add(new PathLine(5,0,"text2",1));
 
                     icon.setImage(fileImage);
                 }

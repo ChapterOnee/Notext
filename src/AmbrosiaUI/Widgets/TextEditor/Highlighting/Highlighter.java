@@ -1,19 +1,40 @@
 package AmbrosiaUI.Widgets.TextEditor.Highlighting;
 
-import AmbrosiaUI.Utility.FileLoader;
+import AmbrosiaUI.Utility.FileInterpreter.FileInterpreter;
+import AmbrosiaUI.Utility.FileInterpreter.InterpretedCommand;
 import AmbrosiaUI.Utility.Logger;
-import AmbrosiaUI.Utility.Position;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Highlighter extends FileLoader {
+public class Highlighter extends FileInterpreter {
     private ArrayList<HighlightQuery> queries = new ArrayList<>();
     private ArrayList<String> applies_to = new ArrayList<>();
     private String name;
 
     public Highlighter(String name) {
         this.name = name;
+
+        this.addCommand(new InterpretedCommand("for", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.STRING}){
+            @Override
+            public void execute(ArrayList<String> arguments) {
+                Highlighter.this.applies_to.addAll(arguments);
+            }
+        });
+
+        this.addCommand(new InterpretedCommand("name", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.STRING}){
+            @Override
+            public void execute(ArrayList<String> arguments) {
+                Highlighter.this.name = arguments.get(0);
+            }
+        });
+
+        this.addCommand(new InterpretedCommand("group", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.STRING, InterpretedCommand.ArgumentType.STRING}){
+            @Override
+            public void execute(ArrayList<String> arguments) {
+                Highlighter.this.queries.add(new HighlightQuery(arguments.get(1),"none",arguments.get(0)));
+            }
+        });
     }
 
     public String getName() {
@@ -121,7 +142,7 @@ public class Highlighter extends FileLoader {
         group accent ("[^"]*")|'[^']*'
      */
 
-    @Override
+    @Deprecated
     public void handleTag(String tag, String name, String args) {
         switch (tag) {
             case "config" -> {

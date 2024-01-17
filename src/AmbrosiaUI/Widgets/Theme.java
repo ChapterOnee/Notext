@@ -1,15 +1,16 @@
 package AmbrosiaUI.Widgets;
 
-import AmbrosiaUI.Utility.FileLoader;
+import AmbrosiaUI.Utility.FileInterpreter.FileInterpreter;
+import AmbrosiaUI.Utility.FileInterpreter.InterpretedCommand;
 import AmbrosiaUI.Utility.Logger;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Theme extends FileLoader {
+public class Theme extends FileInterpreter {
     /*
     private Color primaryColor = new Color(20,20,20);
     private Color secondaryColor = new Color(50,50,50);
@@ -35,6 +36,41 @@ public class Theme extends FileLoader {
         //colors.put("secondary", new Color(50,50,50));
         //colors.put("text1", new Color(220,220,220));
         //colors.put("accent",new Color(200,100,100));
+
+        this.addCommand(new InterpretedCommand("font", new InterpretedCommand.ArgumentType[]{
+                InterpretedCommand.ArgumentType.STRING, InterpretedCommand.ArgumentType.STRING, InterpretedCommand.ArgumentType.INT}){
+            @Override
+            public void execute(ArrayList<String> arguments) {
+                String fontName = arguments.get(1).strip();
+                int fontSize = Integer.parseInt(arguments.get(2));
+
+                if(custom_fonts.containsKey(fontName)){
+                    //System.out.println(fontSize);
+                    fonts.put(arguments.get(0), custom_fonts.get(fontName).deriveFont((float) fontSize));
+                }
+                else {
+                    fonts.put(arguments.get(0), new Font(fontName, Font.PLAIN, fontSize));
+                }
+            }
+        });
+
+        this.addCommand(new InterpretedCommand("color", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.STRING,InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT}){
+            @Override
+            public void execute(ArrayList<String> arguments) {
+                colors.put(arguments.get(0), new Color(
+                        Integer.parseInt(arguments.get(1)),
+                        Integer.parseInt(arguments.get(2)),
+                        Integer.parseInt(arguments.get(3))
+                ));
+            }
+        });
+
+        this.addCommand(new InterpretedCommand("load_font", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.STRING, InterpretedCommand.ArgumentType.STRING}){
+            @Override
+            public void execute(ArrayList<String> arguments) {
+                loadFont(arguments.get(0), arguments.get(1).strip());
+            }
+        });
     }
 
     public Color getColorByName(String name){
@@ -68,11 +104,11 @@ public class Theme extends FileLoader {
         }
     }
 
-    @Override
+    @Deprecated
     public void handleTag(String tag, String name, String args) {
         String[] arguments = args.split(",");
         switch (tag){
-            case "font" -> {
+            /*case "font" -> {
                 //System.out.println(Arrays.toString(arguments));
                 if(arguments.length < 2 || !arguments[1].matches("\\d+")){
                     Logger.printError("Invalid arguments for font.");
@@ -89,8 +125,8 @@ public class Theme extends FileLoader {
                 else {
                     fonts.put(name, new Font(fontName, Font.PLAIN, fontSize));
                 }
-            }
-            case "color" -> {
+            }*/
+            /*case "color" -> {
                 if(arguments.length < 3
                         || !arguments[0].matches("\\d+")
                         || !arguments[1].matches("\\d+")
@@ -105,8 +141,8 @@ public class Theme extends FileLoader {
                         Integer.parseInt(arguments[1]),
                         Integer.parseInt(arguments[2])
                 ));
-            }
-            case "load_font" -> {
+            }*/
+            /*case "load_font" -> {
                 if(arguments.length < 1){
                     Logger.printError("Invalid arguments for load_font.");
                     return;
@@ -114,7 +150,7 @@ public class Theme extends FileLoader {
 
                 loadFont(name, arguments[0].strip());
             }
-            default -> {}
+            default -> {}*/
         }
     }
 }

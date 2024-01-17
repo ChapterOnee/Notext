@@ -1,0 +1,4 @@
+size 20 20
+
+move 5 10
+lineTo 10 0 "text1" 1

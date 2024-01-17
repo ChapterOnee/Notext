@@ -1,0 +1,19 @@
+size 40 40
+
+move 7 7
+
+fillPoly4 0 0 10 0 15 5 0 5 "secondary"
+fillRect 0 5 15 20 "secondary"
+
+lineTo 10 0 "text2" 1
+lineTo 5 5 "text2" 1
+lineTo 0 20 "text2" 1
+lineTo -15 0 "text2" 1
+lineTo 0 -25 "text2" 1
+
+move 5 10
+lineTo 5 0 "text1" 1
+move 0 3
+lineTo -5 0 "text1" 1
+move 0 3
+lineTo 5 0 "text1" 1

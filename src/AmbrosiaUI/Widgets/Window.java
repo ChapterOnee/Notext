@@ -41,6 +41,10 @@ public class Window {
 
     private final boolean DEBUG = false;
 
+    private static final PathImage maximizeImage = new PathImage("icons/window/maximize.pimg");
+    private static final PathImage closeImage = new PathImage("icons/window/close.pimg");
+    private static final PathImage minimizeImage = new PathImage("icons/window/minimize.pimg");
+
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
@@ -108,13 +112,6 @@ public class Window {
         innerHeaderPlacement.add(coreHeader, new UnitValue(0, UnitValue.Unit.AUTO));
         innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(150, UnitValue.Unit.PIXELS));
 
-        PathImage maximizeImage = new PathImage(new Size(20,20));
-
-        maximizeImage.add(new PathMove(5,5));
-        maximizeImage.add(new PathLine(10,0,"text1", 1));
-        maximizeImage.add(new PathLine(0,10,"text1", 1));
-        maximizeImage.add(new PathLine(-10,0,"text1", 1));
-        maximizeImage.add(new PathLine(0,-10,"text1", 1));
 
         Icon maximize = new Icon("secondary", "accent", maximizeImage) {
             @Override
@@ -131,13 +128,6 @@ public class Window {
             }
         };
 
-        PathImage closeImage = new PathImage(new Size(20,20));
-
-        closeImage.add(new PathMove(5,5));
-        closeImage.add(new PathLine(10,10,"text1", 1));
-        closeImage.add(new PathMove(-10,0));
-        closeImage.add(new PathLine(10,-10,"text1", 1));
-
         Icon close = new Icon("secondary", "accent", closeImage) {
             @Override
             public void onMouseClicked(MouseEvent e) {
@@ -146,11 +136,6 @@ public class Window {
                 Window.this.close();
             }
         };
-
-        PathImage minimizeImage = new PathImage(new Size(20,20));
-
-        minimizeImage.add(new PathMove(5,10));
-        minimizeImage.add(new PathLine(10,0,"text1", 1));
 
         Icon minimize = new Icon("secondary", "accent", minimizeImage) {
             @Override

@@ -1,5 +1,5 @@
-config for .java
-config name Java
+for .java
+name Java
 
 group numbers \b(?:([0-9]+))\b
 

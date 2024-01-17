@@ -1,5 +1,5 @@
-config for .py
-config name Python
+for .py
+name Python
 
 group numbers \b(?:([0-9]+))\b
 

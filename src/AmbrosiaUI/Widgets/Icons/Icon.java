@@ -1,6 +1,7 @@
 package AmbrosiaUI.Widgets.Icons;
 
 import AmbrosiaUI.Utility.Position;
+import AmbrosiaUI.Utility.Size;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Theme;
 
@@ -15,6 +16,13 @@ public class Icon extends Frame {
         super(backgroudColor, 0);
         this.backgroundColorHover = backgroundColorHover;
         this.image = image;
+    }
+
+    public Icon(String backgroudColor, String backgroundColorHover, String image_path) {
+        super(backgroudColor, 0);
+        this.backgroundColorHover = backgroundColorHover;
+
+        this.image = new PathImage(image_path);
     }
 
     @Override
