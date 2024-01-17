@@ -1,6 +1,7 @@
 package AmbrosiaUI.Widgets;
 
 import AmbrosiaUI.Utility.AdvancedGraphics;
+import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Utility.Rectangle;
 
 import java.awt.*;
@@ -52,6 +53,15 @@ public class Label extends Frame {
 
         AdvancedGraphics.drawText(g2, rect, getText(), textPlacement);
         //System.out.println(this.getX() + "x" + this.getY() + " " + text + g2.getFont());
+    }
+
+    public Position getTextPosition(){
+        FontMetrics fm = fontsizecanvas.getFontMetrics(theme.getFontByName(font));
+
+        Rectangle rect = new Rectangle(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+        rect.applyMargin(padding);
+
+        return AdvancedGraphics.getTextPositionFromBoundingRect(fm, rect, this.getText() ,this.getTextPlacement());
     }
 
     public String getText() {

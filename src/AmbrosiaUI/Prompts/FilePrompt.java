@@ -31,27 +31,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class FilePrompt extends Prompt{
-    private String path = System.getProperty("user.home");
+    protected String path = System.getProperty("user.home");
 
-    private final ArrayList<String> allowedRegex = new ArrayList<>();
+    protected final ArrayList<String> allowedRegex = new ArrayList<>();
 
-    private Frame pathDisplayFrame;
-    private HorizontalPlacement pathDisplayPlacement;
-    private Frame filesDisplayFrame;
+    protected Frame pathDisplayFrame;
+    protected HorizontalPlacement pathDisplayPlacement;
+    protected Frame filesDisplayFrame;
+    protected GridPlacement corePlacement;
 
-    private Scrollbar filesDisplayScrollbar;
-    private VerticalPlacement filesDisplayPlacement;
+    protected Scrollbar filesDisplayScrollbar;
+    protected VerticalPlacement filesDisplayPlacement;
     public FilePrompt(Theme theme) {
         super(theme);
         initializeWindow();
     }
 
-    private final PathImage dirImage = new PathImage("icons/folder.pimg");
-    private final PathImage fileImage = new PathImage("icons/file.pimg");
+    protected final PathImage dirImage = new PathImage("icons/folder.pimg");
+    protected final PathImage fileImage = new PathImage("icons/file.pimg");
 
 
-    private void initializeWindow(){
-        GridPlacement corePlacement = new GridPlacement(win.getTheme());
+    protected void initializeWindow(){
+        corePlacement = new GridPlacement(win.getTheme());
         corePlacement.setColumnTemplateFromString("auto 20px");
         corePlacement.setRowTemplateFromString("40px auto");
 
@@ -102,7 +103,7 @@ public class FilePrompt extends Prompt{
         updateFiles();
     }
 
-    private void updatePath(){
+    protected void updatePath(){
         ArrayList<String> names = new ArrayList<>();
         ArrayList<String> paths = new ArrayList<>();
         
@@ -129,7 +130,7 @@ public class FilePrompt extends Prompt{
             Label temp = new Label(name, "normal", 0, 1, 4) {
                 @Override
                 public void onMouseClicked(MouseEvent e) {
-                    path = paths.get(placementIndex);
+                    setPath(paths.get(placementIndex));
                     updateFiles();
                 }
             };
@@ -137,7 +138,7 @@ public class FilePrompt extends Prompt{
         }
     }
 
-    private void updateFiles(){
+    protected void updateFiles(){
         updatePath();
 
         File folder = new File(path);
@@ -181,7 +182,7 @@ public class FilePrompt extends Prompt{
                     tempLabel = new Label(name, "normal",0,0,4){
                         @Override
                         public void onMouseClicked(MouseEvent e) {
-                            path = file.getAbsolutePath();
+                            setPath(file.getAbsolutePath());
                             updateFiles();
                         }
                     };
@@ -192,8 +193,7 @@ public class FilePrompt extends Prompt{
                     tempLabel = new Label(name, "normal",0,0,4){
                         @Override
                         public void onMouseClicked(MouseEvent e) {
-                            FilePrompt.this.result = new PromptResult(file.getAbsolutePath());
-                            win.close();
+                            fileSelected(file.getAbsolutePath());
                         }
                     };
 
@@ -217,6 +217,15 @@ public class FilePrompt extends Prompt{
         filesDisplayFrame.getScrollController().setMaxScrollY(Math.max(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight(),0));
 
         win.update();
+    }
+
+    public void setPath(String path){
+        this.path = path;
+    }
+
+    protected void fileSelected(String file){
+        FilePrompt.this.result = new PromptResult(file);
+        win.close();
     }
 
     public void addAllowed(String regex){

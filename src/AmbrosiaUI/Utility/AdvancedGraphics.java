@@ -33,6 +33,16 @@ public class AdvancedGraphics {
     public static void drawText(Graphics2D g2, Rectangle bounding_rect, String text, Side placementSide){
         FontMetrics fm = g2.getFontMetrics(g2.getFont());
 
+        Position pos = getTextPositionFromBoundingRect(fm, bounding_rect, text, placementSide);
+
+        g2.drawString(text, pos.x, pos.y);
+    }
+    
+    public static int getTextHeight(FontMetrics fm){
+        return fm.getAscent()+fm.getDescent();
+    }
+
+    public static Position getTextPositionFromBoundingRect(FontMetrics fm,Rectangle bounding_rect, String text, Side placementSide){
         int x = bounding_rect.getX();
         int y = bounding_rect.getY() + fm.getAscent();
 
@@ -56,6 +66,7 @@ public class AdvancedGraphics {
                 y += bounding_rect.getHeight();
             }
         }
-        g2.drawString(text, x, y);
+
+        return new Position(x,y);
     }
 }

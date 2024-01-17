@@ -36,6 +36,8 @@ public class StoredText {
         lines.add(new EditorLine(""));
         pastText = new ArrayList<>();
         this.actingCursor = actingCursor;
+
+        this.actingCursor.setCurrentTextLines(lines);
     }
 
     public ArrayList<EditorLine> getLines(){

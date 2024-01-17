@@ -1,5 +1,6 @@
 package App;
 
+import AmbrosiaUI.Prompts.CreateFilePrompt;
 import AmbrosiaUI.Prompts.FilePrompt;
 import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Widgets.Button;
@@ -79,16 +80,15 @@ public class Root extends Window {
         Button save_file_as = new Button("Save as..", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                FileDialog fd = new FileDialog(frame, "Choose a file", FileDialog.LOAD);
-                fd.setDirectory("C:\\");
-                fd.setFile("*.*");
-                fd.setVisible(true);
-
-                String filename = fd.getDirectory() + fd.getFile();
-                if(!filename.equals("nullnull")) {
-                    editorInFocus.getText().setCurrentFile(filename);
-                    editorInFocus.saveToCurrentlyOpenFile();
-                }
+                CreateFilePrompt f = new CreateFilePrompt(theme){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        editorInFocus.getText().setCurrentFile(result.getContent());
+                        editorInFocus.saveToCurrentlyOpenFile();
+                    }
+                };
+                f.addAllowed(".*");
+                f.ask();
             }
         };
         save_file_as.setTextPlacement(AdvancedGraphics.Side.LEFT);
@@ -136,8 +136,6 @@ public class Root extends Window {
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorInFocus = addEditor();
-        addEditor();
-        addEditor();
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));

@@ -50,8 +50,6 @@ public class TextEditor extends Widget {
         this.highlighter.loadFromDirectory("syntax/default");
 
         //this.highlighter.loadFromFile("syntax/default/theme.snx");
-
-        cursor.setCurrentTextLines(text.getLines());
     }
 
     public void insertStringOnCursor(String text){
@@ -317,8 +315,6 @@ public class TextEditor extends Widget {
     public String getVisibleContent(){
         return this.text.getContentBetween(getFirstVisibleLine(),getLastVisibleLine());
     }
-
-    private final Canvas fontsizecanvas = new Canvas();
     public int getLineHeight(){
         return fontsizecanvas.getFontMetrics(theme.getFontByName("normal")).getAscent() + LINE_VERTICAL_MARGIN + fontsizecanvas.getFontMetrics(theme.getFontByName("normal")).getDescent();
     }

@@ -1,9 +1,7 @@
 package AmbrosiaUI.Widgets;
 
-import AmbrosiaUI.Utility.EventStatus;
-import AmbrosiaUI.Utility.Position;
+import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
-import AmbrosiaUI.Utility.Size;
 import AmbrosiaUI.Widgets.Placements.Placement;
 import AmbrosiaUI.Widgets.Placements.PlacementCell;
 
@@ -36,6 +34,8 @@ public abstract class Widget implements Comparable<Widget>{
 
     protected final boolean DEBUG = false;
 
+    protected static final Canvas fontsizecanvas = new Canvas();
+
 
     public void draw(Graphics2D g2) {
         ArrayList<Widget> toBeDrawn = this.getAllChildren();
@@ -47,35 +47,33 @@ public abstract class Widget implements Comparable<Widget>{
         }
     }
     public void drawSelf(Graphics2D g2){
-        if(!DEBUG){
-            return;
+        if(DEBUG){
+            if(this.childrenPlacement != null){
+                this.childrenPlacement.drawDebug(g2);
+            }
+
+            g2.setFont(new Font("Monospaced", Font.PLAIN,10));
+            FontMetrics fm = g2.getFontMetrics(g2.getFont());
+
+            g2.setColor(new Color(255,0,0));
+
+            String text = " " + this.getX() + ":" + this.getY();
+            int text_x = this.getX();
+            int text_y = this.getY();
+
+
+            g2.drawRect(this.getX(),this.getY(),this.getWidth()-1,this.getHeight()-1);
+
+            g2.drawLine(this.getX(),this.getY(),this.getX()+this.getWidth(),this.getY()+this.getHeight());
+            g2.drawLine(this.getX()+this.getWidth(),this.getY(),this.getX(),this.getY()+this.getHeight());
+
+            g2.setColor(new Color(0,0,0));
+            g2.fillRect(text_x,text_y,fm.stringWidth(text)+10, fm.getAscent()+2);
+
+            g2.setColor(new Color(255,0,0));
+            g2.drawRect(text_x,text_y,fm.stringWidth(text)+10, fm.getAscent()+2);
+            g2.drawString(text, text_x,text_y+fm.getAscent());
         }
-
-        if(this.childrenPlacement != null){
-            this.childrenPlacement.drawDebug(g2);
-        }
-
-        g2.setFont(new Font("Monospaced", Font.PLAIN,10));
-        FontMetrics fm = g2.getFontMetrics(g2.getFont());
-
-        g2.setColor(new Color(255,0,0));
-
-        String text = " " + this.getX() + ":" + this.getY();
-        int text_x = this.getX();
-        int text_y = this.getY();
-
-
-        g2.drawRect(this.getX(),this.getY(),this.getWidth()-1,this.getHeight()-1);
-
-        g2.drawLine(this.getX(),this.getY(),this.getX()+this.getWidth(),this.getY()+this.getHeight());
-        g2.drawLine(this.getX()+this.getWidth(),this.getY(),this.getX(),this.getY()+this.getHeight());
-
-        g2.setColor(new Color(0,0,0));
-        g2.fillRect(text_x,text_y,fm.stringWidth(text)+10, fm.getAscent()+2);
-
-        g2.setColor(new Color(255,0,0));
-        g2.drawRect(text_x,text_y,fm.stringWidth(text)+10, fm.getAscent()+2);
-        g2.drawString(text, text_x,text_y+fm.getAscent());
     }
     public void setupDraw(Graphics2D g2){
         g2.setStroke(new BasicStroke(1));
