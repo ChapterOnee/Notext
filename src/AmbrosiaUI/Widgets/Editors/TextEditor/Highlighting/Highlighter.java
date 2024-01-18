@@ -1,4 +1,4 @@
-package AmbrosiaUI.Widgets.TextEditor.Highlighting;
+package AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting;
 
 import AmbrosiaUI.Utility.FileInterpreter.FileInterpreter;
 import AmbrosiaUI.Utility.FileInterpreter.InterpretedCommand;

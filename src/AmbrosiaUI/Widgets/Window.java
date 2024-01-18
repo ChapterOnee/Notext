@@ -4,12 +4,8 @@ import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.Icons.Icon;
 import AmbrosiaUI.Widgets.Icons.PathImage;
-import AmbrosiaUI.Widgets.Icons.PathOperations.PathLine;
-import AmbrosiaUI.Widgets.Icons.PathOperations.PathMove;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
-import AmbrosiaUI.Widgets.TextEditor.Selection;
-import App.Root;
 
 import javax.swing.*;
 import java.awt.*;

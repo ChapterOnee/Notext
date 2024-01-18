@@ -3,18 +3,13 @@ package AmbrosiaUI.Widgets;
 import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.EventStatus;
 import AmbrosiaUI.Utility.Position;
-import AmbrosiaUI.Utility.Rectangle;
-import AmbrosiaUI.Widgets.Placements.ScrollController;
-import AmbrosiaUI.Widgets.TextEditor.Cursor;
-import AmbrosiaUI.Widgets.TextEditor.EditorLine;
-import AmbrosiaUI.Widgets.TextEditor.Highlighting.SyntaxHighlighter;
-import AmbrosiaUI.Widgets.TextEditor.Selection;
-import AmbrosiaUI.Widgets.TextEditor.StoredText;
+import AmbrosiaUI.Widgets.Editors.TextEditor.Cursor;
+import AmbrosiaUI.Widgets.Editors.TextEditor.Selection;
+import AmbrosiaUI.Widgets.Editors.TextEditor.StoredText;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 public class Input extends Label{
     private final StoredText storedText;

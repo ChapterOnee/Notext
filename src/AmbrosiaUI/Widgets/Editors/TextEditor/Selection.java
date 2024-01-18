@@ -1,4 +1,4 @@
-package AmbrosiaUI.Widgets.TextEditor;
+package AmbrosiaUI.Widgets.Editors.TextEditor;
 
 import AmbrosiaUI.Utility.Position;
 

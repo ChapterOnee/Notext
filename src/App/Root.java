@@ -5,6 +5,7 @@ import AmbrosiaUI.Prompts.FilePrompt;
 import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Button;
+import AmbrosiaUI.Widgets.Editors.HexEditor.HexEditor;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Scrollbar;
 import AmbrosiaUI.Widgets.SelectBox.SelectBox;
@@ -14,8 +15,8 @@ import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenuItem;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
-import AmbrosiaUI.Widgets.TextEditor.EditorLike;
-import AmbrosiaUI.Widgets.TextEditor.TextEditor;
+import AmbrosiaUI.Widgets.Editors.EditorLike;
+import AmbrosiaUI.Widgets.Editors.TextEditor.TextEditor;
 import AmbrosiaUI.Widgets.Window;
 
 import javax.swing.*;
@@ -66,7 +67,7 @@ public class Root extends Window {
                         editorInFocus.openFile(result.getContent());
                     }
                 };
-                f.addAllowed(".*\\.(txt|py|java|json|thm|snx)");
+                f.addAllowed(editorInFocus.getAllowedFiles());
                 f.ask();
             }
         };
@@ -117,7 +118,7 @@ public class Root extends Window {
         editorSpacePlacement = new HorizontalPlacement(theme);
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
-        editorInFocus = addEditor();
+        editorInFocus = addHexEditor();
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
@@ -145,6 +146,27 @@ public class Root extends Window {
             @Override
             public void onCurrentFileChanged() {
                 super.onCurrentFileChanged();
+                //System.out.println("A"+ editorInFocus.getText().hasFile());
+                save_file.setDisabled(!editorInFocus.hasFile());
+            }
+        };
+
+        editorSpacePlacement.add(editor, new UnitValue(0, UnitValue.Unit.AUTO));
+
+        return editor;
+    }
+
+    public HexEditor addHexEditor(){
+        HexEditor editor = new HexEditor() {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+                scrollbar.setController(this.getScrollController());
+                Root.this.editorInFocus = this;
+            }
+
+            @Override
+            public void onCurrentFileChanged() {
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
                 save_file.setDisabled(!editorInFocus.hasFile());
             }

@@ -1,10 +1,11 @@
-package AmbrosiaUI.Widgets.TextEditor;
+package AmbrosiaUI.Widgets.Editors.TextEditor;
 
+import AmbrosiaUI.Widgets.Editors.EditorLike;
 import AmbrosiaUI.Widgets.Placements.ScrollController;
-import AmbrosiaUI.Widgets.TextEditor.Highlighting.HighlightGroup;
+import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.HighlightGroup;
 import AmbrosiaUI.Utility.EventStatus;
 import AmbrosiaUI.Utility.Position;
-import AmbrosiaUI.Widgets.TextEditor.Highlighting.SyntaxHighlighter;
+import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.SyntaxHighlighter;
 import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Widgets.Widget;
 
@@ -257,7 +258,7 @@ public class TextEditor extends Widget implements EditorLike {
         g2.drawString(cursorPosition,
                 this.getX() + this.getWidth() - cursorPositionWidth - 5,
                 this.getY() + this.getHeight() - 5
-        ); // AmbrosiaUI.Widgets.TextEditor.Cursor position in bottom right corner
+        ); // AmbrosiaUI.Widgets.Editors.TextEditor.Cursor position in bottom right corner
 
         super.drawSelf(g2);
     }
@@ -378,6 +379,11 @@ public class TextEditor extends Widget implements EditorLike {
             highlighter.toDetectedHighlighterFromFilename(filename);
             clear();
         }
+    }
+
+    @Override
+    public String getAllowedFiles() {
+        return ".*\\.(txt|py|java|json|thm|snx)";
     }
 
     public void onCurrentFileChanged(){

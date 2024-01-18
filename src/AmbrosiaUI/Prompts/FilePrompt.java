@@ -1,31 +1,23 @@
 package AmbrosiaUI.Prompts;
 
 import AmbrosiaUI.Utility.AdvancedGraphics;
-import AmbrosiaUI.Utility.Logger;
 import AmbrosiaUI.Utility.Size;
 import AmbrosiaUI.Utility.UnitValue;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Icons.Icon;
 import AmbrosiaUI.Widgets.Icons.PathImage;
-import AmbrosiaUI.Widgets.Icons.PathOperations.PathLine;
-import AmbrosiaUI.Widgets.Icons.PathOperations.PathMove;
-import AmbrosiaUI.Widgets.Icons.PathOperations.PathRectangle;
 import AmbrosiaUI.Widgets.Label;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
 import AmbrosiaUI.Widgets.Scrollbar;
-import AmbrosiaUI.Widgets.TextEditor.Highlighting.Highlighter;
 import AmbrosiaUI.Widgets.Theme;
-import App.Root;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
