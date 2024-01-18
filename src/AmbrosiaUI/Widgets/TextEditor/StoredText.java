@@ -132,7 +132,15 @@ public class StoredText {
         actingCursor.setY(st.cursorPosition.y);
 
         //System.out.println(currentFile + " " + st.filename + " " + this.currentFile.equals(st.filename));
-        boolean file_changed = !this.currentFile.equals(st.filename);
+
+        boolean file_changed;
+        if(this.currentFile == null){
+            file_changed = st.filename != null;
+        }
+        else{
+            file_changed = !this.currentFile.equals(st.filename);
+        }
+
 
         this.currentFile = st.filename;
 

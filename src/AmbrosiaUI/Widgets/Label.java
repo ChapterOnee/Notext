@@ -17,6 +17,8 @@ public class Label extends Frame {
 
     protected int padding = 0;
 
+    protected final boolean disableAutoDrawingText;
+
     public Label(String text, String font, int borderWidth, int margin, int padding) {
         super("secondary", margin);
         this.text = text;
@@ -25,6 +27,18 @@ public class Label extends Frame {
         this.padding = padding;
 
         this.onHoverBackgroundColor = "accent";
+        this.disableAutoDrawingText = false;
+    }
+
+    public Label(String text, String font, int borderWidth, int margin, int padding,boolean disableAutoDrawingText) {
+        super("secondary", margin);
+        this.text = text;
+        this.font = font;
+        this.borderWidth = borderWidth;
+        this.padding = padding;
+
+        this.onHoverBackgroundColor = "accent";
+        this.disableAutoDrawingText = disableAutoDrawingText;
     }
     
     @Override
@@ -37,6 +51,13 @@ public class Label extends Frame {
          */
         super.drawSelf(g2);
 
+        if(!disableAutoDrawingText) {
+            drawText(g2);
+        }
+        //System.out.println(this.getX() + "x" + this.getY() + " " + text + g2.getFont());
+    }
+
+    public void drawText(Graphics2D g2){
         if(!mouseOver || disableHoverEffect){
             g2.setColor(theme.getColorByName(foregroundColor));
         }
@@ -52,7 +73,6 @@ public class Label extends Frame {
         rect.applyMargin(padding);
 
         AdvancedGraphics.drawText(g2, rect, getText(), textPlacement);
-        //System.out.println(this.getX() + "x" + this.getY() + " " + text + g2.getFont());
     }
 
     public Position getTextPosition(){

@@ -6,30 +6,24 @@ import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Button;
 import AmbrosiaUI.Widgets.Frame;
-import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
 import AmbrosiaUI.Widgets.Scrollbar;
 import AmbrosiaUI.Widgets.SelectBox.SelectBox;
 import AmbrosiaUI.Widgets.SelectBox.SelectBoxOption;
-import AmbrosiaUI.Widgets.TextEditor.Highlighting.Highlighter;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenuItem;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
-import AmbrosiaUI.Widgets.TextEditor.Selection;
+import AmbrosiaUI.Widgets.TextEditor.EditorLike;
 import AmbrosiaUI.Widgets.TextEditor.TextEditor;
 import AmbrosiaUI.Widgets.Window;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.io.File;
 
 public class Root extends Window {
-    private TextEditor editorInFocus;
+    private EditorLike editorInFocus;
 
     private final HorizontalPlacement editorSpacePlacement;
     private final Scrollbar scrollbar;
@@ -51,7 +45,7 @@ public class Root extends Window {
         Button new_file = new Button("New", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                editorInFocus.getText().clear();
+                editorInFocus.clear();
             }
         };
         new_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
@@ -60,7 +54,7 @@ public class Root extends Window {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 editorInFocus.saveToCurrentlyOpenFile();
-                editorInFocus.openFile(editorInFocus.getText().getCurrentFile());
+                editorInFocus.openFile(editorInFocus.getCurrentFile());
             }
         };
         Button open_file = new Button("Open", "small", 0,0,4) {
@@ -86,7 +80,7 @@ public class Root extends Window {
                 CreateFilePrompt f = new CreateFilePrompt(theme){
                     @Override
                     public void onSubmited(PromptResult result) {
-                        editorInFocus.getText().setCurrentFile(result.getContent());
+                        editorInFocus.setCurrentFile(result.getContent());
                         editorInFocus.saveToCurrentlyOpenFile();
                     }
                 };
@@ -117,21 +111,6 @@ public class Root extends Window {
 
         scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
 
-        /*TextEditor secondaryEditor = new TextEditor(){
-            @Override
-            public void onMouseClicked(MouseEvent e) {
-                super.onMouseClicked(e);
-                scrollbar.setController(this.getScrollController());
-                Root.this.editorInFocus = this;
-            }
-
-            @Override
-            public void onCurrentFileChanged() {
-                super.onCurrentFileChanged();
-                //System.out.println("A"+ editorInFocus.getText().hasFile());
-                save_file.setDisabled(!editorInFocus.getText().hasFile());
-            }
-        };*/
 
         Frame editorSpace = new Frame("accent2", 0);
 
@@ -167,7 +146,7 @@ public class Root extends Window {
             public void onCurrentFileChanged() {
                 super.onCurrentFileChanged();
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
-                save_file.setDisabled(!editorInFocus.getText().hasFile());
+                save_file.setDisabled(!editorInFocus.hasFile());
             }
         };
 
@@ -221,29 +200,6 @@ public class Root extends Window {
             }
         }
 
-        /*selection.addOption(new SelectBoxOption("Light") {
-            @Override
-            public void onSelected() {
-                theme.loadFromFile("themes/Light.thm");
-                Root.this.update();
-            }
-        });
-        selection.addOption(new SelectBoxOption("Moonlight") {
-            @Override
-            public void onSelected() {
-                theme.loadFromFile("themes/Moonlight.thm");
-                Root.this.update();
-            }
-        });
-        selection.addOption(new SelectBoxOption("Ainz") {
-            @Override
-            public void onSelected() {
-                theme.loadFromFile("themes/Ainz.thm");
-                Root.this.update();
-            }
-        });*/
-
-
         settingsWindow.getCoreFrame().setChildrenPlacement(grid);
 
         grid.add(selection,0,0,1,1);
@@ -261,56 +217,8 @@ public class Root extends Window {
         Keybind save = new Keybind("Save", panel, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)) {
             @Override
             public void activated(ActionEvent e) {
-                if(editorInFocus.getText().hasFile()) {
+                if(editorInFocus.hasFile()) {
                     editorInFocus.saveToCurrentlyOpenFile();
-                }
-            }
-        };
-
-        Keybind copy = new Keybind("Copy", panel, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK)){
-            @Override
-            public void activated(ActionEvent e) {
-                if(!editorInFocus.getActiveSelections().isEmpty()){
-                    Selection selection = editorInFocus.getActiveSelections().get(0);
-                    selection = selection.getReorganized();
-                    //System.out.println(selection.getSelectedContentFormated());
-
-                    StringSelection sel = new StringSelection(selection.getSelectedContentFormated());
-                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    clipboard.setContents(sel, sel);
-                }
-            }
-        };
-
-        Keybind paste = new Keybind("Paste", panel, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK)){
-            @Override
-            public void activated(ActionEvent e) {
-                try {
-                    editorInFocus.getText().storeState();
-                    editorInFocus.getText().blockStoring();
-
-                    String data = (String) Toolkit.getDefaultToolkit()
-                            .getSystemClipboard().getData(DataFlavor.stringFlavor);
-
-                    String[] formated_data = data.split("\n");
-
-                    for(int i = 0;i < formated_data.length;i++) {
-                        if (i == 0) {
-                            editorInFocus.insertStringOnCursor(formated_data[i]);
-                        }
-                        else{
-                            editorInFocus.getText().insertNewLine(formated_data[i], editorInFocus.getCursor().getY()+1);
-                        }
-                    }
-
-                    editorInFocus.getCursor().setY(editorInFocus.getCursor().getY()+1);
-                    editorInFocus.getCursor().upToLineEnd();
-
-                    editorInFocus.getText().unblockStoring();
-                }
-                catch (Exception ex){
-                    editorInFocus.getText().unblockStoring();
-                    ex.printStackTrace();
                 }
             }
         };
@@ -318,7 +226,7 @@ public class Root extends Window {
         Keybind revert = new Keybind("Revert", panel, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK)){
             @Override
             public void activated(ActionEvent e) {
-                editorInFocus.getText().revert();
+                editorInFocus.revert();
             }
         };
     }

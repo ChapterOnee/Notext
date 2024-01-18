@@ -8,10 +8,17 @@ import AmbrosiaUI.Widgets.Icons.PathOperations.PathLine;
 import AmbrosiaUI.Widgets.Icons.PathOperations.PathMove;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
+import AmbrosiaUI.Widgets.TextEditor.Selection;
+import App.Root;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class Window {
     protected Frame coreFrame;
@@ -285,6 +292,48 @@ public class Window {
                 update();
             }
         });
+
+        panel.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if(element_in_focus == null){
+                    return;
+                }
+                if(element_in_focus.isDisabled()){
+                    return;
+                }
+
+                element_in_focus.onMouseWheel(e);
+            }
+        });
+
+        Keybind copy = new Keybind("Copy", panel, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK)){
+            @Override
+            public void activated(ActionEvent e) {
+                if(element_in_focus != null){
+                    StringSelection sel = new StringSelection(element_in_focus.getSelectedContent());
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(sel, sel);
+                }
+            }
+        };
+
+        Keybind paste = new Keybind("Paste", panel, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK)){
+            @Override
+            public void activated(ActionEvent e) {
+                if(element_in_focus != null){
+                    String data = null;
+                    try {
+                        data = (String) Toolkit.getDefaultToolkit()
+                                .getSystemClipboard().getData(DataFlavor.stringFlavor);
+                    } catch (UnsupportedFlavorException | IOException ex) {
+                        System.out.println(ex);
+                    }
+
+                    element_in_focus.onPasted(data);
+                }
+            }
+        };
     }
 
     public void open(){

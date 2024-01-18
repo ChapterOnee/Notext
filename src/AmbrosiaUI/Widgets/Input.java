@@ -13,14 +13,17 @@ import AmbrosiaUI.Widgets.TextEditor.StoredText;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Input extends Label{
     private final StoredText storedText;
     private final Cursor cursor;
 
+    private Selection currentSelection;
+
     public Input(String font, int borderWidth, int margin, int padding) {
-        super("", font, borderWidth, margin, padding);
+        super("", font, borderWidth, margin, padding, true);
 
         cursor = new Cursor(new Position(0,0));
         storedText = new StoredText(cursor);
@@ -31,11 +34,33 @@ public class Input extends Label{
         super.drawSelf(g2);
 
         FontMetrics fm = g2.getFontMetrics(g2.getFont());
+        Position textPosition = getTextPosition();
+
+        if(currentSelection != null) {
+            g2.setColor(theme.getColorByName("selection"));
+
+
+            Cursor from, to;
+
+            Selection selection = currentSelection.getReorganized();
+
+            from = selection.getFrom();
+            to = selection.getTo();
+
+            // First line
+            int offset_x = fm.stringWidth(storedText.getLines().get(from.getY()).getText().substring(0, from.getX()));
+            int width = fm.stringWidth(storedText.getLines().get(from.getY()).getText().substring(from.getX(), to.getX()));
+            g2.fillRect(
+                    textPosition.x + offset_x,
+                    textPosition.y -fm.getAscent(),
+                    width,
+                    AdvancedGraphics.getTextHeight(fm)
+            );
+        }
+
+        drawText(g2);
 
         g2.setColor(theme.getColorByName(foregroundColor));
-
-
-        Position textPosition = getTextPosition();
         Position pos = cursor.getRealCursorPosition(fm, AdvancedGraphics.getTextHeight(fm));
         
         g2.fillRect(
@@ -62,6 +87,12 @@ public class Input extends Label{
                         Backspace, handle removing characters.
                     */
             case 8 -> {
+                if(currentSelection != null){
+                    this.storedText.removeSelection(this.currentSelection);
+                    this.clearSelections();
+                    break;
+                }
+
                 if (this.cursor.canMove(new Position(-1, 0))) {
                     this.storedText.removeCharAt(this.cursor.getX() - 1, this.cursor.getY());
                     this.cursor.left();
@@ -91,6 +122,12 @@ public class Input extends Label{
                         block != null &&
                         block != Character.UnicodeBlock.SPECIALS
                 ) {
+                    if(currentSelection != null){
+                        this.storedText.removeSelection(this.currentSelection);
+                        this.clearSelections();
+                        break;
+                    }
+
                     this.insertStringOnCursor(keyEvent.getKeyChar() + "");
                 }
             }
@@ -149,5 +186,53 @@ public class Input extends Label{
 
     public void setContent(String content) {
         storedText.setText(content);
+    }
+
+    @Override
+    public String getSelectedContent() {
+        if(currentSelection != null){
+            return currentSelection.getSelectedContentFormated();
+        }
+
+        return super.getSelectedContent();
+    }
+
+    public void startSelection(){
+        if(currentSelection != null){
+            return;
+        }
+
+        Cursor second = new Cursor(new Position(cursor.getX(), cursor.getY()));
+        second.setCurrentTextLines(storedText.getLines());
+
+        currentSelection = new Selection(cursor, second);
+    }
+    public void endSelection(){
+        if(currentSelection == null){
+            return;
+        }
+        Cursor second = new Cursor(new Position(cursor.getX(), cursor.getY()));
+        second.setCurrentTextLines(storedText.getLines());
+
+        currentSelection.setFrom(second);
+    }
+
+    public void clearSelections(){
+        currentSelection = null;
+    }
+
+    @Override
+    public void onMouseClicked(MouseEvent e) {
+        this.clearSelections();
+    }
+
+    @Override
+    public void onMouseReleased(MouseEvent e) {
+        this.endSelection();
+    }
+
+    @Override
+    public void onMouseDragged(MouseEvent e) {
+        this.startSelection();
     }
 }

@@ -16,22 +16,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class TextEditor extends Widget {
+public class TextEditor extends Widget implements EditorLike {
+
     private final StoredText text;
 
     private final Position offset = new Position(60,20);
     final private int LINE_OFFSET_X = 20;
     final private int LINE_VERTICAL_MARGIN = 0;
-    private ScrollController scrollController = new ScrollController(0,0);
     private Selection currentSelection = null;
     private final ArrayList<Selection> activeSelections = new ArrayList<>();
+
+    protected ScrollController scrollController = new ScrollController(0,0);
 
     private final Cursor cursor;
 
     private final SyntaxHighlighter highlighter;
 
     public TextEditor() {
-        super();
         this.cursor = new Cursor(new Position(0, 0));
         this.text = new StoredText(this.cursor) {
             @Override
@@ -60,10 +61,8 @@ public class TextEditor extends Widget {
         }
     }
 
-    @Override
     public void drawSelf(Graphics2D g2) {
         setupDraw(g2);
-
         // Calculations
         FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
         //int single_char_width = fm.stringWidth(" " + cursor.getCurrrentCharsUnderCursor().charAt(0));
@@ -350,6 +349,26 @@ public class TextEditor extends Widget {
         return new Position(x,y);
     }
 
+    @Override
+    public String getCurrentFile() {
+        return text.getCurrentFile();
+    }
+
+    @Override
+    public void setCurrentFile(String filename) {
+        text.setCurrentFile(filename);
+    }
+
+    @Override
+    public boolean hasFile() {
+        return text.hasFile();
+    }
+
+    @Override
+    public void revert() {
+        text.revert();
+    }
+
     public void clear(){
         scrollController.reset();
         activeSelections.clear();
@@ -440,8 +459,11 @@ public class TextEditor extends Widget {
                 EditorLine current_line = this.getLineUnderCursor();
 
                 if(!this.activeSelections.isEmpty()){
+                    this.text.storeState();
+                    this.text.blockStoring();
                     this.text.removeSelection(this.activeSelections.get(0));
                     this.clearSelections();
+                    this.text.unblockStoring();
                     break;
                 }
 
@@ -492,6 +514,12 @@ public class TextEditor extends Widget {
                         block != null &&
                         block != Character.UnicodeBlock.SPECIALS
                 ) {
+                    if(!this.activeSelections.isEmpty()){
+                        this.text.removeSelection(this.activeSelections.get(0));
+                        this.clearSelections();
+                        break;
+                    }
+
                     this.insertStringOnCursor(keyEvent.getKeyChar() + "");
                 }
             }
@@ -508,6 +536,43 @@ public class TextEditor extends Widget {
             default -> {}
         }
     }
+
+    @Override
+    public String getSelectedContent() {
+        StringBuilder out = new StringBuilder();
+        if(!this.activeSelections.isEmpty()){
+            for(Selection sel: this.activeSelections){
+                out.append(sel.getSelectedContentFormated());
+            }
+
+            return out.toString();
+        }
+
+        return super.getSelectedContent();
+    }
+
+    @Override
+    public void onPasted(String pastedData) {
+        this.getText().storeState();
+        this.getText().blockStoring();
+
+        String[] formated_data = pastedData.split("\n");
+
+        for(int i = 0;i < formated_data.length;i++) {
+            if (i == 0) {
+                this.insertStringOnCursor(formated_data[i]);
+            }
+            else{
+                this.getText().insertNewLine(formated_data[i], this.getCursor().getY()+1);
+            }
+        }
+
+        this.getCursor().setY(this.getCursor().getY()+1);
+        this.getCursor().upToLineEnd();
+
+        this.getText().unblockStoring();
+    }
+
     public Cursor getCursor() {
         return cursor;
     }

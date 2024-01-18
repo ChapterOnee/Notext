@@ -8,6 +8,7 @@ import AmbrosiaUI.Widgets.Placements.PlacementCell;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -319,6 +320,10 @@ public abstract class Widget implements Comparable<Widget>{
                 '}';
     }
 
+    public String getSelectedContent(){
+        return "";
+    }
+
     public void onMouseDragged(MouseEvent e){
 
     }
@@ -344,6 +349,14 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public void onKeyReleased(KeyEvent keyEvent){
+
+    }
+
+    public void onPasted(String pastedData){
+
+    }
+
+    public void onMouseWheel(MouseWheelEvent event){
 
     }
 }

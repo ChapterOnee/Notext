@@ -68,6 +68,8 @@ public class CreateFilePrompt extends FilePrompt{
         bottomFramePlacement.add(bottomPathFrame, 0, 0,1,1);
 
         corePlacement.add(bottomFrame, 2,0,1,2);
+
+        win.update();
     }
 
     @Override
