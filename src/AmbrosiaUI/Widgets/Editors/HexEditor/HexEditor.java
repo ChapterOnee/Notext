@@ -1,5 +1,6 @@
 package AmbrosiaUI.Widgets.Editors.HexEditor;
 
+import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.EventStatus;
 import AmbrosiaUI.Utility.Logger;
 import AmbrosiaUI.Utility.Position;
@@ -21,9 +22,10 @@ public class HexEditor extends Widget implements EditorLike {
     protected ScrollController scrollController = new ScrollController(0,0);
 
     private final Position offset = new Position(60,60);
+    private int byteOffeetX = 30;
     private String currentFile;
 
-    private int bytesPerRow = 16;
+    private int bytesPerRow = 32;
 
     @Override
     public void drawSelf(Graphics2D g2) {
@@ -36,11 +38,26 @@ public class HexEditor extends Widget implements EditorLike {
         int contentHeight = (contents.length / bytesPerRow) * text_height;
         this.scrollController.setMaxScrollY(contentHeight);
 
+        offset.x = this.getWidth()/2 - (bytesPerRow * byteOffeetX)/2;
+
         // Draw background
         g2.setColor(theme.getColorByName("primary"));
         g2.fillRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
-        g2.setColor(theme.getColorByName("text1"));
+        int byteBackgroundPadding = 10;
+        AdvancedGraphics.borderedRect(
+                g2,
+                this.getX()+offset.x-byteBackgroundPadding,
+                this.getY()+offset.y-byteBackgroundPadding,
+                (bytesPerRow * byteOffeetX)+byteBackgroundPadding,
+                this.getHeight(),
+                2,
+                theme.getColorByName("primary"),
+                theme.getColorByName("secondary"),
+                AdvancedGraphics.BORDER_FULL
+        );
+
+        g2.setColor(theme.getColorByName("text2"));
 
         AffineTransform at = new AffineTransform();
         at.translate(-scrollController.getScrollX(), -scrollController.getScrollY());
@@ -48,18 +65,23 @@ public class HexEditor extends Widget implements EditorLike {
         g2.setTransform(at);
 
         int currentX, currentY, totalwidth = 0, realCurrentX, realCurrentY;
+        double color;
+
         byte[] fullrow = new byte[bytesPerRow];
 
         Position underCursor = getByteUnderCursor();
 
         String byteString;
-        for(int i = 0; i < contents.length; i ++){
+        for(int i = getFirstVisibleIndex(); i < getLastVisibleIndex(); i ++){
             byteString = String.format("%02X", contents[i]);
+
+            //color = contents[i]+128;
+            //color = (color/255);
 
             realCurrentX = (i%bytesPerRow);
             realCurrentY = (i/bytesPerRow);
 
-            currentX = realCurrentX * 30;
+            currentX = realCurrentX * byteOffeetX;
             currentY = realCurrentY * getLineHeight();
 
             fullrow[i%bytesPerRow] = contents[i];
@@ -78,13 +100,19 @@ public class HexEditor extends Widget implements EditorLike {
 
             if(currentX == 0){
                 g2.drawString(new String(fullrow), this.getX()+offset.x+totalwidth + 100, this.getY()+offset.y+currentY);
+
+                String st = realCurrentY + ":";
+
+                g2.drawString(st, this.getX()+offset.x - fm.stringWidth(st)-byteBackgroundPadding, this.getY()+offset.y+currentY);
                 totalwidth = 0;
             }
 
+            //g2.setColor(new Color((int)(255*color), (int)(color*255*1.1)%255, (int)(color*255*1.2)%255));
             g2.drawString(byteString,
                     this.getX()+offset.x+currentX,
                     this.getY()+offset.y+currentY
             );
+            g2.setColor(theme.getColorByName("text2"));
 
             totalwidth += fm.stringWidth(byteString) + 10;
         }
@@ -105,8 +133,16 @@ public class HexEditor extends Widget implements EditorLike {
         }
     }
 
+    public int getFirstVisibleIndex(){
+        return Math.max(0,((scrollController.getScrollY() / getLineHeight())+1)*bytesPerRow);
+    }
+
+    public int getLastVisibleIndex(){
+        return Math.min(contents.length, getFirstVisibleIndex() + this.getHeight()/getLineHeight()*bytesPerRow);
+    }
+
     public Position getByteUnderCursor(){
-        int x = (lastMousePosition.x-this.getX()-offset.x+ scrollController.getScrollX()) / 30;
+        int x = (lastMousePosition.x-this.getX()-offset.x+ scrollController.getScrollX()) / byteOffeetX;
         int y = (lastMousePosition.y-this.getY()-offset.y+ scrollController.getScrollY()+getLineHeight()/2) / getLineHeight();
 
         return new Position(x,y);
