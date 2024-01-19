@@ -5,6 +5,7 @@ import AmbrosiaUI.Utility.EventStatus;
 import AmbrosiaUI.Utility.Logger;
 import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Widgets.Editors.EditorLike;
+import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.ScrollController;
 import AmbrosiaUI.Widgets.Widget;
 
@@ -16,20 +17,30 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class HexEditor extends Widget implements EditorLike {
+public class HexEditor extends Frame implements EditorLike {
     private byte[] contents = new byte[0];
 
     protected ScrollController scrollController = new ScrollController(0,0);
 
-    private final Position offset = new Position(60,60);
+    private final Position offset = new Position(60,20);
     private int byteOffeetX = 30;
     private String currentFile;
 
     private int bytesPerRow = 32;
 
+    public HexEditor() {
+        super("primary",0);
+
+        setBorderColor("secondary");
+        setBorderWidth(2);
+    }
+
     @Override
     public void drawSelf(Graphics2D g2) {
+        super.drawSelf(g2);
         setupDraw(g2);
+
+        bytesPerRow = ((this.getWidth()/2)/byteOffeetX);
 
         // Calculations
         FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
@@ -38,11 +49,13 @@ public class HexEditor extends Widget implements EditorLike {
         int contentHeight = (contents.length / bytesPerRow) * text_height;
         this.scrollController.setMaxScrollY(contentHeight);
 
-        offset.x = this.getWidth()/2 - (bytesPerRow * byteOffeetX)/2;
+        offset.x = fm.stringWidth(contents.length/bytesPerRow+"");
 
-        // Draw background
-        g2.setColor(theme.getColorByName("primary"));
-        g2.fillRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        AffineTransform at = new AffineTransform();
+        at.translate(-scrollController.getScrollX(), -scrollController.getScrollY());
+
+        g2.setTransform(at);
+
 
         int byteBackgroundPadding = 10;
         AdvancedGraphics.borderedRect(
@@ -50,22 +63,14 @@ public class HexEditor extends Widget implements EditorLike {
                 this.getX()+offset.x-byteBackgroundPadding,
                 this.getY()+offset.y-byteBackgroundPadding,
                 (bytesPerRow * byteOffeetX)+byteBackgroundPadding,
-                this.getHeight(),
+                this.getFullByteHeight()+byteBackgroundPadding*2,
                 2,
-                theme.getColorByName("primary"),
                 theme.getColorByName("secondary"),
+                theme.getColorByName("accent"),
                 AdvancedGraphics.BORDER_FULL
         );
 
-        g2.setColor(theme.getColorByName("text2"));
-
-        AffineTransform at = new AffineTransform();
-        at.translate(-scrollController.getScrollX(), -scrollController.getScrollY());
-
-        g2.setTransform(at);
-
         int currentX, currentY, totalwidth = 0, realCurrentX, realCurrentY;
-        double color;
 
         byte[] fullrow = new byte[bytesPerRow];
 
@@ -90,7 +95,7 @@ public class HexEditor extends Widget implements EditorLike {
                 g2.setColor(theme.getColorByName("selection"));
                 g2.fillRect(
                         this.getX()+offset.x+currentX,
-                        this.getY()+offset.y+currentY-text_height,
+                        this.getY()+offset.y+currentY-text_height+getLineHeight(),
                         fm.stringWidth(byteString),
                         text_height
                 );
@@ -98,19 +103,20 @@ public class HexEditor extends Widget implements EditorLike {
             }
 
 
-            if(currentX == 0){
-                g2.drawString(new String(fullrow), this.getX()+offset.x+totalwidth + 100, this.getY()+offset.y+currentY);
+            if(realCurrentX == bytesPerRow-1){
+                g2.drawString(new String(fullrow), this.getX()+offset.x+totalwidth + 100, this.getY()+offset.y+currentY+getLineHeight());
 
-                String st = realCurrentY + ":";
+                String st = realCurrentY + "";
 
-                g2.drawString(st, this.getX()+offset.x - fm.stringWidth(st)-byteBackgroundPadding, this.getY()+offset.y+currentY);
+                g2.drawString(st, this.getX()+offset.x - fm.stringWidth(st)-byteBackgroundPadding*2, this.getY()+offset.y+currentY+getLineHeight());
                 totalwidth = 0;
             }
 
             //g2.setColor(new Color((int)(255*color), (int)(color*255*1.1)%255, (int)(color*255*1.2)%255));
+            g2.setColor(theme.getColorByName("text1"));
             g2.drawString(byteString,
                     this.getX()+offset.x+currentX,
-                    this.getY()+offset.y+currentY
+                    this.getY()+offset.y+currentY+getLineHeight()
             );
             g2.setColor(theme.getColorByName("text2"));
 
@@ -121,8 +127,6 @@ public class HexEditor extends Widget implements EditorLike {
         at2.translate(0 , 0);
 
         g2.setTransform(at2);
-
-        super.drawSelf(g2);
     }
 
     @Override
@@ -133,8 +137,12 @@ public class HexEditor extends Widget implements EditorLike {
         }
     }
 
+    public int getFullByteHeight(){
+        return (contents.length/bytesPerRow)*getLineHeight()+getLineHeight();
+    }
+
     public int getFirstVisibleIndex(){
-        return Math.max(0,((scrollController.getScrollY() / getLineHeight())+1)*bytesPerRow);
+        return Math.max(0,((scrollController.getScrollY() / getLineHeight()-1))*bytesPerRow);
     }
 
     public int getLastVisibleIndex(){
@@ -143,7 +151,7 @@ public class HexEditor extends Widget implements EditorLike {
 
     public Position getByteUnderCursor(){
         int x = (lastMousePosition.x-this.getX()-offset.x+ scrollController.getScrollX()) / byteOffeetX;
-        int y = (lastMousePosition.y-this.getY()-offset.y+ scrollController.getScrollY()+getLineHeight()/2) / getLineHeight();
+        int y = (lastMousePosition.y-this.getY()-offset.y+ scrollController.getScrollY()) / getLineHeight();
 
         return new Position(x,y);
     }

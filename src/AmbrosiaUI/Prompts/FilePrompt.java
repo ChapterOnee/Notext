@@ -114,8 +114,8 @@ public class FilePrompt extends Prompt{
         pathDisplayPlacement.clear();
         String name;
         for (int i = 0;i < names.size();i++) {
-            name = "\\" + names.get(i);
-            if(name.equals("\\")){
+            name = names.get(i);
+            if(name.isEmpty()){
                 name = paths.get(i);
             }
 

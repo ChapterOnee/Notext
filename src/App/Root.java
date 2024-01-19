@@ -119,6 +119,8 @@ public class Root extends Window {
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorInFocus = addHexEditor();
+        editorInFocus.openFile("testFiles/test.txt");
+        addEditor().openFile("testFiles/test.txt");
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));

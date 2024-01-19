@@ -1,6 +1,7 @@
 package AmbrosiaUI.Widgets.Editors.TextEditor;
 
 import AmbrosiaUI.Widgets.Editors.EditorLike;
+import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.ScrollController;
 import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.HighlightGroup;
 import AmbrosiaUI.Utility.EventStatus;
@@ -17,7 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class TextEditor extends Widget implements EditorLike {
+public class TextEditor extends Frame implements EditorLike {
 
     private final StoredText text;
 
@@ -34,6 +35,11 @@ public class TextEditor extends Widget implements EditorLike {
     private final SyntaxHighlighter highlighter;
 
     public TextEditor() {
+        super("primary", 0);
+
+        setBorderColor("secondary");
+        setBorderWidth(2);
+
         this.cursor = new Cursor(new Position(0, 0));
         this.text = new StoredText(this.cursor) {
             @Override
@@ -63,6 +69,7 @@ public class TextEditor extends Widget implements EditorLike {
     }
 
     public void drawSelf(Graphics2D g2) {
+        super.drawSelf(g2);
         setupDraw(g2);
         // Calculations
         FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
@@ -73,10 +80,6 @@ public class TextEditor extends Widget implements EditorLike {
 
         int contentHeight = text.getLines().size() * text_height;
         this.scrollController.setMaxScrollY(contentHeight);
-
-        // Draw background
-        g2.setColor(theme.getColorByName("primary"));
-        g2.fillRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
 
         //
@@ -259,8 +262,6 @@ public class TextEditor extends Widget implements EditorLike {
                 this.getX() + this.getWidth() - cursorPositionWidth - 5,
                 this.getY() + this.getHeight() - 5
         ); // AmbrosiaUI.Widgets.Editors.TextEditor.Cursor position in bottom right corner
-
-        super.drawSelf(g2);
     }
 
     public String getFullContent(){
