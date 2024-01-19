@@ -9,10 +9,12 @@ import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.SyntaxHighlighter;
 import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Widgets.Widget;
+import App.Root;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -79,7 +81,7 @@ public class TextEditor extends Frame implements EditorLike {
         offset.x = fm.stringWidth(" ."+text.getLines().size());
 
         int contentHeight = text.getLines().size() * text_height;
-        this.scrollController.setMaxScrollY(contentHeight);
+        this.scrollController.setMaxScrollY(Math.max(0,contentHeight-this.getContentHeight()+offset.y+50));
 
 
         //

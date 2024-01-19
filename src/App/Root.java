@@ -72,6 +72,39 @@ public class Root extends Window {
             }
         };
         open_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
+        Button open_file_in_new_editor = new Button("Open In New Editor", "small", 0,0,4) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                editorInFocus = addEditor();
+                FilePrompt f = new FilePrompt(theme){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        editorInFocus.openFile(result.getContent());
+                    }
+                };
+                f.addAllowed(editorInFocus.getAllowedFiles());
+                f.ask();
+            }
+        };
+        open_file_in_new_editor .setTextPlacement(AdvancedGraphics.Side.LEFT);
+
+        Button open_file_in_new_editor_hex = new Button("Open In New Hex Editor", "small", 0,0,4) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                editorInFocus = addHexEditor();
+                FilePrompt f = new FilePrompt(theme){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        editorInFocus.openFile(result.getContent());
+                    }
+                };
+                f.addAllowed(editorInFocus.getAllowedFiles());
+                f.ask();
+            }
+        };
+        open_file_in_new_editor_hex.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
         save_file.setDisabled(true);
         save_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
@@ -98,13 +131,17 @@ public class Root extends Window {
         };
         settings.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-        DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(100,30));
+        DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(200,30));
         menu.setzIndex(1);
 
         header_placement.add(menu, new UnitValue(50, UnitValue.Unit.PIXELS));
 
         menu.addMenuItem(new DropdownMenuItem(new_file));
+        menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(open_file));
+        menu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor));
+        menu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor_hex));
+        menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(save_file));
         menu.addMenuItem(new DropdownMenuItem(save_file_as));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
@@ -113,7 +150,7 @@ public class Root extends Window {
         scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
 
 
-        Frame editorSpace = new Frame("accent2", 0);
+        Frame editorSpace = new Frame("primary", 0);
 
         editorSpacePlacement = new HorizontalPlacement(theme);
         editorSpace.setChildrenPlacement(editorSpacePlacement);
@@ -244,6 +281,17 @@ public class Root extends Window {
                 if(editorInFocus.hasFile()) {
                     editorInFocus.saveToCurrentlyOpenFile();
                 }
+            }
+        };
+
+        Keybind closeEditor = new Keybind("CloseEditor", panel, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK)) {
+            @Override
+            public void activated(ActionEvent e) {
+                if(editorSpacePlacement.getChildren().size() < 2){
+                    return;
+                }
+                editorSpacePlacement.remove((Widget) editorInFocus);
+                editorInFocus = (EditorLike) editorSpacePlacement.getChildren().get(0).getBoundElement();
             }
         };
 

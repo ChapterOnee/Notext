@@ -108,7 +108,7 @@ public class Window {
 
 
         coreHeader = new Frame("secondary", 0);
-        Frame innerHeaderControlls = new Frame("accent", 0);
+        Frame innerHeaderControlls = new Frame("secondary", 0);
         HorizontalPlacement innerHeaderControlsPlacement = new HorizontalPlacement(theme);
         innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
 

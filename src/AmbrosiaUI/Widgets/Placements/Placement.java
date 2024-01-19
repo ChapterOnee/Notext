@@ -3,6 +3,7 @@ import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Utility.Size;
 import AmbrosiaUI.Widgets.Widget;
+import AmbrosiaUI.Widgets.Window;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -40,6 +41,22 @@ public abstract class Placement {
             }
         }
         onResize();
+    }
+
+    public void remove(Widget w){
+        PlacementCell cell;
+        for(int i = 0;i < children.size();i++){
+            cell = children.get(i);
+
+            if(cell.boundElement == w){
+                for(int j = i+1; j < children.size();j++){
+                    this.children.get(j).boundElement.setPlacementIndex(j-1);
+                }
+
+                this.children.remove(cell);
+                break;
+            }
+        }
     }
 
     public void onResize(){
