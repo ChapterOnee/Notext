@@ -18,7 +18,7 @@ public class PathMove implements PathDrawable{
     }
 
     @Override
-    public void draw(Graphics2D g2, Position currentPosition, Theme Theme) {
+    public void draw(Graphics2D g2, Position currentPosition, Theme Theme, double scale) {
         currentPosition.move(movement);
     }
 }

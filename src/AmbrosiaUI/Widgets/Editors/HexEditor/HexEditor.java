@@ -30,7 +30,7 @@ public class HexEditor extends Frame implements EditorLike {
 
         setBorderColor("secondary");
         setBorderWidth(2);
-        setBorderModifier(new GraphicsBorderModifier(false,true,false,false));
+        setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class HexEditor extends Frame implements EditorLike {
         int byteBackgroundPadding = 10;
         offset.x = fm.stringWidth(Math.floor((double)contents.length/(double)bytesPerRow)+"") + byteBackgroundPadding;
 
-        this.scrollController.setMaxScrollY(Math.max(0,contentHeight+byteBackgroundPadding*2+offset.y-this.getContentHeight()));
+        this.scrollController.setMaxScrollY(Math.max(0,contentHeight+byteBackgroundPadding*2+offset.y));
 
         AdvancedGraphics.borderedRect(
                 g2,

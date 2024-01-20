@@ -22,20 +22,20 @@ public class PathFillPoly implements PathDrawable{
     }
 
     @Override
-    public void draw(Graphics2D g2, Position currentPosition, Theme Theme) {
+    public void draw(Graphics2D g2, Position currentPosition, Theme Theme, double scale) {
         g2.setColor(Theme.getColorByName(color));
 
         Polygon p = new Polygon(new int[]{
-                pos1.x + currentPosition.x,
-                pos2.x + currentPosition.x,
-                pos3.x + currentPosition.x,
-                pos4.x + currentPosition.x
+                pos1.x  + currentPosition.x,
+                pos2.x  + currentPosition.x,
+                pos3.x  + currentPosition.x,
+                pos4.x  + currentPosition.x
         },
         new int[]{
-                pos1.y + currentPosition.y,
-                pos2.y + currentPosition.y,
-                pos3.y + currentPosition.y,
-                pos4.y + currentPosition.y
+                pos1.y  + currentPosition.y,
+                pos2.y  + currentPosition.y,
+                pos3.y  + currentPosition.y,
+                pos4.y  + currentPosition.y
         }, 4);
 
         g2.fillPolygon(p);

@@ -42,7 +42,7 @@ public class TextEditor extends Frame implements EditorLike {
 
         setBorderColor("secondary");
         setBorderWidth(2);
-        setBorderModifier(new GraphicsBorderModifier(false,true,false,false));
+        setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
 
         this.cursor = new Cursor(new Position(0, 0));
         this.text = new StoredText(this.cursor) {
@@ -83,7 +83,7 @@ public class TextEditor extends Frame implements EditorLike {
         offset.x = fm.stringWidth(" ."+text.getLines().size());
 
         int contentHeight = text.getLines().size() * text_height;
-        this.scrollController.setMaxScrollY(Math.max(0,contentHeight-this.getContentHeight()+offset.y+50));
+        this.scrollController.setMaxScrollY(Math.max(0,contentHeight+offset.y+50));
 
 
         //

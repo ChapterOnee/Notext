@@ -8,6 +8,7 @@ import AmbrosiaUI.Widgets.Icons.PathOperations.*;
 import AmbrosiaUI.Widgets.Theme;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 public class PathImage extends FileInterpreter {
@@ -15,6 +16,8 @@ public class PathImage extends FileInterpreter {
 
     private Size size = new Size(0,0);
     private Theme Theme;
+
+    private double scale = 1;
 
     public PathImage(Size size) {
         this.size = size;
@@ -139,11 +142,31 @@ public class PathImage extends FileInterpreter {
         }
 
         //g2.setClip(startPosition.x, startPosition.y, size.width,size.height);
-        Position position = new Position(startPosition.x,startPosition.y);
+
+        AffineTransform at = new AffineTransform();
+        at.translate(startPosition.x, startPosition.y);
+        at.scale(scale,scale);
+        g2.setTransform(at);
+
+        //g2.setColor(new Color(255,0,0));
+        //g2.fillRect(0,0,20,20);
+
+        Position position = new Position(0,0);
 
         for(PathDrawable operation: oparations){
-            operation.draw(g2,position, Theme);
+            operation.draw(g2,position, Theme, scale);
         }
+
+        at = new AffineTransform();
+        //at.translate(-scrollController.getScrollX(), -scrollController.getScrollY());
+
+        g2.setTransform(at);
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+        //this.size.width = (int) (this.size.width * scale);
+        //this.size.height = (int) (this.size.height * scale);
     }
 
     public Theme getTheme() {
@@ -156,5 +179,9 @@ public class PathImage extends FileInterpreter {
 
     public void add(PathDrawable drawable){
         oparations.add(drawable);
+    }
+
+    public double getScale() {
+        return scale;
     }
 }

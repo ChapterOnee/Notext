@@ -25,10 +25,10 @@ public class PathLine implements PathDrawable{
     }
 
     @Override
-    public void draw(Graphics2D g2, Position currentPosition, Theme Theme) {
+    public void draw(Graphics2D g2, Position currentPosition, Theme Theme, double scale) {
         g2.setColor(Theme.getColorByName(color));
         g2.setStroke(new BasicStroke(width));
-        g2.drawLine(currentPosition.x,currentPosition.y, currentPosition.x + to.x, currentPosition.y + to.y);
+        g2.drawLine(currentPosition.x,currentPosition.y, (currentPosition.x + to.x), (currentPosition.y + to.y));
         currentPosition.move(to);
     }
 }

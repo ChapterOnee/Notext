@@ -1,6 +1,6 @@
 size 40 40
 
-move 7 7
+move 12 7
 
 fillPoly4 0 0 10 0 15 5 0 5 "secondary"
 fillRect 0 5 15 20 "secondary"

@@ -35,7 +35,7 @@ public class Root extends Window {
     public Root() {
         super();
         GridPlacement placement = new GridPlacement(theme);
-        placement.setColumnTemplateFromString("auto 20px");
+        placement.setColumnTemplateFromString("20% auto 20px");
         placement.setRowTemplateFromString("auto");
 
         coreFrame.setChildrenPlacement(placement);
@@ -165,9 +165,24 @@ public class Root extends Window {
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
-        placement.add(editorSpace,0,0,1,1);
-        placement.add(scrollbar, 0, 1, 1, 1);
+        FolderView fw = new FolderView(theme){
+            @Override
+            protected void fileSelected(String file) {
+                editorInFocus.openFile(file);
+                Root.this.update();
+            }
 
+            @Override
+            public void setPath(String path) {
+                super.setPath(path);
+                Root.this.update();
+            }
+        };
+        fw.addAllowed(".*");
+
+        placement.add(editorSpace,0,1,1,1);
+        placement.add(scrollbar, 0, 2, 1, 1);
+        placement.add(fw, 0,0,1,1);
         //core.resize(Size.fromDimension(this.getSize()));
 
         panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://

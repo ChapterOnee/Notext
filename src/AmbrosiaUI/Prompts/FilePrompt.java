@@ -3,15 +3,12 @@ package AmbrosiaUI.Prompts;
 import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.Size;
 import AmbrosiaUI.Utility.UnitValue;
-import AmbrosiaUI.Widgets.Frame;
+import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Icons.Icon;
 import AmbrosiaUI.Widgets.Icons.PathImage;
-import AmbrosiaUI.Widgets.Label;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
-import AmbrosiaUI.Widgets.Scrollbar;
-import AmbrosiaUI.Widgets.Theme;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -23,204 +20,55 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class FilePrompt extends Prompt{
-    protected String path = System.getProperty("user.home");
-
-    protected final ArrayList<String> allowedRegex = new ArrayList<>();
-
-    protected Frame pathDisplayFrame;
-    protected HorizontalPlacement pathDisplayPlacement;
-    protected Frame filesDisplayFrame;
     protected GridPlacement corePlacement;
 
-    protected Scrollbar filesDisplayScrollbar;
-    protected VerticalPlacement filesDisplayPlacement;
+    protected FolderView folderView;
     public FilePrompt(Theme theme) {
         super(theme);
         initializeWindow();
     }
 
-    protected final PathImage dirImage = new PathImage("icons/folder.pimg");
-    protected final PathImage fileImage = new PathImage("icons/file.pimg");
-
-
     protected void initializeWindow(){
         corePlacement = new GridPlacement(win.getTheme());
-        corePlacement.setColumnTemplateFromString("auto 20px");
-        corePlacement.setRowTemplateFromString("40px auto");
+        corePlacement.setColumnTemplateFromString("auto");
+        corePlacement.setRowTemplateFromString("auto");
 
         win.getCoreFrame().setChildrenPlacement(corePlacement);
 
-        pathDisplayFrame = new Frame("primary", 1);
-        pathDisplayFrame.setHoverEffectDisabled(true);
-
-        pathDisplayPlacement = new HorizontalPlacement(win.getTheme());
-        pathDisplayFrame.setChildrenPlacement(pathDisplayPlacement);
-        //pathDisplayFrame.setTextPlacement(AdvancedGraphics.Side.LEFT);
-
-        filesDisplayFrame = new Frame("primary", 1);
-        
-        filesDisplayPlacement = new VerticalPlacement(win.getTheme()){
+        folderView = new FolderView(win.getCoreFrame().getTheme()) {
             @Override
-            public void onResize() {
-                //System.out.println(filesDisplayFrame.getScrollController().getMaxScrollY() + " " + filesDisplayPlacement.getMinimalHeight() + " " + filesDisplayFrame.getContentHeight());
-                filesDisplayFrame.getScrollController().setMaxScrollY(
-                        Math.max(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight(),0)
-                );
+            protected void fileSelected(String file) {
+                FilePrompt.this.fileSelected(file);
+            }
+
+            @Override
+            public void setPath(String path) {
+                super.setPath(path);
+
+                win.update();
             }
         };
-        filesDisplayPlacement.setMinColumnWidth(300);
-        filesDisplayFrame.setChildrenPlacement(filesDisplayPlacement);
+        corePlacement.add(folderView, 0,0,1,1);
+
 
         win.getPanel().addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                filesDisplayFrame.getScrollController().setScrollY(Math.max(0, filesDisplayFrame.getScrollController().getScrollY() + e.getWheelRotation()*25));
+                folderView.getScrollController().setScrollY(Math.max(0, folderView.getScrollController().getScrollY() + e.getWheelRotation()*25));
                 win.update();
                 win.update(); // Idk why this works but it fixes a visual bug :>
             }
         });
 
-        filesDisplayScrollbar = new Scrollbar("primary",filesDisplayFrame.getScrollController(), UnitValue.Direction.VERTICAL){
-            @Override
-            public void onMouseDragged(MouseEvent e) {
-                win.update();
-                super.onMouseDragged(e);
-            }
-        };
-
-        corePlacement.add(pathDisplayFrame, 0,0,1,2);
-        corePlacement.add(filesDisplayScrollbar,1,1,1,1);
-        corePlacement.add(filesDisplayFrame, 1,0,1,1);
-
-        updateFiles();
-    }
-
-    protected void updatePath(){
-        ArrayList<String> names = new ArrayList<>();
-        ArrayList<String> paths = new ArrayList<>();
-        
-        File f = new File(path);
-        String nm;
-        while(f != null){
-            names.add(f.getName());
-            paths.add(f.getAbsolutePath());
-
-            f = f.getParentFile();
-        }
-
-        Collections.reverse(names);
-        Collections.reverse(paths);
-
-        pathDisplayPlacement.clear();
-        String name;
-        for (int i = 0;i < names.size();i++) {
-            name = names.get(i);
-            if(name.isEmpty()){
-                name = paths.get(i);
-            }
-
-            Label temp = new Label(name, "normal", 0, 1, 4) {
-                @Override
-                public void onMouseClicked(MouseEvent e) {
-                    setPath(paths.get(placementIndex));
-                    updateFiles();
-                }
-            };
-            pathDisplayPlacement.add(temp, new UnitValue(win.getPanel().getFontMetrics(win.getTheme().getFontByName("normal")).stringWidth(name)+10, UnitValue.Unit.PIXELS));
-        }
-    }
-
-    protected void updateFiles(){
-        updatePath();
-
-        File folder = new File(path);
-        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                if(new File(Paths.get(dir.getAbsolutePath(),name).toString()).isDirectory()){
-                    return true;
-                }
-
-                for(String s: allowedRegex){
-                    if(name.toLowerCase().matches(s)){
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        });
-
-        filesDisplayPlacement.clear();
-        if(listOfFiles == null){
-            return;
-        }
-
-        for (File file : listOfFiles) {
-            if (!file.isHidden() && !file.getName().startsWith(".")) {
-                String name = file.getName();
-
-                Frame temp = new Frame("primary",1);
-
-                temp.setLockedToView(filesDisplayFrame);
-
-                HorizontalPlacement tempPlacement = new HorizontalPlacement(win.getTheme());
-                temp.setChildrenPlacement(tempPlacement);
-
-                Icon icon = new Icon("primary", "primary", new PathImage(new Size(0,0)));
-
-                Label tempLabel;
-
-                if(file.isDirectory()){
-                    tempLabel = new Label(name, "normal",0,0,4){
-                        @Override
-                        public void onMouseClicked(MouseEvent e) {
-                            setPath(file.getAbsolutePath());
-                            updateFiles();
-                        }
-                    };
-
-                    icon.setImage(dirImage);
-                }
-                else{
-                    tempLabel = new Label(name, "normal",0,0,4){
-                        @Override
-                        public void onMouseClicked(MouseEvent e) {
-                            fileSelected(file.getAbsolutePath());
-                        }
-                    };
-
-                    icon.setImage(fileImage);
-                }
-
-                icon.setLockedToView(filesDisplayFrame);
-                tempLabel.setBackgroudColor("primary");
-                tempLabel.setForegroundColor("text2");
-                tempLabel.setLockedToView(filesDisplayFrame);
-                tempLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
-
-                tempPlacement.add(icon, new UnitValue(40, UnitValue.Unit.PIXELS));
-                tempPlacement.add(tempLabel, new UnitValue(0, UnitValue.Unit.AUTO));
-                //temp.setTextPlacement(AdvancedGraphics.Side.LEFT);
-
-                filesDisplayPlacement.add(temp, new UnitValue(40, UnitValue.Unit.PIXELS));
-            }
-        }
-        filesDisplayFrame.getScrollController().setScrollY(0);
-        filesDisplayFrame.getScrollController().setMaxScrollY(Math.max(filesDisplayPlacement.getMinimalHeight()-filesDisplayFrame.getContentHeight(),0));
-
         win.update();
     }
 
-    public void setPath(String path){
-        this.path = path;
-    }
-
-    protected void fileSelected(String file){
+    public void fileSelected(String file){
         FilePrompt.this.result = new PromptResult(file);
         win.close();
     }
 
     public void addAllowed(String regex){
-        allowedRegex.add(regex);
+        folderView.addAllowed(regex);
     }
 }

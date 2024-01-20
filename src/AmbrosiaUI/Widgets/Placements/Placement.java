@@ -43,6 +43,10 @@ public abstract class Placement {
         onResize();
     }
 
+    public void update(){
+        this.resize(this.getRootSize());
+    }
+
     public void remove(Widget w){
         PlacementCell cell;
         for(int i = 0;i < children.size();i++){

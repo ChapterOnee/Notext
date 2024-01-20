@@ -1,5 +1,6 @@
 package AmbrosiaUI.Widgets;
 
+import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Utility.UnitValue;
 import AmbrosiaUI.Widgets.Frame;
@@ -11,6 +12,8 @@ import java.awt.event.MouseEvent;
 public class Scrollbar extends Frame {
     private ScrollController controller;
     private UnitValue.Direction direction;
+
+    private Position grabPosition;
     private int handleSize = 100;
 
     private String handleColor = "secondary";
@@ -48,6 +51,8 @@ public class Scrollbar extends Frame {
     @Override
     public void onMousePressed(MouseEvent e) {
         if(lastMousePosition.inRectangle(getHandle())){
+            grabPosition = new Position(e.getX()-getHandle().getX(),e.getY()-getHandle().getY());
+            //System.out.println(grabPosition + " " + getHandle() + " " + e.getPoint());
             grabbed = true;
             return;
         }
@@ -63,12 +68,12 @@ public class Scrollbar extends Frame {
     public void onMouseDragged(MouseEvent e) {
         if(grabbed){
             if(direction == UnitValue.Direction.HORIZONTAL){
-                double offset = ((double)controller.getMaxScrollX()/this.getWidth())*(e.getX()-this.getX());
+                double offset = ((double)controller.getMaxScrollX()/(this.getWidth()-handleSize))*(e.getX()-grabPosition.x-this.getX());
 
                 controller.setScrollX((int) offset);
             }
             else{
-                double offset = ((double)controller.getMaxScrollY()/this.getHeight())*(e.getY()-this.getY());
+                double offset = ((double)controller.getMaxScrollY()/(this.getHeight()-handleSize))*(e.getY()-grabPosition.y-this.getY());
 
                 controller.setScrollY((int) offset);
             }
@@ -83,10 +88,12 @@ public class Scrollbar extends Frame {
 
         if(direction == UnitValue.Direction.HORIZONTAL){
             handleX += ((double)(this.getWidth()-handleSize)/controller.getMaxScrollX())*controller.getScrollX();
+            handleX = Math.min(handleX,this.getX()+this.getWidth()-handleSize);
             handleHeight = this.getHeight();
         }
         else{
             handleY += ((double)(this.getHeight()-handleSize)/controller.getMaxScrollY())*controller.getScrollY();
+            handleY = Math.min(handleY,this.getY()+this.getHeight()-handleSize);
             handleWidth = this.getWidth();
         }
 

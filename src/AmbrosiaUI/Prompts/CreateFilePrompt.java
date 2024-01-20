@@ -23,7 +23,7 @@ public class CreateFilePrompt extends FilePrompt{
     public CreateFilePrompt(Theme theme) {
         super(theme);
 
-        corePlacement.setRowTemplateFromString("40px auto 40px");
+        corePlacement.setRowTemplateFromString("auto 40px");
 
         bottomFrame = new Frame("primary", 1);
         bottomFramePlacement = new GridPlacement(theme);
@@ -35,7 +35,7 @@ public class CreateFilePrompt extends FilePrompt{
         pathDisplayLabelSecondary = new Label("", "normal", 0,1,4) {
             @Override
             public String getText() {
-                return path;
+                return folderView.getPath();
             }
         };
         pathDisplayLabelSecondary.setHoverEffectDisabled(true);
@@ -56,7 +56,7 @@ public class CreateFilePrompt extends FilePrompt{
         submitButton = new Button("Save", "normal", 0, 1, 4){
             @Override
             public void onMouseClicked(MouseEvent e) {
-                result = new PromptResult(Paths.get(path, filenameInput.getContent()).toString());
+                result = new PromptResult(Paths.get(folderView.getPath(), filenameInput.getContent()).toString());
                 win.close();
             }
         };
@@ -67,18 +67,13 @@ public class CreateFilePrompt extends FilePrompt{
         bottomFramePlacement.add(submitButton, 0, 1,1,1);
         bottomFramePlacement.add(bottomPathFrame, 0, 0,1,1);
 
-        corePlacement.add(bottomFrame, 2,0,1,2);
+        corePlacement.add(bottomFrame, 1,0,1,1);
 
         win.update();
     }
 
     @Override
-    public void setPath(String path) {
-        super.setPath(path);
-    }
-
-    @Override
-    protected void fileSelected(String file) {
+    public void fileSelected(String file) {
         filenameInput.setContent(new File(file).getName());
         win.update();
     }

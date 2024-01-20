@@ -43,8 +43,8 @@ public class Icon extends Frame {
 
         if(image != null) {
             image.draw(g2, new Position(
-                    this.getX()+this.getWidth()/2-image.getWidth()/2,
-                    this.getY()+this.getHeight()/2-image.getHeight()/2
+                    this.getContentX()+this.getContentWidth()/2-(int)((image.getWidth()/2)*image.getScale()),
+                    this.getContentY()+this.getContentHeight()/2-(int)((image.getHeight()/2)*image.getScale())
             ));
         }
     }

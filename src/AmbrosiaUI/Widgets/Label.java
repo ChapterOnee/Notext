@@ -44,7 +44,6 @@ public class Label extends Frame {
     @Override
     public void drawSelf(Graphics2D g2) {
         setupDraw(g2);
-        g2.setFont(theme.getFontByName(font));
 
         /*
             Draw background and border
@@ -72,6 +71,7 @@ public class Label extends Frame {
         Rectangle rect = new Rectangle(this.getX(),this.getY(),this.getWidth(),this.getHeight());
         rect.applyMargin(padding);
 
+        g2.setFont(theme.getFontByName(font));
         AdvancedGraphics.drawText(g2, rect, getText(), textPlacement);
     }
 

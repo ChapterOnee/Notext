@@ -320,7 +320,9 @@ public abstract class Widget implements Comparable<Widget>{
                 '}';
     }
 
-
+    public boolean isMouseOver() {
+        return mouseOver;
+    }
 
     public String getSelectedContent(){
         return "";

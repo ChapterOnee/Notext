@@ -16,8 +16,10 @@ public class PathFillRectangle implements PathDrawable {
     }
 
     @Override
-    public void draw(Graphics2D g2, Position currentPosition, Theme Theme) {
+    public void draw(Graphics2D g2, Position currentPosition, Theme Theme, double scale) {
         g2.setColor(Theme.getColorByName(color));
-        g2.fillRect(rect.x+ currentPosition.x, rect.y+ currentPosition.y, rect.width, rect.height);
+        g2.fillRect(
+                (int) (rect.x) + currentPosition.x,
+                (int) (rect.y) + currentPosition.y, (int) (rect.width), (int) (rect.height));
     }
 }
