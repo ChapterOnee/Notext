@@ -84,7 +84,7 @@ public class Root extends Window {
         };
         open_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-        Button open_file_in_new_editor = new Button("Open In New Editor", "small", 0,0,4) {
+        Button open_file_in_new_editor = new Button("In New Text Editor", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 FilePrompt f = new FilePrompt(theme){
@@ -99,9 +99,9 @@ public class Root extends Window {
                 f.ask();
             }
         };
-        open_file_in_new_editor .setTextPlacement(AdvancedGraphics.Side.LEFT);
+        open_file_in_new_editor.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-        Button open_file_in_new_editor_hex = new Button("Open In New Hex Editor", "small", 0,0,4) {
+        Button open_file_in_new_editor_hex = new Button("In New Hex Editor", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 FilePrompt f = new FilePrompt(theme){
@@ -147,18 +147,23 @@ public class Root extends Window {
         DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(200,30));
         menu.setzIndex(1);
 
+        DropdownMenu openMenu = new DropdownMenu("Open..", "small", 0, 0, 4, new Size(200,30));
+        openMenu.setzIndex(1);
+        openMenu.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
         header_placement.add(menu, new UnitValue(50, UnitValue.Unit.PIXELS));
 
         menu.addMenuItem(new DropdownMenuItem(new_file));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
-        menu.addMenuItem(new DropdownMenuItem(open_file));
-        menu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor));
-        menu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor_hex));
+        menu.addMenuItem(new DropdownMenuItem(openMenu));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(save_file));
         menu.addMenuItem(new DropdownMenuItem(save_file_as));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(settings));
+
+        openMenu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor));
+        openMenu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor_hex));
 
         scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
 

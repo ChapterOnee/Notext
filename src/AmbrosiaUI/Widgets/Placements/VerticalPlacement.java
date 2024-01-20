@@ -47,7 +47,6 @@ public class VerticalPlacement extends Placement{
         w.setPlacementIndex(this.children.size());
         w.setParent(this.parent);
         this.children.add(new VerticalPlacementCell(w, unit));
-        this.recalculate();
     }
 
     public int getMinimalHeight(){

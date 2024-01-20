@@ -13,9 +13,10 @@ import java.util.ArrayList;
 
 public class DropdownMenu extends Label {
 
-    private ArrayList<DropdownMenuItem> items;
-
+    private final ArrayList<DropdownMenuItem> items;
+    private final ArrayList<DropdownMenu> dropdownMenusUnder = new ArrayList<>();
     private final int spacerHeight = 8;
+    private boolean inAnotherDropdownMenu = false;
 
     private VerticalPlacement verticalPlacement;
 
@@ -37,7 +38,7 @@ public class DropdownMenu extends Label {
             }
             @Override
             public Position getRootPosition() {
-                return DropdownMenu.this.getPosition().getOffset(new Position(0,DropdownMenu.this.getHeight()));
+                return getItemSpaceRectangle().getPosition();
             }
         };
         verticalPlacement.setItemMargin(2);
@@ -58,7 +59,7 @@ public class DropdownMenu extends Label {
             g2.setColor(theme.getColorByName(this.getBackgroudColor()));
 
             AdvancedGraphics.borderedRect(g2,
-                    this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width),  getFullItemHeight(),
+                    getItemSpaceRectangle(),
                     2, theme.getColorByName("secondary"), theme.getColorByName("primary"), AdvancedGraphics.BORDER_FULL
             );
             //g2.fillRect(this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size());
@@ -106,10 +107,22 @@ public class DropdownMenu extends Label {
     public ArrayList<Rectangle> getMouseHoverRectangles() {
         ArrayList<Rectangle> rects = super.getMouseHoverRectangles();
         if(mouseOver){
-            rects.add(new Rectangle(this.getX(),this.getY()+this.getHeight()-5,Math.max(this.getWidth(), itemSize.width), getFullItemHeight()));
+            rects.add(getItemSpaceRectangle());
+
+            for (DropdownMenu menu: dropdownMenusUnder){
+                rects.addAll(menu.getMouseHoverRectangles());
+            }
         }
         //System.out.println(rects + " " + mouseOver);
         return rects;
+    }
+
+    public Rectangle getItemSpaceRectangle(){
+        return new Rectangle(
+                this.getX() + (inAnotherDropdownMenu ? this.getWidth()-1: 0),
+                this.getY() + (!inAnotherDropdownMenu ? this.getHeight()-1 : 0),
+                Math.max(this.getWidth(), itemSize.width),
+                getFullItemHeight());
     }
 
     public void addMenuItem(DropdownMenuItem item){
@@ -120,7 +133,14 @@ public class DropdownMenu extends Label {
             item.setBoundWidget(new Frame(foregroundColor,1));
         }
 
+        if(item.getBoundWidget().getClass().getSimpleName().equals("DropdownMenu")){
+            ((DropdownMenu) item.getBoundWidget()).setInAnotherDropdownMenu(true);
+            ((DropdownMenu) item.getBoundWidget()).setzIndex(this.getzIndex()+1);
+            dropdownMenusUnder.add(((DropdownMenu) item.getBoundWidget()));
+        }
+
         verticalPlacement.add(item.getBoundWidget(), new UnitValue(height, UnitValue.Unit.PIXELS));
+        verticalPlacement.update();
     }
 
     @Override
@@ -132,6 +152,7 @@ public class DropdownMenu extends Label {
                 item.getBoundWidget().setzIndex(this.getzIndex()+1);
                 //System.out.println(item.getBoundWidget().getX() + " " + item.getBoundWidget().getY());
                 output.add(item.getBoundWidget());
+                output.addAll(item.getBoundWidget().getAllChildren());
             }
         }
 
@@ -158,5 +179,13 @@ public class DropdownMenu extends Label {
 
     public void setItemSize(Size itemSize) {
         this.itemSize = itemSize;
+    }
+
+    public boolean isInAnotherDropdownMenu() {
+        return inAnotherDropdownMenu;
+    }
+
+    public void setInAnotherDropdownMenu(boolean inAnotherDropdownMenu) {
+        this.inAnotherDropdownMenu = inAnotherDropdownMenu;
     }
 }

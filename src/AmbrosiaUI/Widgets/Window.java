@@ -43,11 +43,13 @@ public class Window {
     protected Theme theme;
 
     private final boolean DEBUG = false;
+    private boolean customFrame = false;
 
     private static final PathImage maximizeImage = new PathImage("icons/window/maximize.pimg");
     private static final PathImage closeImage = new PathImage("icons/window/close.pimg");
     private static final PathImage minimizeImage = new PathImage("icons/window/minimize.pimg");
 
+    private HorizontalPlacement innerHeaderControlsPlacement;
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
@@ -72,6 +74,10 @@ public class Window {
     }
 
     private void initialize(){
+        if(System.getProperty("os.name").startsWith("Windows")){
+            customFrame = true;
+        };
+
         innerFrame = new Frame("primary", 0){
             @Override
             public Position getPosition() {
@@ -80,17 +86,23 @@ public class Window {
 
             @Override
             public int getWidth() {
-                return panel.getPreferredSize().width;
+                return panel.getSize().width;
             }
 
             @Override
             public int getHeight() {
-                return panel.getPreferredSize().height;
+                return panel.getSize().height;
             }
+
         };;
         innerFrame.setTheme(theme);
 
-        VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme);
+        VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme) {
+            @Override
+            public Size getRootSize() {
+                return new Size(panel.getSize().width, panel.getSize().height);
+            }
+        };
         innerFrame.setChildrenPlacement(hiddenCorePlacement);
 
         Frame innerHeader = new Frame("secondary", 0);
@@ -109,49 +121,12 @@ public class Window {
 
         coreHeader = new Frame("secondary", 0);
         Frame innerHeaderControlls = new Frame("secondary", 0);
-        HorizontalPlacement innerHeaderControlsPlacement = new HorizontalPlacement(theme);
+        innerHeaderControlsPlacement = new HorizontalPlacement(theme);
         innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
 
         innerHeaderPlacement.add(coreHeader, new UnitValue(0, UnitValue.Unit.AUTO));
         innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(150, UnitValue.Unit.PIXELS));
 
-
-        Icon maximize = new Icon("secondary", "accent", maximizeImage) {
-            @Override
-            public void onMouseClicked(MouseEvent e) {
-                super.onMouseClicked(e);
-
-                if(frame.getExtendedState() == JFrame.MAXIMIZED_BOTH){
-                    frame.setExtendedState(java.awt.Frame.NORMAL);
-                }
-                else {
-                    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-                }
-                Window.this.update();
-            }
-        };
-
-        Icon close = new Icon("secondary", "accent", closeImage) {
-            @Override
-            public void onMouseClicked(MouseEvent e) {
-                super.onMouseClicked(e);
-
-                Window.this.close();
-            }
-        };
-
-        Icon minimize = new Icon("secondary", "accent", minimizeImage) {
-            @Override
-            public void onMouseClicked(MouseEvent e) {
-                super.onMouseClicked(e);
-
-                frame.setState(JFrame.ICONIFIED);
-            }
-        };
-
-        innerHeaderControlsPlacement.add(minimize, new UnitValue(0, UnitValue.Unit.AUTO));
-        innerHeaderControlsPlacement.add(maximize, new UnitValue(0, UnitValue.Unit.AUTO));
-        innerHeaderControlsPlacement.add(close, new UnitValue(0, UnitValue.Unit.AUTO));
 
         panel = new JPanel(){
             @Override
@@ -332,7 +307,7 @@ public class Window {
         };
     }
 
-    public void open(){
+    private void open(){
         if(frame != null){
             return;
         }
@@ -364,7 +339,9 @@ public class Window {
 
         //frame.setUndecorated(true);
 
-        enableCustomFrame();
+        if(customFrame) {
+            enableCustomFrame();
+        }
 
         GridBagConstraints gb = new GridBagConstraints();
         gb.fill = GridBagConstraints.BOTH;
@@ -537,6 +514,44 @@ public class Window {
                 panel.setCursor(nwcursor);
             }
         });
+
+        Icon maximize = new Icon("secondary", "accent", maximizeImage) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+
+                if(frame.getExtendedState() == JFrame.MAXIMIZED_BOTH){
+                    frame.setExtendedState(java.awt.Frame.NORMAL);
+                }
+                else {
+                    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+                }
+                Window.this.update();
+            }
+        };
+
+        Icon close = new Icon("secondary", "accent", closeImage) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+
+                Window.this.close();
+            }
+        };
+
+        Icon minimize = new Icon("secondary", "accent", minimizeImage) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+
+                frame.setState(JFrame.ICONIFIED);
+            }
+        };
+
+        innerHeaderControlsPlacement.add(minimize, new UnitValue(0, UnitValue.Unit.AUTO));
+        innerHeaderControlsPlacement.add(maximize, new UnitValue(0, UnitValue.Unit.AUTO));
+        innerHeaderControlsPlacement.add(close, new UnitValue(0, UnitValue.Unit.AUTO));
+
         frame.setUndecorated(true);
     }
 
