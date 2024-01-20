@@ -1,9 +1,6 @@
 package AmbrosiaUI.Widgets.Editors.HexEditor;
 
-import AmbrosiaUI.Utility.AdvancedGraphics;
-import AmbrosiaUI.Utility.EventStatus;
-import AmbrosiaUI.Utility.Logger;
-import AmbrosiaUI.Utility.Position;
+import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Widgets.Editors.EditorLike;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.ScrollController;
@@ -33,6 +30,7 @@ public class HexEditor extends Frame implements EditorLike {
 
         setBorderColor("secondary");
         setBorderWidth(2);
+        setBorderModifier(new GraphicsBorderModifier(false,true,false,false));
     }
 
     @Override

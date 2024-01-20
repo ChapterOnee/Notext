@@ -1,5 +1,6 @@
 package AmbrosiaUI.Widgets.Editors.TextEditor;
 
+import AmbrosiaUI.Utility.GraphicsBorderModifier;
 import AmbrosiaUI.Widgets.Editors.EditorLike;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.ScrollController;
@@ -41,6 +42,7 @@ public class TextEditor extends Frame implements EditorLike {
 
         setBorderColor("secondary");
         setBorderWidth(2);
+        setBorderModifier(new GraphicsBorderModifier(false,true,false,false));
 
         this.cursor = new Cursor(new Position(0, 0));
         this.text = new StoredText(this.cursor) {
@@ -373,14 +375,18 @@ public class TextEditor extends Frame implements EditorLike {
         text.revert();
     }
 
-    public void clear(){
+    @Override
+    public void clear() {
         scrollController.reset();
         activeSelections.clear();
+        text.clear();
     }
+
     public void openFile(String filename){
         if(text.fromFile(filename)){
             highlighter.toDetectedHighlighterFromFilename(filename);
-            clear();
+            scrollController.reset();
+            activeSelections.clear();
         }
     }
 

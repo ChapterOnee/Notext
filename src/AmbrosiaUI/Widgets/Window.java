@@ -374,8 +374,8 @@ public class Window {
         frame.add(panel,gb);
         panel.setFocusable(true);
 
-        frame.setLocationRelativeTo(null);
         frame.setSize(800,500);
+        frame.setLocationRelativeTo(null);
 
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

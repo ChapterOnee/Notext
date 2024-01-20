@@ -65,6 +65,7 @@ public class Root extends Window {
                     @Override
                     public void onSubmited(PromptResult result) {
                         editorInFocus.openFile(result.getContent());
+                        Root.this.update();
                     }
                 };
                 f.addAllowed(editorInFocus.getAllowedFiles());
@@ -76,11 +77,12 @@ public class Root extends Window {
         Button open_file_in_new_editor = new Button("Open In New Editor", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                editorInFocus = addEditor();
                 FilePrompt f = new FilePrompt(theme){
                     @Override
                     public void onSubmited(PromptResult result) {
+                        editorInFocus = addEditor();
                         editorInFocus.openFile(result.getContent());
+                        Root.this.update();
                     }
                 };
                 f.addAllowed(editorInFocus.getAllowedFiles());
@@ -92,11 +94,12 @@ public class Root extends Window {
         Button open_file_in_new_editor_hex = new Button("Open In New Hex Editor", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                editorInFocus = addHexEditor();
                 FilePrompt f = new FilePrompt(theme){
                     @Override
                     public void onSubmited(PromptResult result) {
+                        editorInFocus = addHexEditor();
                         editorInFocus.openFile(result.getContent());
+                        Root.this.update();
                     }
                 };
                 f.addAllowed(editorInFocus.getAllowedFiles());
@@ -292,6 +295,7 @@ public class Root extends Window {
                 }
                 editorSpacePlacement.remove((Widget) editorInFocus);
                 editorInFocus = (EditorLike) editorSpacePlacement.getChildren().get(0).getBoundElement();
+                scrollbar.setController(editorInFocus.getScrollController());
             }
         };
 
