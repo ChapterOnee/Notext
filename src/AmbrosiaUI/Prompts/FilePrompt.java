@@ -68,6 +68,10 @@ public class FilePrompt extends Prompt{
         win.close();
     }
 
+    public void setPath(String path){
+        folderView.setPath(path);
+    }
+
     public void addAllowed(String regex){
         folderView.addAllowed(regex);
     }

@@ -18,7 +18,7 @@ color numbers 150 150 200
 
 Copperplate Gothic Bold
 
-load_font "fonts/RobotoMono/static/Roboto-Regular.ttf" roboto
+load_font "fonts/RobotoMono/static/RobotoMono-Regular.ttf" roboto
 
 font normal Monospaced 16
 font small Monospaced 12

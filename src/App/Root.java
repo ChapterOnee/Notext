@@ -46,7 +46,17 @@ public class Root extends Window {
         Button new_file = new Button("New", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
-                editorInFocus.clear();
+                CreateFilePrompt f = new CreateFilePrompt(theme){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        editorInFocus.clear();
+                        editorInFocus.setCurrentFile(result.getContent());
+                        editorInFocus.saveToCurrentlyOpenFile();
+                        win.update();
+                    }
+                };
+                f.addAllowed(".*");
+                f.ask();
             }
         };
         new_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
@@ -158,9 +168,7 @@ public class Root extends Window {
         editorSpacePlacement = new HorizontalPlacement(theme);
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
-        editorInFocus = addHexEditor();
-        editorInFocus.openFile("testFiles/test.txt");
-        addEditor().openFile("testFiles/test.txt");
+        editorInFocus = addEditor();
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
