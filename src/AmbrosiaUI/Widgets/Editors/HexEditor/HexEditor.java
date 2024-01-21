@@ -223,4 +223,9 @@ public class HexEditor extends Frame implements EditorLike {
     public ScrollController getScrollController() {
         return scrollController;
     }
+
+    @Override
+    public boolean dontAutoScroll() {
+        return false;
+    }
 }

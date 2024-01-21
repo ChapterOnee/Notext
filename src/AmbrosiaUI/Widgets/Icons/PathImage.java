@@ -32,12 +32,6 @@ public class PathImage extends FileInterpreter {
     }
 
     private void initFileloaderCommands() {
-        this.addCommand(new InterpretedCommand("move", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT}) {
-            @Override
-            public void execute(ArrayList<String> arguments) {
-                PathImage.this.oparations.add(new PathMove(arguments));
-            }
-        });
 
         this.addCommand(new InterpretedCommand("line", new InterpretedCommand.ArgumentType[]{
                 InterpretedCommand.ArgumentType.INT,

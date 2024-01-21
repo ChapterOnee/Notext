@@ -67,7 +67,15 @@ public class PathLine implements PathDrawable{
 
     @Override
     public String getName() {
-        return "lineTo";
+        return "line";
+    }
+
+    @Override
+    public ArrayList<Position> getPositions() {
+        ArrayList<Position> out = new ArrayList<>();
+        out.add(from);
+        out.add(to);
+        return out;
     }
 
     public Position getTo() {

@@ -6,6 +6,7 @@ import AmbrosiaUI.Widgets.Icons.Icon;
 import AmbrosiaUI.Widgets.Icons.PathImage;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
+import App.Root;
 
 import javax.swing.*;
 import java.awt.*;
@@ -93,8 +94,7 @@ public class Window {
             public int getHeight() {
                 return panel.getSize().height;
             }
-
-        };;
+        };
         innerFrame.setTheme(theme);
 
         VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme) {
@@ -132,6 +132,10 @@ public class Window {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
+                //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY );
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
                 innerFrame.draw(g2);
 
                 if(!DEBUG) {

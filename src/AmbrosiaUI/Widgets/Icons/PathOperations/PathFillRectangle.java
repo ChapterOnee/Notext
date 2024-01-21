@@ -2,7 +2,9 @@ package AmbrosiaUI.Widgets.Icons.PathOperations;
 
 import AmbrosiaUI.Utility.FileInterpreter.InterpretedCommand;
 import AmbrosiaUI.Utility.Position;
+import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.Theme;
+
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,8 +27,8 @@ public class PathFillRectangle implements PathDrawable {
     public void draw(Graphics2D g2, Position currentPosition, Theme Theme) {
         g2.setColor(Theme.getColorByName(color));
         g2.fillRect(
-                (int) (rect.x) + currentPosition.x,
-                (int) (rect.y) + currentPosition.y, (int) (rect.width), (int) (rect.height));
+                (int) (rect.getX()) + currentPosition.x,
+                (int) (rect.getY()) + currentPosition.y, (int) (rect.getWidth()), (int) (rect.getHeight()));
     }
 
     @Override
@@ -41,13 +43,18 @@ public class PathFillRectangle implements PathDrawable {
     }
 
     @Override
+    public ArrayList<Position> getPositions() {
+        return new ArrayList<Position>();
+    }
+
+    @Override
     public ArrayList<String> toArguments() {
         ArrayList<String> output = new ArrayList<>();
 
-        output.add(rect.x + "");
-        output.add(rect.y + "");
-        output.add(rect.width + "");
-        output.add(rect.height + "");
+        output.add(rect.getX() + "");
+        output.add(rect.getY() + "");
+        output.add(rect.getWidth() + "");
+        output.add(rect.getHeight() + "");
         output.add(color);
 
         return output;

@@ -1,28 +1,20 @@
 size 40 40
-
-move 15 10
-
-fillRect 0 0 8 12 "accent"
-fillRect -8 8 8 8 "accent"
-
-fillRect 8 8 8 8 "selection"
-fillRect 0 12 8 12 "selection"
-
-line 0 8 "text2" 1
-move 4 0
-line -12 0 "text2" 1
-line 0 8 "text2" 1
-line 8 0 "text2" 1
-line 0 -4 "text2" 1
-line 8 0 "text2" 1
-line 0 -12 "text2" 1
-line -8 0 "text2" 1
-
-move 8 8
-line 8 0 "text2" 1
-line 0 8 "text2" 1
-line -12 0 "text2" 1
-move 4 0
-line 0 8 "text2" 1
-line -8 0 "text2" 1
-line 0 -8 "text2" 1
+fillPoly4 7 16 16 16 16 24 7 24 accent
+fillPoly4 25 21 16 20 16 7 24 7 accent
+fillPoly4 24 24 33 24 33 16 24 16 selection
+fillPoly4 16 33 24 33 24 20 16 20 selection
+line 24 33 24 24 text2 1
+line 16 33 16 24 text2 1
+line 16 20 24 20 text2 1
+line 33 24 20 24 text2 1
+line 7 16 20 16 text2 1
+line 16 24 16 20 text2 1
+line 33 24 33 16 text2 1
+line 7 16 7 24 text2 1
+line 24 16 33 16 text2 1
+line 16 24 7 24 text2 1
+line 24 16 24 7 text2 1
+line 16 33 24 33 text2 1
+line 16 7 16 16 text2 1
+line 16 7 24 7 text2 1
+line 24 16 24 20 text2 1

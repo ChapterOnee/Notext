@@ -3,6 +3,7 @@ package AmbrosiaUI.Widgets.Icons.PathOperations;
 import AmbrosiaUI.Utility.FileInterpreter.InterpretedCommand;
 import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Widgets.Theme;
+import com.sun.source.tree.ArrayAccessTree;
 
 import java.awt.*;
 import java.lang.reflect.Array;
@@ -80,6 +81,16 @@ public class PathFillPoly implements PathDrawable{
                 InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, // p4
                 InterpretedCommand.ArgumentType.STRING // color
         };
+    }
+
+    @Override
+    public ArrayList<Position> getPositions() {
+        ArrayList<Position> output = new ArrayList<>();
+        output.add(pos1);
+        output.add(pos2);
+        output.add(pos3);
+        output.add(pos4);
+        return output;
     }
 
     @Override

@@ -628,6 +628,11 @@ public class TextEditor extends Frame implements EditorLike {
         return scrollController;
     }
 
+    @Override
+    public boolean dontAutoScroll() {
+        return false;
+    }
+
     public StoredText getText() {
         return text;
     }

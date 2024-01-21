@@ -17,4 +17,6 @@ public interface PathDrawable {
 
     String getName();
 
+    ArrayList<Position> getPositions();
+
 }

@@ -37,7 +37,6 @@ public abstract class Widget implements Comparable<Widget>{
 
     protected static final Canvas fontsizecanvas = new Canvas();
 
-
     public void draw(Graphics2D g2) {
         ArrayList<Widget> toBeDrawn = this.getAllChildren();
 

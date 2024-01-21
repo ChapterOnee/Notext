@@ -59,7 +59,7 @@ public class Root extends Window {
             }
         };
         fw.addAllowed(".*");
-        fw.setPath("/home/hades/IdeaProjects/text_editor");
+        fw.setPath("C:\\Users\\filah\\IdeaProjects\\TextEditor");
 
         Button new_file = new Button("New", "small", 0,0,4) {
             @Override
@@ -197,7 +197,7 @@ public class Root extends Window {
         editorSpacePlacement = new HorizontalPlacement(theme);
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
-        editorInFocus = addPIconEditor();
+        editorInFocus = addEditor();
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
@@ -331,6 +331,10 @@ public class Root extends Window {
         panel.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
+                if(editorInFocus.dontAutoScroll()){
+                    Root.this.update();
+                    return;
+                }
                 editorInFocus.getScrollController().setScrollY(Math.max(0, editorInFocus.getScrollController().getScrollY() + e.getWheelRotation()*25));
                 Root.this.update();
             }

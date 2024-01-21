@@ -69,6 +69,11 @@ public class PathRectangle implements PathDrawable{
         return "rect";
     }
 
+    @Override
+    public ArrayList<Position> getPositions() {
+        return new ArrayList<>();
+    }
+
     public String getColor() {
         return color;
     }

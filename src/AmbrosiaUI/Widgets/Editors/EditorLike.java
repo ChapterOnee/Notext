@@ -19,4 +19,6 @@ public interface EditorLike {
     String getAllowedFiles();
 
     ScrollController getScrollController();
+
+    boolean dontAutoScroll();
 }
