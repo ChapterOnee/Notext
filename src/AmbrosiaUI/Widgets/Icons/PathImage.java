@@ -9,12 +9,14 @@ import AmbrosiaUI.Widgets.Theme;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class PathImage extends FileInterpreter {
     private ArrayList<PathDrawable> oparations = new ArrayList<>();
 
-    private Size size = new Size(0,0);
+    private Size size = new Size(0, 0);
     private Theme Theme;
 
     private double scale = 1;
@@ -23,68 +25,44 @@ public class PathImage extends FileInterpreter {
         this.size = size;
         initFileloaderCommands();
     }
-    public PathImage(String path){
+
+    public PathImage(String path) {
         initFileloaderCommands();
         loadFromFile(path);
     }
 
-    private void initFileloaderCommands(){
-        this.addCommand(new InterpretedCommand("move", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT}){
+    private void initFileloaderCommands() {
+        this.addCommand(new InterpretedCommand("move", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT}) {
             @Override
             public void execute(ArrayList<String> arguments) {
-                PathImage.this.oparations.add(new PathMove(
-                        Integer.parseInt(arguments.get(0)),
-                        Integer.parseInt(arguments.get(1))
-                ));
+                PathImage.this.oparations.add(new PathMove(arguments));
             }
         });
 
-        this.addCommand(new InterpretedCommand("lineTo", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.STRING, InterpretedCommand.ArgumentType.INT}){
+        this.addCommand(new InterpretedCommand("lineTo", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.STRING, InterpretedCommand.ArgumentType.INT}) {
             @Override
             public void execute(ArrayList<String> arguments) {
-                PathImage.this.oparations.add(new PathLine(
-                        Integer.parseInt(arguments.get(0)),
-                        Integer.parseInt(arguments.get(1)),
-                        arguments.get(2),
-                        Integer.parseInt(arguments.get(3))
-                ));
+                PathImage.this.oparations.add(new PathLine(arguments));
             }
         });
 
         this.addCommand(new InterpretedCommand("rect", new InterpretedCommand.ArgumentType[]{
                 InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, // Rectangle
                 InterpretedCommand.ArgumentType.STRING, InterpretedCommand.ArgumentType.INT // color, width
-        }){
+        }) {
             @Override
             public void execute(ArrayList<String> arguments) {
-                PathImage.this.oparations.add(new PathRectangle(
-                        arguments.get(4),
-                        new Rectangle(
-                                Integer.parseInt(arguments.get(0)),
-                                Integer.parseInt(arguments.get(1)),
-                                Integer.parseInt(arguments.get(2)),
-                                Integer.parseInt(arguments.get(3))
-                        ),
-                        Integer.parseInt(arguments.get(5))
-                ));
+                PathImage.this.oparations.add(new PathRectangle(arguments));
             }
         });
 
         this.addCommand(new InterpretedCommand("fillRect", new InterpretedCommand.ArgumentType[]{
                 InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, // Rectangle
                 InterpretedCommand.ArgumentType.STRING // color
-        }){
+        }) {
             @Override
             public void execute(ArrayList<String> arguments) {
-                PathImage.this.oparations.add(new PathFillRectangle(
-                        arguments.get(4),
-                        new Rectangle(
-                                Integer.parseInt(arguments.get(0)),
-                                Integer.parseInt(arguments.get(1)),
-                                Integer.parseInt(arguments.get(2)),
-                                Integer.parseInt(arguments.get(3))
-                        )
-                ));
+                PathImage.this.oparations.add(new PathFillRectangle(arguments));
             }
         });
 
@@ -94,20 +72,14 @@ public class PathImage extends FileInterpreter {
                 InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, // p3
                 InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, // p4
                 InterpretedCommand.ArgumentType.STRING // color
-        }){
+        }) {
             @Override
             public void execute(ArrayList<String> arguments) {
-                PathImage.this.oparations.add(new PathFillPoly(
-                        new Position(Integer.parseInt(arguments.get(0)),Integer.parseInt(arguments.get(1))),
-                        new Position(Integer.parseInt(arguments.get(2)),Integer.parseInt(arguments.get(3))),
-                        new Position(Integer.parseInt(arguments.get(4)),Integer.parseInt(arguments.get(5))),
-                        new Position(Integer.parseInt(arguments.get(6)),Integer.parseInt(arguments.get(7))),
-                        arguments.get(8)
-                ));
+                PathImage.this.oparations.add(new PathFillPoly(arguments));
             }
         });
 
-        this.addCommand(new InterpretedCommand("size", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT}){
+        this.addCommand(new InterpretedCommand("size", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT}) {
             @Override
             public void execute(ArrayList<String> arguments) {
                 PathImage.this.setSize(new Size(
@@ -118,6 +90,18 @@ public class PathImage extends FileInterpreter {
         });
     }
 
+    public void saveToFile(String filename) {
+        try (FileWriter myWriter = new FileWriter(filename)) {
+            myWriter.write("size " + getSize().width + " " + getSize().height + "\n");
+            for(PathDrawable path: oparations) {
+                myWriter.write(path.getName() + " " + String.join(" ",path.toArguments())+ "\n");
+            }
+            //myWriter.close();
+        } catch (IOException ignored) {
+
+        }
+    }
+
     public Size getSize() {
         return size;
     }
@@ -126,18 +110,19 @@ public class PathImage extends FileInterpreter {
         this.size = size;
     }
 
-    public int getWidth(){
+    public int getWidth() {
         return size.width;
     }
-    public int getHeight(){
+
+    public int getHeight() {
         return size.height;
     }
 
-    public void draw(Graphics2D g2, Position startPosition){
+    public void draw(Graphics2D g2, Position startPosition) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        if(Theme == null){
+        if (Theme == null) {
             return;
         }
 
@@ -145,16 +130,16 @@ public class PathImage extends FileInterpreter {
 
         AffineTransform at = new AffineTransform();
         at.translate(startPosition.x, startPosition.y);
-        at.scale(scale,scale);
+        at.scale(scale, scale);
         g2.setTransform(at);
 
         //g2.setColor(new Color(255,0,0));
         //g2.fillRect(0,0,20,20);
 
-        Position position = new Position(0,0);
+        Position position = new Position(0, 0);
 
-        for(PathDrawable operation: oparations){
-            operation.draw(g2,position, Theme, scale);
+        for (PathDrawable operation : oparations) {
+            operation.draw(g2, position, Theme, scale);
         }
 
         at = new AffineTransform();
@@ -177,11 +162,15 @@ public class PathImage extends FileInterpreter {
         this.Theme = Theme;
     }
 
-    public void add(PathDrawable drawable){
+    public void add(PathDrawable drawable) {
         oparations.add(drawable);
     }
 
     public double getScale() {
         return scale;
+    }
+
+    public ArrayList<PathDrawable> getOparations() {
+        return oparations;
     }
 }

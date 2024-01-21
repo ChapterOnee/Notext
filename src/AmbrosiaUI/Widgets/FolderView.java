@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.stream.Stream;
 
 public class FolderView extends Frame {
@@ -43,8 +44,10 @@ public class FolderView extends Frame {
         initialize();
     }
 
-    protected final PathImage dirImage = new PathImage("icons/folder.pimg");
-    protected final PathImage fileImage = new PathImage("icons/file.pimg");
+    protected static final PathImage dirImage = new PathImage("icons/folder.pimg");
+    protected static final PathImage fileImage = new PathImage("icons/file.pimg");
+
+    protected static final PathImage pyFileImage = new PathImage("icons/pyfile.pimg");
 
 
     protected void initialize() {
@@ -182,7 +185,7 @@ public class FolderView extends Frame {
                 Label tempLabel;
 
                 if(file.isDirectory()){
-                    tempLabel = new Label(name, "normal",0,0,4){
+                    tempLabel = new Label(name, "small",0,0,4){
                         @Override
                         public void onMouseClicked(MouseEvent e) {
                             setPath(file.getAbsolutePath());
@@ -192,16 +195,22 @@ public class FolderView extends Frame {
                     dirImage.setScale((double) itemHeight / dirImage.getHeight());
                     icon.setImage(dirImage);
                 }
-                else{
-                    tempLabel = new Label(name, "normal",0,0,4){
+                else {
+                    tempLabel = new Label(name, "small", 0, 0, 4) {
                         @Override
                         public void onMouseClicked(MouseEvent e) {
                             fileSelected(file.getAbsolutePath());
                         }
                     };
 
-                    fileImage.setScale((double) itemHeight / fileImage.getHeight());
-                    icon.setImage(fileImage);
+                    PathImage finalImage = fileImage;
+
+                    if (name.matches(".*\\.py")) {
+                        finalImage = pyFileImage;
+                    }
+                    finalImage.setScale((double) itemHeight / fileImage.getHeight());
+
+                    icon.setImage(finalImage);
                 }
 
                 icon.setLockedToView(filesDisplayFrame);
@@ -236,6 +245,7 @@ public class FolderView extends Frame {
 
     public void addAllowed(String regex){
         allowedRegex.add(regex);
+        updateFiles();
     }
 
     public void noColumns(){

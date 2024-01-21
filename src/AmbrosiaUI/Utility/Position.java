@@ -14,6 +14,18 @@ public class Position {
         this.y += y;
     }
 
+    public double getDistanceTo(Position pos){
+        double ac = Math.abs(pos.y - y);
+        double cb = Math.abs(pos.x - x);
+
+        return Math.hypot(ac, cb);
+    }
+    public Position getMultiplied(double mult){
+        return new Position(
+                (int) (x*mult),
+                (int) (y*mult)
+        );
+    }
     public void move(Position position){
         this.x += position.x;
         this.y += position.y;

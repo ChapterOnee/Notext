@@ -20,10 +20,10 @@ Copperplate Gothic Bold
 
 load_font "fonts/RobotoMono/static/RobotoMono-Regular.ttf" roboto
 
-font normal Monospaced 16
+font normal Monospaced 14
 font small Monospaced 12
 font big Monospaced 24
 
-font normal roboto 16
+font normal roboto 14
 font small roboto 12
 font big roboto 24

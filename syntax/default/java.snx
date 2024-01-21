@@ -3,5 +3,5 @@ name Java
 
 group numbers \b(?:([0-9]+))\b
 
-group keywords \b(?:return|continue|public|static|private|protected|int|float|double|boolean|char|if|else|break|switch|void|class|new|import|package|extends|implements|for)\b
+group accent \b(?:return|continue|public|static|private|protected|int|float|double|boolean|char|if|else|break|switch|void|class|new|import|package|extends|implements|for)\b
 group strings (\"[^\"]*\")|'[^']*'

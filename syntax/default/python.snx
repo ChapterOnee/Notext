@@ -3,5 +3,5 @@ name Python
 
 group numbers \b(?:([0-9]+))\b
 
-group keywords \b(?:if|else|elif|def|lambda|import|as|in|for|while)\b
+group accent \b(?:False|None|True|and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\b
 group strings (\"[^\"]*\")|'[^']*'

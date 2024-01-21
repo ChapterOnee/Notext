@@ -383,6 +383,10 @@ public class TextEditor extends Frame implements EditorLike {
     }
 
     public void openFile(String filename){
+        if(!filename.matches(getAllowedFiles())){
+            return;
+        }
+
         if(text.fromFile(filename)){
             highlighter.toDetectedHighlighterFromFilename(filename);
             scrollController.reset();

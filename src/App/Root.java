@@ -6,7 +6,9 @@ import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Button;
 import AmbrosiaUI.Widgets.Editors.HexEditor.HexEditor;
+import AmbrosiaUI.Widgets.Editors.PIconEditor.PIconEditor;
 import AmbrosiaUI.Widgets.Frame;
+import AmbrosiaUI.Widgets.Icons.PathImage;
 import AmbrosiaUI.Widgets.Scrollbar;
 import AmbrosiaUI.Widgets.SelectBox.SelectBox;
 import AmbrosiaUI.Widgets.SelectBox.SelectBoxOption;
@@ -43,6 +45,22 @@ public class Root extends Window {
         HorizontalPlacement header_placement = new HorizontalPlacement(theme);
         coreHeader.setChildrenPlacement(header_placement);
 
+        FolderView fw = new FolderView(theme){
+            @Override
+            protected void fileSelected(String file) {
+                editorInFocus.openFile(file);
+                Root.this.update();
+            }
+
+            @Override
+            public void setPath(String path) {
+                super.setPath(path);
+                Root.this.update();
+            }
+        };
+        fw.addAllowed(".*");
+        fw.setPath("/home/hades/IdeaProjects/text_editor");
+
         Button new_file = new Button("New", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
@@ -55,6 +73,7 @@ public class Root extends Window {
                         win.update();
                     }
                 };
+                f.setPath(fw.getPath());
                 f.addAllowed(".*");
                 f.ask();
             }
@@ -68,7 +87,7 @@ public class Root extends Window {
                 editorInFocus.openFile(editorInFocus.getCurrentFile());
             }
         };
-        Button open_file = new Button("Open", "small", 0,0,4) {
+        Button open_file = new Button("In Current Editor", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 FilePrompt f = new FilePrompt(theme){
@@ -78,6 +97,7 @@ public class Root extends Window {
                         Root.this.update();
                     }
                 };
+                f.setPath(fw.getPath());
                 f.addAllowed(editorInFocus.getAllowedFiles());
                 f.ask();
             }
@@ -95,6 +115,7 @@ public class Root extends Window {
                         Root.this.update();
                     }
                 };
+                f.setPath(fw.getPath());
                 f.addAllowed(editorInFocus.getAllowedFiles());
                 f.ask();
             }
@@ -112,6 +133,7 @@ public class Root extends Window {
                         Root.this.update();
                     }
                 };
+                f.setPath(fw.getPath());
                 f.addAllowed(editorInFocus.getAllowedFiles());
                 f.ask();
             }
@@ -131,6 +153,7 @@ public class Root extends Window {
                         editorInFocus.saveToCurrentlyOpenFile();
                     }
                 };
+                f.setPath(fw.getPath());
                 f.addAllowed(".*");
                 f.ask();
             }
@@ -162,6 +185,7 @@ public class Root extends Window {
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(settings));
 
+        openMenu.addMenuItem(new DropdownMenuItem(open_file));
         openMenu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor));
         openMenu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor_hex));
 
@@ -174,24 +198,10 @@ public class Root extends Window {
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorInFocus = addEditor();
+        addPIconEditor();
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
-
-        FolderView fw = new FolderView(theme){
-            @Override
-            protected void fileSelected(String file) {
-                editorInFocus.openFile(file);
-                Root.this.update();
-            }
-
-            @Override
-            public void setPath(String path) {
-                super.setPath(path);
-                Root.this.update();
-            }
-        };
-        fw.addAllowed(".*");
 
         placement.add(editorSpace,0,1,1,1);
         placement.add(scrollbar, 0, 2, 1, 1);
@@ -228,6 +238,27 @@ public class Root extends Window {
 
     public HexEditor addHexEditor(){
         HexEditor editor = new HexEditor() {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                super.onMouseClicked(e);
+                scrollbar.setController(this.getScrollController());
+                Root.this.editorInFocus = this;
+            }
+
+            @Override
+            public void onCurrentFileChanged() {
+                //System.out.println("A"+ editorInFocus.getText().hasFile());
+                save_file.setDisabled(!editorInFocus.hasFile());
+            }
+        };
+
+        editorSpacePlacement.add(editor, new UnitValue(0, UnitValue.Unit.AUTO));
+
+        return editor;
+    }
+
+    public PIconEditor addPIconEditor(){
+        PIconEditor editor = new PIconEditor("primary",0) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);

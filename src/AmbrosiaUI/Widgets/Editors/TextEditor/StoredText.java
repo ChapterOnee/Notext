@@ -72,6 +72,10 @@ public class StoredText {
     }
 
     public void setText(String raw_text){
+        if(raw_text.isBlank()){
+            raw_text = " \n\n";
+        }
+
         this.storeState();
         String[] data = raw_text.split("\n\r|\n|\r");
         this.lines.clear();
