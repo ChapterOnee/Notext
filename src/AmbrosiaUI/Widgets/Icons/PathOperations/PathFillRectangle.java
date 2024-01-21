@@ -22,7 +22,7 @@ public class PathFillRectangle implements PathDrawable {
     }
 
     @Override
-    public void draw(Graphics2D g2, Position currentPosition, Theme Theme, double scale) {
+    public void draw(Graphics2D g2, Position currentPosition, Theme Theme) {
         g2.setColor(Theme.getColorByName(color));
         g2.fillRect(
                 (int) (rect.x) + currentPosition.x,

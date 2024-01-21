@@ -10,53 +10,41 @@ import java.util.ArrayList;
 public class PathLine implements PathDrawable{
 
     private Position to;
+    private Position from;
     private String color;
 
     private int width;
-
-    private final Position lastPosition = new Position(0,0);
-
-    public PathLine(Position to, String color, int width) {
-        this.to = to;
-        this.color = color;
-        this.width = width;
-    }
-
-    public PathLine(int x, int y, String color, int width) {
-        this.width = width;
-        this.to = new Position(x,y);
-        this.color = color;
-    }
 
     public PathLine(ArrayList<String> arguments){
         fromArguments(arguments);
     }
 
     @Override
-    public void draw(Graphics2D g2, Position currentPosition, Theme Theme, double scale) {
+    public void draw(Graphics2D g2, Position currentPosition, Theme Theme) {
         g2.setColor(Theme.getColorByName(color));
         g2.setStroke(new BasicStroke(width));
-        g2.drawLine(currentPosition.x,currentPosition.y, (currentPosition.x + to.x), (currentPosition.y + to.y));
-
-        lastPosition.x = (currentPosition.x + to.x);
-        lastPosition.y = (currentPosition.y + to.y);
-
-        currentPosition.move(to);
+        g2.drawLine(from.x + currentPosition.x, from.y  + currentPosition.y, (currentPosition.x + to.x), (currentPosition.y + to.y));
     }
 
     @Override
     public void fromArguments(ArrayList<String> arguments) {
-        to = new Position(
+        from = new Position(
                 Integer.parseInt(arguments.get(0)),
                 Integer.parseInt(arguments.get(1))
         );
-        color = arguments.get(2);
-        width = Integer.parseInt(arguments.get(3));
+        to = new Position(
+                Integer.parseInt(arguments.get(2)),
+                Integer.parseInt(arguments.get(3))
+        );
+        color = arguments.get(4);
+        width = Integer.parseInt(arguments.get(5));
     }
 
     @Override
     public ArrayList<String> toArguments() {
         ArrayList<String> output = new ArrayList<>();
+        output.add(from.x + "");
+        output.add(from.y + "");
         output.add(to.x + "");
         output.add(to.y + "");
         output.add(color);
@@ -68,6 +56,8 @@ public class PathLine implements PathDrawable{
     @Override
     public InterpretedCommand.ArgumentType[] getArgumentTypes() {
         return new InterpretedCommand.ArgumentType[]{
+                InterpretedCommand.ArgumentType.INT,
+                InterpretedCommand.ArgumentType.INT,
                 InterpretedCommand.ArgumentType.INT,
                 InterpretedCommand.ArgumentType.INT,
                 InterpretedCommand.ArgumentType.STRING,
@@ -104,7 +94,11 @@ public class PathLine implements PathDrawable{
         this.width = width;
     }
 
-    public Position getLastPosition() {
-        return lastPosition;
+    public Position getFrom() {
+        return from;
+    }
+
+    public void setFrom(Position from) {
+        this.from = from;
     }
 }

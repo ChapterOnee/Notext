@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public interface PathDrawable {
-    void draw(Graphics2D g2, Position currentPosition, Theme Theme, double scale);
+    void draw(Graphics2D g2, Position currentPosition, Theme Theme);
 
     void fromArguments(ArrayList<String> arguments);
     ArrayList<String> toArguments();

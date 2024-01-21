@@ -1,7 +1,6 @@
 size 20 20
 
-move 5 5
-lineTo 10 0 "text1" 1
-lineTo 0 10 "text1" 1
-lineTo -10 0 "text1" 1
-lineTo 0 -10 "text1" 1
+line 5 5 15 5 "text1" 1
+line 15 5 15 15 "text1" 1
+line 15 15 5 15 "text1" 1
+line 5 15 5 5 "text1" 1

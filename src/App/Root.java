@@ -197,8 +197,7 @@ public class Root extends Window {
         editorSpacePlacement = new HorizontalPlacement(theme);
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
-        editorInFocus = addEditor();
-        addPIconEditor();
+        editorInFocus = addPIconEditor();
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));

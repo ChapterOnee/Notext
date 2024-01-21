@@ -39,7 +39,14 @@ public class PathImage extends FileInterpreter {
             }
         });
 
-        this.addCommand(new InterpretedCommand("lineTo", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.STRING, InterpretedCommand.ArgumentType.INT}) {
+        this.addCommand(new InterpretedCommand("line", new InterpretedCommand.ArgumentType[]{
+                InterpretedCommand.ArgumentType.INT,
+                InterpretedCommand.ArgumentType.INT,
+                InterpretedCommand.ArgumentType.INT,
+                InterpretedCommand.ArgumentType.INT,
+                InterpretedCommand.ArgumentType.STRING,
+                InterpretedCommand.ArgumentType.INT
+        }) {
             @Override
             public void execute(ArrayList<String> arguments) {
                 PathImage.this.oparations.add(new PathLine(arguments));
@@ -139,7 +146,7 @@ public class PathImage extends FileInterpreter {
         Position position = new Position(0, 0);
 
         for (PathDrawable operation : oparations) {
-            operation.draw(g2, position, Theme, scale);
+            operation.draw(g2, position, Theme);
         }
 
         at = new AffineTransform();

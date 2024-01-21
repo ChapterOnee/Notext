@@ -26,6 +26,13 @@ public class Position {
                 (int) (y*mult)
         );
     }
+
+    public Position getDivided(double mult){
+        return new Position(
+                (int) (x/mult),
+                (int) (y/mult)
+        );
+    }
     public void move(Position position){
         this.x += position.x;
         this.y += position.y;

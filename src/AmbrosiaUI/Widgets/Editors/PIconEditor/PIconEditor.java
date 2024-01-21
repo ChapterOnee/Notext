@@ -20,7 +20,7 @@ public class PIconEditor extends Frame implements EditorLike {
     private PathImage currentImage;
     private String currentFile;
 
-    private PathDrawable selected;
+    private Position selected;
 
     public PIconEditor(String backgroudColor, int margin) {
         super(backgroudColor, margin);
@@ -48,22 +48,33 @@ public class PIconEditor extends Frame implements EditorLike {
         );
         currentImage.draw(g2, getImagePosition());
 
+        int offsetY = 0;
         for(PathDrawable op: currentImage.getOparations()){
+            Position preview_pos = this.getContentPosition().getOffset(this.getContentWidth()-currentImage.getWidth(),offsetY);
+
+            g2.setColor(theme.getColorByName("secondary"));
+            g2.drawRect(preview_pos.x, preview_pos.y, currentImage.getWidth(), currentImage.getHeight());
+            g2.setColor(theme.getColorByName("selection"));
+            g2.fillRect(preview_pos.x, preview_pos.y, currentImage.getWidth(), currentImage.getHeight());
+            op.draw(g2,preview_pos,theme);
+
             if(op instanceof PathLine ln){
-                Position realPosition = ln.getLastPosition().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
+                Position realPosition = ln.getFrom().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
+                Position realPosition2 = ln.getTo().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
 
                 if(realPosition.getDistanceTo(lastMousePosition) < 20){
-                    g2.setColor(theme.getColorByName("selection"));
-                    g2.drawArc(realPosition.x-10, realPosition.y-10, 20,20,0,360);
+                    drawSelection(g2,realPosition);
+                }
+                else if(realPosition2.getDistanceTo(lastMousePosition) < 20){
+                    drawSelection(g2,realPosition2);
                 }
             }
+
+            offsetY += currentImage.getHeight()+5;
         }
 
-        if(selected instanceof PathLine ln){
-            Position realPosition = ln.getLastPosition().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
-
-            g2.setColor(theme.getColorByName("selection"));
-            g2.drawArc(realPosition.x-10, realPosition.y-10, 20,20,0,360);
+        if(selected != null){
+            drawSelection(g2,selected.getMultiplied(currentImage.getScale()).getOffset(getImagePosition()));
         }
     }
 
@@ -74,6 +85,11 @@ public class PIconEditor extends Frame implements EditorLike {
         );
     }
 
+    public void drawSelection(Graphics2D g2, Position pos){
+        g2.setColor(theme.getColorByName("selection"));
+        g2.drawArc(pos.x-10, pos.y-10, 20,20,0,360);
+    }
+
     @Override
     public void onMousePressed(MouseEvent e) {
         if(currentImage == null){
@@ -82,12 +98,31 @@ public class PIconEditor extends Frame implements EditorLike {
 
         for(PathDrawable op: currentImage.getOparations()){
             if(op instanceof PathLine ln){
-                Position realPosition = ln.getLastPosition().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
+                Position realPosition = ln.getFrom().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
+                Position realPosition2 = ln.getTo().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
 
                 if(realPosition.getDistanceTo(lastMousePosition) < 20){
-                    selected = ln;
+                    selected = ln.getFrom();
+                }
+                else if(realPosition2.getDistanceTo(lastMousePosition) < 20){
+                    selected = ln.getTo();
                 }
             }
+        }
+    }
+
+    @Override
+    public void onMouseClicked(MouseEvent e) {
+        selected = null;
+    }
+
+    @Override
+    public void onMouseDragged(MouseEvent e) {
+        if(selected != null){
+            Position mousePos = new Position(e.getX()-getImagePosition().x,e.getY()-getImagePosition().y).getDivided(currentImage.getScale());
+
+            selected.x = mousePos.x;
+            selected.y = mousePos.y;
         }
     }
 
