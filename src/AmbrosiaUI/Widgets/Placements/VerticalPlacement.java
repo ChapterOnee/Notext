@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class VerticalPlacement extends Placement{
-    private static class VerticalPlacementCell extends PlacementCell{
+    public static class VerticalPlacementCell extends PlacementCell{
         UnitValue height;
 
         public VerticalPlacementCell(Widget bound_element, UnitValue height) {
@@ -21,6 +21,10 @@ public class VerticalPlacement extends Placement{
 
         public UnitValue getHeight() {
             return height;
+        }
+
+        public void setHeight(UnitValue height) {
+            this.height = height;
         }
     }
 
@@ -42,10 +46,7 @@ public class VerticalPlacement extends Placement{
     }
 
     public void add(Widget w, UnitValue unit){
-        w.setPlacement(this);
-        w.setTheme(this.theme);
-        w.setPlacementIndex(this.children.size());
-        w.setParent(this.parent);
+        setupWidget(w);
         this.children.add(new VerticalPlacementCell(w, unit));
     }
 

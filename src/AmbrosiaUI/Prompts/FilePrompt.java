@@ -49,6 +49,7 @@ public class FilePrompt extends Prompt{
             }
         };
         corePlacement.add(folderView, 0,0,1,1);
+        folderView.initialize();
 
 
         win.getPanel().addMouseWheelListener(new MouseWheelListener() {

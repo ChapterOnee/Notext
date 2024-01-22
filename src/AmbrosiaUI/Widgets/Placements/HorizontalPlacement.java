@@ -7,7 +7,7 @@ import AmbrosiaUI.Widgets.Widget;
 import AmbrosiaUI.Widgets.Theme;
 
 public class HorizontalPlacement extends Placement{
-    private static class HorizontalPlacementCell extends PlacementCell{
+    public static class HorizontalPlacementCell extends PlacementCell{
         UnitValue width;
 
         public HorizontalPlacementCell(Widget bound_element, UnitValue width) {
@@ -34,10 +34,7 @@ public class HorizontalPlacement extends Placement{
     }
 
     public void add(Widget w, UnitValue unit){
-        w.setPlacement(this);
-        w.setTheme(this.theme);
-        w.setPlacementIndex(this.children.size());
-        w.setParent(this.parent);
+        setupWidget(w);
         this.children.add(new HorizontalPlacementCell(w, unit));
     }
 

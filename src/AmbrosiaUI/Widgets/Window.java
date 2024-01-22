@@ -96,6 +96,7 @@ public class Window {
             }
         };
         innerFrame.setTheme(theme);
+        innerFrame.setWindow(this);
 
         VerticalPlacement hiddenCorePlacement = new VerticalPlacement(theme) {
             @Override
@@ -106,27 +107,27 @@ public class Window {
         innerFrame.setChildrenPlacement(hiddenCorePlacement);
 
         Frame innerHeader = new Frame("secondary", 0);
+        hiddenCorePlacement.add(innerHeader, new UnitValue(30, UnitValue.Unit.PIXELS));
+
         HorizontalPlacement innerHeaderPlacement = new HorizontalPlacement(theme);
         innerHeader.setChildrenPlacement(innerHeaderPlacement);
 
         coreFrame = new Frame("primary", 0);
+        hiddenCorePlacement.add(coreFrame, new UnitValue(0, UnitValue.Unit.AUTO));
+
         coreFrame.setBorderWidth(2);
         coreFrame.setBorderColor("secondary");
         coreFrame.setBorderModifier(new GraphicsBorderModifier(false,true,true,true));
         element_in_focus = coreFrame;
 
-        hiddenCorePlacement.add(innerHeader, new UnitValue(30, UnitValue.Unit.PIXELS));
-        hiddenCorePlacement.add(coreFrame, new UnitValue(0, UnitValue.Unit.AUTO));
-
-
         coreHeader = new Frame("secondary", 0);
-        Frame innerHeaderControlls = new Frame("secondary", 0);
-        innerHeaderControlsPlacement = new HorizontalPlacement(theme);
-        innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
-
         innerHeaderPlacement.add(coreHeader, new UnitValue(0, UnitValue.Unit.AUTO));
+
+        Frame innerHeaderControlls = new Frame("secondary", 0);
         innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(150, UnitValue.Unit.PIXELS));
 
+        innerHeaderControlsPlacement = new HorizontalPlacement(theme);
+        innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
 
         panel = new JPanel(){
             @Override
@@ -197,7 +198,7 @@ public class Window {
             @Override
             public void mousePressed(MouseEvent e) {
                 update();
-                element_in_focus = innerFrame.getChildUnderMouse();
+                element_in_focus = innerFrame.getChildUnderMouse(eventStatus);
 
                 eventStatus.setMouseDown(true);
                 //editor.startSelection();

@@ -2,6 +2,7 @@ package AmbrosiaUI.Widgets;
 
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
+import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
 import AmbrosiaUI.Widgets.Placements.Placement;
 import AmbrosiaUI.Widgets.Placements.PlacementCell;
 
@@ -16,6 +17,8 @@ public abstract class Widget implements Comparable<Widget>{
     protected Placement placement;
 
     protected Widget parent;
+    protected Window window;
+
     protected Placement childrenPlacement;
 
     protected Theme theme;
@@ -34,6 +37,8 @@ public abstract class Widget implements Comparable<Widget>{
     protected Widget lockedToView;
 
     protected final boolean DEBUG = false;
+
+    protected Size minimalSize = new Size(0,0);
 
     protected static final Canvas fontsizecanvas = new Canvas();
 
@@ -99,10 +104,17 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public int getMinWidth(){
-        return 0;
+        return  minimalSize.width;
     }
     public int getMinHeight(){
-        return 0;
+        return  minimalSize.height;
+    }
+
+    public void setMinWidth(int width){
+        minimalSize.width = width;
+    }
+    public void setMinHeight(int height){
+        minimalSize.height = height;
     }
 
     public int getX(){
@@ -150,8 +162,22 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public void setChildrenPlacement(Placement childrenPlacement) {
+        if(window == null){
+            Logger.printError("Place this element: " + getClass().getName() + ", before adding a children placement to it.");
+            return;
+        }
+
         this.childrenPlacement = childrenPlacement;
         this.childrenPlacement.setParent(this);
+        this.childrenPlacement.setWindow(window);
+    }
+
+    public Window getWindow() {
+        return window;
+    }
+
+    public void setWindow(Window window) {
+        this.window = window;
     }
 
     public Theme getTheme() {
@@ -188,50 +214,54 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public void fullUpdate(EventStatus eventStatus){
-        this.mouseOver = false;
-        this.getChildUnderMouse().mouseOver = true;
+        for(Widget w: this.getAllChildren()) {
+            if(w.getMouseHoverRectangles().size() > 1){
+                boolean found = false;
+
+                for(Rectangle rect: w.getMouseHoverRectangles()){
+                    if(eventStatus.getMousePosition().inRectangle(rect)){
+                        found = true;
+                        break;
+                    }
+                }
+
+                if(!found){
+                    w.mouseOver = false;
+                }
+            }
+            else {
+                w.mouseOver = false;
+            }
+        }
+        this.getChildUnderMouse(eventStatus).mouseOver = true;
         this.update(eventStatus);
     }
 
     public void update(EventStatus eventStatus){
-        boolean found = false;
-
-        for(Rectangle rect: this.getMouseHoverRectangles()){
-            if(eventStatus.getMousePosition().inRectangle(rect)){
-                found = true;
-                break;
-            }
-        }
-
-        if(lockedToView == null) {
-            mouseOver = found;
-        }
-        else{
-            mouseOver = found && eventStatus.getMousePosition().inRectangle(lockedToView.getBoundingRect());
-        }
         lastMousePosition = eventStatus.getMousePosition();
 
         for(Widget w: this.getChildren()){
             w.update(eventStatus);
-
-            if(w.mouseOver){
-                this.mouseOver = false;
-            }
-        }
-
-        if(disabled){
-            mouseOver = false;
         }
     }
 
-    public Widget getChildUnderMouse(){
+    public Widget getChildUnderMouse(EventStatus eventStatus){
         Widget output = this;
 
         ArrayList<Widget> children = getAllChildren();
         ArrayList<Widget> childrenUnderCursor = new ArrayList<>();
 
         for(Widget child: children){
-            if(child.mouseOver){
+            boolean found = false;
+
+            for(Rectangle rect: child.getMouseHoverRectangles()){
+                if(eventStatus.getMousePosition().inRectangle(rect)){
+                    found = true;
+                    break;
+                }
+            }
+
+            if(found) {
                 childrenUnderCursor.add(child);
             }
         }
@@ -244,6 +274,8 @@ public abstract class Widget implements Comparable<Widget>{
 
         return output;
     }
+
+
 
     public Rectangle getBoundingRect(){
         return new Rectangle(this.getPosition(),this.getWidth(),this.getHeight());

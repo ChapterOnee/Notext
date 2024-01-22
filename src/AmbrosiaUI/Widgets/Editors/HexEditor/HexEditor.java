@@ -130,13 +130,6 @@ public class HexEditor extends Frame implements EditorLike {
         g2.setTransform(at2);
     }
 
-    @Override
-    public void update(EventStatus eventStatus){
-        super.update(eventStatus);
-        if(mouseOver){
-            getByteUnderCursor();
-        }
-    }
 
     public int getFullByteHeight(){
         return (int)Math.floor(((double)contents.length/(double)bytesPerRow)*(double)getLineHeight())+getLineHeight();

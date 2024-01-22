@@ -13,6 +13,7 @@ public abstract class Placement {
     protected Size rootSize;
 
     protected Widget parent;
+    protected Window window;
 
     protected ArrayList<PlacementCell> children = new ArrayList<>();
 
@@ -42,6 +43,14 @@ public abstract class Placement {
         }
         this.setRootSize(new_size);
         onResize();
+    }
+
+    public void setupWidget(Widget w){
+        w.setPlacement(this);
+        w.setTheme(this.theme);
+        w.setPlacementIndex(this.children.size());
+        w.setParent(this.parent);
+        w.setWindow(window);
     }
 
     public void update(){
@@ -104,6 +113,14 @@ public abstract class Placement {
 
     public void drawDebug(Graphics2D g2){
 
+    }
+
+    public Window getWindow() {
+        return window;
+    }
+
+    public void setWindow(Window window) {
+        this.window = window;
     }
 
     public void setItemMargin(int itemMargin) {

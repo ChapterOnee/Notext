@@ -16,7 +16,7 @@ public class GridPlacement extends Placement{
     private ArrayList<Rectangle> calculatedRows = new ArrayList<>();
     private ArrayList<Rectangle> calculatedColumns = new ArrayList<>();
 
-    private class GridPlacementCell extends PlacementCell{
+    public class GridPlacementCell extends PlacementCell{
         private final int column;
         private final int row;
         private final int columnSpan;
@@ -125,10 +125,7 @@ public class GridPlacement extends Placement{
     }
 
     public void add(Widget w, int row, int column, int rowspan, int columnspan){
-        w.setPlacement(this);
-        w.setTheme(this.theme);
-        w.setPlacementIndex(this.children.size());
-        w.setParent(this.parent);
+        setupWidget(w);
         this.children.add(new GridPlacementCell(w, row, column, rowspan, columnspan));
     }
 

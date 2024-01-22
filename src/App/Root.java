@@ -58,6 +58,9 @@ public class Root extends Window {
                 Root.this.update();
             }
         };
+        placement.add(fw, 0,0,1,1);
+        fw.initialize();
+
         fw.addAllowed(".*");
         fw.setPath("C:\\Users\\filah\\IdeaProjects\\TextEditor");
 
@@ -116,7 +119,7 @@ public class Root extends Window {
                     }
                 };
                 f.setPath(fw.getPath());
-                f.addAllowed(editorInFocus.getAllowedFiles());
+                f.addAllowed(new TextEditor().getAllowedFiles());
                 f.ask();
             }
         };
@@ -134,11 +137,29 @@ public class Root extends Window {
                     }
                 };
                 f.setPath(fw.getPath());
-                f.addAllowed(editorInFocus.getAllowedFiles());
+                f.addAllowed(new HexEditor().getAllowedFiles());
                 f.ask();
             }
         };
         open_file_in_new_editor_hex.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
+        Button open_file_in_new_editor_icon = new Button("In New Icon Editor", "small", 0,0,4) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                FilePrompt f = new FilePrompt(theme){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        editorInFocus = addPIconEditor();
+                        editorInFocus.openFile(result.getContent());
+                        Root.this.update();
+                    }
+                };
+                f.setPath(fw.getPath());
+                f.addAllowed(new PIconEditor().getAllowedFiles());
+                f.ask();
+            }
+        };
+        open_file_in_new_editor_icon.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
         save_file.setDisabled(true);
         save_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
@@ -188,6 +209,7 @@ public class Root extends Window {
         openMenu.addMenuItem(new DropdownMenuItem(open_file));
         openMenu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor));
         openMenu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor_hex));
+        openMenu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor_icon));
 
         scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
 
@@ -195,6 +217,8 @@ public class Root extends Window {
         Frame editorSpace = new Frame("primary", 0);
 
         editorSpacePlacement = new HorizontalPlacement(theme);
+
+        placement.add(editorSpace,0,1,1,1);
         editorSpace.setChildrenPlacement(editorSpacePlacement);
 
         editorInFocus = addEditor();
@@ -202,9 +226,7 @@ public class Root extends Window {
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
-        placement.add(editorSpace,0,1,1,1);
         placement.add(scrollbar, 0, 2, 1, 1);
-        placement.add(fw, 0,0,1,1);
         //core.resize(Size.fromDimension(this.getSize()));
 
         panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://

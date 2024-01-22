@@ -5,7 +5,7 @@ import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Widgets.Widget;
 
 public class AbsolutePlacement extends Placement {
-    private static class AbsolutePlacementCell extends PlacementCell {
+    public static class AbsolutePlacementCell extends PlacementCell {
         private final Position position;
         private final Size size;
         public AbsolutePlacementCell(Widget bound_element, Position position, Size size) {
@@ -27,10 +27,7 @@ public class AbsolutePlacement extends Placement {
         this.rootPosition = root_position;
     }
     public void add(Widget w, Position pos, Size size){
-        w.setPlacement(this);
-        w.setTheme(this.theme);
-        w.setPlacementIndex(this.children.size());
-        w.setParent(this.parent);
+        setupWidget(w);
         this.children.add(new AbsolutePlacementCell(w, pos, size));
     }
 

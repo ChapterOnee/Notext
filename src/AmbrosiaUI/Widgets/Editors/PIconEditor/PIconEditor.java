@@ -42,6 +42,14 @@ public class PIconEditor extends Frame implements EditorLike {
         setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
     }
 
+    public PIconEditor() {
+        super("primary", 0);
+
+        setBorderColor("secondary");
+        setBorderWidth(2);
+        setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
+    }
+
     @Override
     public void drawSelf(Graphics2D g2) {
         super.drawSelf(g2);

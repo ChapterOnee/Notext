@@ -80,30 +80,6 @@ public class DropdownMenu extends Label {
     }
 
     @Override
-    public void update(EventStatus eventStatus) {
-        boolean found = false;
-
-        for(Rectangle rect: this.getMouseHoverRectangles()){
-            if(eventStatus.getMousePosition().inRectangle(rect)){
-                found = true;
-                break;
-            }
-        }
-
-        mouseOver = found;
-
-        lastMousePosition = eventStatus.getMousePosition();
-
-        for(Widget w: this.getChildren()){
-            w.update(eventStatus);
-        }
-
-        if(disabled){
-            mouseOver = false;
-        }
-    }
-
-    @Override
     public ArrayList<Rectangle> getMouseHoverRectangles() {
         ArrayList<Rectangle> rects = super.getMouseHoverRectangles();
         if(mouseOver){
