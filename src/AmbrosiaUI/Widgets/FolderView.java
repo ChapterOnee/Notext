@@ -37,15 +37,7 @@ public class FolderView extends Frame {
     protected static final PathImage pyFileImage = new PathImage("icons/pyfile.pimg");
 
     protected static final PathImage expandImage = new PathImage("icons/expand.pimg");
-    protected static final PathImage expandedImage = new PathImage("icons/expanded.pimg") {
-        @Override
-        public void draw(Graphics2D g2, Position startPosition) {
-            super.draw(g2, startPosition);
-
-            //g2.setColor(new Color(255,255,0));
-            //g2.fillRect(startPosition.x,startPosition.y ,10,10);
-        }
-    };
+    protected static final PathImage expandedImage = new PathImage("icons/expanded.pimg");
 
 
     public void initialize() {
@@ -181,11 +173,13 @@ public class FolderView extends Frame {
                                 ArrayList<File> data = getAllFilesInDirectory(file.getAbsolutePath());
                                 addFilesToPlacement(data,contentPlacement);
 
+                                System.out.println(expandedImage);
                                 this.setImage(expandedImage);
 
                                 expanded = true;
                             }
                             else{
+                                System.out.println(expandImage);
                                 this.setImage(expandImage);
 
                                 tempPlacement.remove(content);

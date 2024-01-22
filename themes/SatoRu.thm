@@ -1,0 +1,27 @@
+color primary 39 37 76
+color secondary 242 236 248
+
+color accent 69 176 210
+color accentText 255 255 255
+color accent2 225 58 75
+
+color text1 0 0 0
+color text1_disabled 80 80 80
+color text2 150 150 150
+
+color selection 50 50 200
+
+color keywords 200 200 100
+color strings 100 100 100
+color comment 50 50 50
+color numbers 150 150 200
+
+load_font "fonts/RobotoMono/static/RobotoMono-Regular.ttf" roboto
+
+font normal Monospaced 14
+font small Monospaced 12
+font big Monospaced 24
+
+font normal roboto 14
+font small roboto 12
+font big roboto 24

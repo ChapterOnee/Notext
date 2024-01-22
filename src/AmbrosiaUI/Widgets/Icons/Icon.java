@@ -55,5 +55,6 @@ public class Icon extends Frame {
 
     public void setImage(PathImage image) {
         this.image = image;
+        this.image.setTheme(theme);
     }
 }

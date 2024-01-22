@@ -26,6 +26,8 @@ public class CreateFilePrompt extends FilePrompt{
         corePlacement.setRowTemplateFromString("auto 40px");
 
         bottomFrame = new Frame("primary", 1);
+        corePlacement.add(bottomFrame, 1,0,1,1);
+
         bottomFramePlacement = new GridPlacement(theme);
         bottomFramePlacement.setRowTemplateFromString("auto");
         bottomFramePlacement.setColumnTemplateFromString("auto 100px");
@@ -43,6 +45,8 @@ public class CreateFilePrompt extends FilePrompt{
 
 
         Frame bottomPathFrame = new Frame("primary",0);
+        bottomFramePlacement.add(bottomPathFrame, 0, 0,1,1);
+
         HorizontalPlacement bottomPathPlacement = new HorizontalPlacement(theme);
         bottomPathFrame.setChildrenPlacement(bottomPathPlacement);
 
@@ -65,9 +69,6 @@ public class CreateFilePrompt extends FilePrompt{
         bottomPathPlacement.add(filenameInput,new UnitValue(0, UnitValue.Unit.FIT));
 
         bottomFramePlacement.add(submitButton, 0, 1,1,1);
-        bottomFramePlacement.add(bottomPathFrame, 0, 0,1,1);
-
-        corePlacement.add(bottomFrame, 1,0,1,1);
 
         win.update();
     }
