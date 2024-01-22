@@ -62,6 +62,9 @@ public class PIconEditor extends Frame implements EditorLike {
         int imageWidth = (int)((currentImage.getWidth())*currentImage.getScale());
         int imageHeight = (int)((currentImage.getHeight())*currentImage.getScale());
 
+        //
+        // Draw image grid background
+        //
         g2.setColor(theme.getColorByName("secondary"));
         g2.drawRect(
                 getImagePosition().x,
@@ -71,6 +74,34 @@ public class PIconEditor extends Frame implements EditorLike {
         );
         g2.drawLine(getImagePosition().x + imageWidth/2, getImagePosition().y, getImagePosition().x + imageWidth/2, getImagePosition().y+imageHeight);
         g2.drawLine(getImagePosition().x, getImagePosition().y + imageHeight/2, getImagePosition().x+imageWidth, getImagePosition().y+ imageWidth/2);
+
+        //
+        //  Draw up right hint
+        //
+        g2.setColor(theme.getColorByName("secondary"));
+        g2.fillRect(
+                this.getContentX(),
+                this.getContentY(),
+                200,
+                100
+        );
+        g2.setColor(theme.getColorByName("text1"));
+        AdvancedGraphics.drawText(g2,
+                new Rectangle(this.getContentX()+10,
+                this.getContentY(),
+                200,
+                20),
+                "Real size:" + currentImage.getWidth() + " x " + currentImage.getHeight(),
+                AdvancedGraphics.Side.LEFT
+        );
+        AdvancedGraphics.drawText(g2,
+                new Rectangle(this.getContentX()+10,
+                this.getContentY()+20,
+                200,
+                20),
+                "Scaled ("+currentImage.getScale()+"): " + imageWidth + "x" + imageHeight,
+                AdvancedGraphics.Side.LEFT
+        );
 
         currentImage.draw(g2, getImagePosition());
 
@@ -84,43 +115,12 @@ public class PIconEditor extends Frame implements EditorLike {
             g2.fillRect(preview_pos.x, preview_pos.y, currentImage.getWidth(), currentImage.getHeight());
             op.draw(g2,preview_pos,theme);
 
-            if(op instanceof PathLine ln){
-                Position realPosition = ln.getFrom().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
-                Position realPosition2 = ln.getTo().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
-
-                if(realPosition.getDistanceTo(lastMousePosition) < 20){
-                    drawSelection(g2,realPosition);
-                }
-                else if(realPosition2.getDistanceTo(lastMousePosition) < 20){
-                    drawSelection(g2,realPosition2);
+            for(Position pos: op.getPositions()){
+                if(getRealPosition(pos).getDistanceTo(lastMousePosition) < 20){
+                    drawSelection(g2, getRealPosition(pos));
                 }
 
-                drawGrabPoint(g2,realPosition);
-                drawGrabPoint(g2,realPosition2);
-            }
-            else if (op instanceof PathFillPoly ln){
-                Position realPosition = ln.getPos1().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
-                Position realPosition2 = ln.getPos2().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
-                Position realPosition3 = ln.getPos3().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
-                Position realPosition4 = ln.getPos4().getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
-
-                if(realPosition.getDistanceTo(lastMousePosition) < 20){
-                    drawSelection(g2,realPosition);
-                }
-                else if(realPosition2.getDistanceTo(lastMousePosition) < 20){
-                    drawSelection(g2,realPosition2);
-                }
-                else if(realPosition3.getDistanceTo(lastMousePosition) < 20){
-                    drawSelection(g2,realPosition3);
-                }
-                else if(realPosition4.getDistanceTo(lastMousePosition) < 20){
-                    drawSelection(g2,realPosition4);
-                }
-
-                drawGrabPoint(g2,realPosition);
-                drawGrabPoint(g2,realPosition2);
-                drawGrabPoint(g2,realPosition3);
-                drawGrabPoint(g2,realPosition4);
+                drawGrabPoint(g2, getRealPosition(pos));
             }
 
             offsetY += currentImage.getHeight()+5;
@@ -212,6 +212,10 @@ public class PIconEditor extends Frame implements EditorLike {
         if(keyEvent.getKeyCode() == 16){
             shiftDown = false;
         }
+    }
+
+    public Position getRealPosition(Position pos){
+        return pos.getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
     }
 
     public boolean checkPositionForSelection(Position pos){
@@ -317,6 +321,8 @@ public class PIconEditor extends Frame implements EditorLike {
         setCurrentFile(filename);
         currentImage = new PathImage(filename);
         currentImage.setTheme(theme);
+
+        currentImage.setScale((double)(this.getContentHeight()-100)/currentImage.getHeight());
     }
 
     @Override

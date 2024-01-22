@@ -25,10 +25,16 @@ public class FolderView extends Frame {
     protected Scrollbar filesDisplayScrollbar;
     protected VerticalPlacement filesDisplayPlacement;
 
-    protected int itemHeight = 30;
+    protected int itemHeight = 25;
     public FolderView(Theme theme) {
         super("primary",0);
         setTheme(theme);
+    }
+
+    public FolderView(Theme theme, int itemHeight){
+        super("primary",0);
+        setTheme(theme);
+        this.itemHeight = itemHeight;
     }
 
     protected static final PathImage dirImage = new PathImage("icons/folder.pimg");
@@ -145,8 +151,7 @@ public class FolderView extends Frame {
                         }
                     };
 
-                    dirImage.setScale((double) itemHeight / dirImage.getHeight());
-                    icon.setImage(dirImage);
+                    icon.setImage(dirImage.getScaled((double) itemHeight / dirImage.getHeight()));
 
                     expand = new Icon("primary", "accent", expandImage){
                         private boolean expanded = false;
@@ -173,7 +178,6 @@ public class FolderView extends Frame {
                                 ArrayList<File> data = getAllFilesInDirectory(file.getAbsolutePath());
                                 addFilesToPlacement(data,contentPlacement);
 
-                                System.out.println(expandedImage);
                                 this.setImage(expandedImage);
 
                                 expanded = true;
@@ -208,9 +212,8 @@ public class FolderView extends Frame {
                     if (name.matches(".*\\.py")) {
                         finalImage = pyFileImage;
                     }
-                    finalImage.setScale((double) itemHeight / fileImage.getHeight());
 
-                    icon.setImage(finalImage);
+                    icon.setImage(finalImage.getScaled((double) itemHeight / fileImage.getHeight()));
                 }
 
                 icon.setLockedToView(filesDisplayFrame);

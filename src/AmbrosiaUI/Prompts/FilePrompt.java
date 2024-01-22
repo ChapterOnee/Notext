@@ -35,7 +35,7 @@ public class FilePrompt extends Prompt{
 
         win.getCoreFrame().setChildrenPlacement(corePlacement);
 
-        folderView = new FolderView(win.getCoreFrame().getTheme()) {
+        folderView = new FolderView(win.getCoreFrame().getTheme(), 40) {
             @Override
             protected void fileSelected(String file) {
                 FilePrompt.this.fileSelected(file);

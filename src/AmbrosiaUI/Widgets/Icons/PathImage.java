@@ -31,6 +31,13 @@ public class PathImage extends FileInterpreter {
         loadFromFile(path);
     }
 
+    public PathImage(ArrayList<PathDrawable> oparations, Size size, AmbrosiaUI.Widgets.Theme theme, double scale) {
+        this.oparations = oparations;
+        this.size = size;
+        Theme = theme;
+        this.scale = scale;
+    }
+
     private void initFileloaderCommands() {
 
         this.addCommand(new InterpretedCommand("line", new InterpretedCommand.ArgumentType[]{
@@ -147,6 +154,10 @@ public class PathImage extends FileInterpreter {
         //at.translate(-scrollController.getScrollX(), -scrollController.getScrollY());
 
         g2.setTransform(at);
+    }
+
+    public PathImage getScaled(double scale){
+        return new PathImage(oparations,size,this.getTheme(),scale);
     }
 
     public void setScale(double scale) {
