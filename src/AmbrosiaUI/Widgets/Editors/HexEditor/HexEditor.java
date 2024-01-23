@@ -69,8 +69,6 @@ public class HexEditor extends Frame implements EditorLike {
                 AdvancedGraphics.BORDER_FULL
         );
 
-
-
         int currentX, currentY, realCurrentX, realCurrentY;
 
         byte[] fullrow = new byte[bytesPerRow];

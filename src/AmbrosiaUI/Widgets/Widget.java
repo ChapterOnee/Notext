@@ -233,7 +233,9 @@ public abstract class Widget implements Comparable<Widget>{
                 w.mouseOver = false;
             }
         }
-        this.getChildUnderMouse(eventStatus).mouseOver = true;
+        Widget underMouse = this.getChildUnderMouse(eventStatus);
+
+        underMouse.mouseOver = true;
         this.update(eventStatus);
     }
 
@@ -261,7 +263,7 @@ public abstract class Widget implements Comparable<Widget>{
                 }
             }
 
-            if(found) {
+            if(found && !child.isDisabled()) {
                 childrenUnderCursor.add(child);
             }
         }

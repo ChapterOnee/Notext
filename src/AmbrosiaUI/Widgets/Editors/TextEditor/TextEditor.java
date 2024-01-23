@@ -396,7 +396,7 @@ public class TextEditor extends Frame implements EditorLike {
 
     @Override
     public String getAllowedFiles() {
-        return ".*\\.(txt|py|java|json|thm|snx)";
+        return ".*\\.(txt|py|java|json|thm|snx|pimg)";
     }
 
     public void onCurrentFileChanged(){
@@ -574,6 +574,10 @@ public class TextEditor extends Frame implements EditorLike {
     public void onPasted(String pastedData) {
         this.getText().storeState();
         this.getText().blockStoring();
+
+        if(!activeSelections.isEmpty()){
+            text.removeSelection(activeSelections.get(0));
+        }
 
         String[] formated_data = pastedData.split("\n");
 

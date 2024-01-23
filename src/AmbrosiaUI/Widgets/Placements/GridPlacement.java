@@ -157,4 +157,12 @@ public class GridPlacement extends Placement{
             );
         }
     }
+
+    public ArrayList<UnitValue> getRowTemplate() {
+        return rowTemplate;
+    }
+
+    public ArrayList<UnitValue> getColumnTemplate() {
+        return columnTemplate;
+    }
 }

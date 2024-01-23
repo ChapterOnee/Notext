@@ -19,6 +19,7 @@ import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Editors.EditorLike;
 import AmbrosiaUI.Widgets.Editors.TextEditor.TextEditor;
+import AmbrosiaUI.Widgets.TabbedFrame.TabbedFrame;
 import AmbrosiaUI.Widgets.Window;
 
 import javax.swing.*;
@@ -28,19 +29,21 @@ import java.io.File;
 public class Root extends Window {
     private EditorLike editorInFocus;
 
-    private final HorizontalPlacement editorSpacePlacement;
+    private final TabbedFrame editorSpace;
     private final Scrollbar scrollbar;
 
     private final Button save_file;
 
     private Window settingsWindow;
+
+    private GridPlacement mainPlacement;
     public Root() {
         super();
-        GridPlacement placement = new GridPlacement(theme);
-        placement.setColumnTemplateFromString("20% auto 20px");
-        placement.setRowTemplateFromString("auto");
+        mainPlacement = new GridPlacement(theme);
+        mainPlacement.setColumnTemplateFromString("20% auto 20px");
+        mainPlacement.setRowTemplateFromString("auto");
 
-        coreFrame.setChildrenPlacement(placement);
+        coreFrame.setChildrenPlacement(mainPlacement);
 
         HorizontalPlacement header_placement = new HorizontalPlacement(theme);
         coreHeader.setChildrenPlacement(header_placement);
@@ -58,7 +61,7 @@ public class Root extends Window {
                 Root.this.update();
             }
         };
-        placement.add(fw, 0,0,1,1);
+        mainPlacement.add(fw, 0,0,1,1);
         fw.initialize();
 
         fw.addAllowed(".*");
@@ -214,19 +217,16 @@ public class Root extends Window {
         scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
 
 
-        Frame editorSpace = new Frame("primary", 0);
+        editorSpace = new TabbedFrame("primary", 0);
+        mainPlacement.add(editorSpace,0,1,1,1);
+        editorSpace.initialize();
 
-        editorSpacePlacement = new HorizontalPlacement(theme);
-
-        placement.add(editorSpace,0,1,1,1);
-        editorSpace.setChildrenPlacement(editorSpacePlacement);
-
-        editorInFocus = addPIconEditor();
+        editorInFocus = addEditor();
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
-        placement.add(scrollbar, 0, 2, 1, 1);
+        mainPlacement.add(scrollbar, 0, 2, 1, 1);
         //core.resize(Size.fromDimension(this.getSize()));
 
         panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
@@ -251,8 +251,10 @@ public class Root extends Window {
                 save_file.setDisabled(!editorInFocus.hasFile());
             }
         };
-
-        editorSpacePlacement.add(editor, new UnitValue(0, UnitValue.Unit.AUTO));
+        Frame tab = editorSpace.addTab("AAAAAAAAA");
+        HorizontalPlacement temp = new HorizontalPlacement(theme);
+        tab.setChildrenPlacement(temp);
+        temp.add(editor,new UnitValue(0, UnitValue.Unit.AUTO));
 
         return editor;
     }
@@ -273,7 +275,10 @@ public class Root extends Window {
             }
         };
 
-        editorSpacePlacement.add(editor, new UnitValue(0, UnitValue.Unit.AUTO));
+        Frame tab = editorSpace.addTab("BBBBBBBB");
+        HorizontalPlacement temp = new HorizontalPlacement(theme);
+        tab.setChildrenPlacement(temp);
+        temp.add(editor,new UnitValue(0, UnitValue.Unit.AUTO));
 
         return editor;
     }
@@ -294,7 +299,10 @@ public class Root extends Window {
             }
         };
 
-        editorSpacePlacement.add(editor, new UnitValue(0, UnitValue.Unit.AUTO));
+        Frame tab = editorSpace.addTab("VVVVVVV");
+        HorizontalPlacement temp = new HorizontalPlacement(theme);
+        tab.setChildrenPlacement(temp);
+        temp.add(editor,new UnitValue(0, UnitValue.Unit.AUTO));
 
         return editor;
     }
@@ -308,8 +316,8 @@ public class Root extends Window {
         };
 
         GridPlacement grid = new GridPlacement(theme);
-        grid.setColumnTemplateFromString("100px auto");
-        grid.setRowTemplateFromString("40px auto");
+        grid.setColumnTemplateFromString("200px 100px auto");
+        grid.setRowTemplateFromString("40px 40px auto");
 
         SelectBox selection = new SelectBox("normal", 0,2,4);
         selection.setItemSize(new Size(200,40));
@@ -344,9 +352,39 @@ public class Root extends Window {
             }
         }
 
+        SelectBox selection2 = new SelectBox("normal", 0,2,4);
+        selection2.setItemSize(new Size(200,40));
+
+        for(int i = 0;i < 9;i++){
+            selection2.addOption(new SelectBoxOption((10+(i*5))+"%"){
+                @Override
+                public void onSelected() {
+                    mainPlacement.getColumnTemplate().get(0).setValue((10+(index*5)));
+                    update();
+                }
+            });
+        }
+        selection2.setSelected(2);
+
         settingsWindow.getCoreFrame().setChildrenPlacement(grid);
 
-        grid.add(selection,0,0,1,1);
+        Label themeLabel = new Label("Theme:", "normal", 0,0,4);
+        themeLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
+        themeLabel.setForegroundColor("text2");
+        themeLabel.setBackgroudColor("primary");
+        themeLabel.setHoverEffectDisabled(true);
+
+        Label sidebarWidthLabel = new Label("File sidebar width:", "normal", 0,0,4);
+        sidebarWidthLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
+        sidebarWidthLabel.setForegroundColor("text2");
+        sidebarWidthLabel.setBackgroudColor("primary");
+        sidebarWidthLabel.setHoverEffectDisabled(true);
+
+        grid.add(themeLabel,0,0,1,1);
+        grid.add(selection,0,1,1,1);
+
+        grid.add(sidebarWidthLabel,1,0,1,1);
+        grid.add(selection2,1,1,1,1);
     }
 
     public void bindEvents(){
@@ -374,12 +412,12 @@ public class Root extends Window {
         Keybind closeEditor = new Keybind("CloseEditor", panel, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK)) {
             @Override
             public void activated(ActionEvent e) {
-                if(editorSpacePlacement.getChildren().size() < 2){
+                /*if(editorSpacePlacement.getChildren().size() < 2){
                     return;
                 }
                 editorSpacePlacement.remove((Widget) editorInFocus);
                 editorInFocus = (EditorLike) editorSpacePlacement.getChildren().get(0).getBoundElement();
-                scrollbar.setController(editorInFocus.getScrollController());
+                scrollbar.setController(editorInFocus.getScrollController());*/
             }
         };
 

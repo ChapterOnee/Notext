@@ -22,6 +22,7 @@ public class SelectBox extends Label {
     }
 
     public void addOption(SelectBoxOption option){
+        option.setIndex(options.size());
         options.add(option);
     }
 
@@ -30,6 +31,7 @@ public class SelectBox extends Label {
         super.drawSelf(g2);
 
         if(mouseOver){
+            setzIndex(9999);
             g2.setClip(null);
             g2.setColor(theme.getColorByName(this.getBackgroudColor()));
 
@@ -59,6 +61,9 @@ public class SelectBox extends Label {
             }
             //g2.fillRect(this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*items.size());
         }
+        else {
+            setzIndex(1);
+        }
     }
 
     public Rectangle getRectangleForOption(int index){
@@ -87,6 +92,9 @@ public class SelectBox extends Label {
     public SelectBoxOption getSelected(){
         if(options.isEmpty()){
             return new SelectBoxOption("");
+        }
+        if(selected == -1){
+            selected = 0;
         }
         return options.get(selected);
     }

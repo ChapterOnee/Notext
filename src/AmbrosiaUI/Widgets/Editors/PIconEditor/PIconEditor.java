@@ -74,7 +74,7 @@ public class PIconEditor extends Frame implements EditorLike {
                 imageHeight
         );
         g2.drawLine(getImagePosition().x + imageWidth/2, getImagePosition().y, getImagePosition().x + imageWidth/2, getImagePosition().y+imageHeight);
-        g2.drawLine(getImagePosition().x, getImagePosition().y + imageHeight/2, getImagePosition().x+imageWidth, getImagePosition().y+ imageWidth/2);
+        g2.drawLine(getImagePosition().x, getImagePosition().y + imageHeight/2, getImagePosition().x+imageWidth, getImagePosition().y+ imageHeight/2);
 
         //
         //  Draw up right hint
@@ -129,7 +129,7 @@ public class PIconEditor extends Frame implements EditorLike {
             int i = 0;
             for (Position pos: op.getPositions()){
                 if(selected.contains(pos)){
-                    g2.fillRect(preview_pos.x+segment*i, preview_pos.y, segment, 10);
+                    g2.fillRect(preview_pos.x+segment*i, preview_pos.y, segment, currentImage.getHeight()/10);
                 }
                 i++;
             }
@@ -370,6 +370,10 @@ public class PIconEditor extends Frame implements EditorLike {
     private final Position lastMouseDragged = new Position(0,0);
     @Override
     public void onMouseDragged(MouseEvent e) {
+        if(currentImage == null){
+            return;
+        }
+
         if(selectionRectangle != null){
             selectionRectangle.setWidth(e.getX() - selectionRectangle.getX());
             selectionRectangle.setHeight(e.getY() - selectionRectangle.getY());
@@ -390,6 +394,10 @@ public class PIconEditor extends Frame implements EditorLike {
 
     @Override
     public void onMouseReleased(MouseEvent e) {
+        if(currentImage == null){
+            return;
+        }
+
         if(selectionRectangle != null){
             Position realPosition;
 
@@ -444,6 +452,10 @@ public class PIconEditor extends Frame implements EditorLike {
 
     @Override
     public void openFile(String filename) {
+        if(!filename.matches(getAllowedFiles())){
+            return;
+        }
+
         setCurrentFile(filename);
         currentImage = new PathImage(filename);
         currentImage.setTheme(theme);

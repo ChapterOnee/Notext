@@ -1,8 +1,8 @@
 size 40 40
 fillPoly4 7 16 16 16 16 24 7 24 accent
 fillPoly4 25 21 16 20 16 7 24 7 accent
-fillPoly4 24 24 33 24 33 16 24 16 selection
-fillPoly4 16 33 24 33 24 20 16 20 selection
+fillPoly4 24 24 33 24 33 16 24 16 secondary
+fillPoly4 16 33 24 33 24 20 16 20 secondary
 line 24 33 24 24 text2 1
 line 16 33 16 24 text2 1
 line 16 20 24 20 text2 1
