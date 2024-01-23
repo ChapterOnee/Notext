@@ -20,6 +20,7 @@ import java.awt.event.MouseWheelEvent;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PIconEditor extends Frame implements EditorLike {
 
@@ -78,61 +79,116 @@ public class PIconEditor extends Frame implements EditorLike {
         //
         //  Draw up right hint
         //
+
+
+        ArrayList<String> hintText = new ArrayList<>();
+        hintText.add("Real size:" + currentImage.getWidth() + " x " + currentImage.getHeight());
+
+        int lineHeight = 20;
+        int maxWidth = 0;
+        for (String text: hintText){
+            maxWidth = Math.max(maxWidth, getStringWidth(text, theme.getFontByName("normal"))+20);
+        }
+
         g2.setColor(theme.getColorByName("secondary"));
         g2.fillRect(
                 this.getContentX(),
                 this.getContentY(),
-                200,
-                100
+                maxWidth,
+                hintText.size()*lineHeight+20
         );
+
         g2.setColor(theme.getColorByName("text1"));
-        AdvancedGraphics.drawText(g2,
-                new Rectangle(this.getContentX()+10,
-                this.getContentY(),
-                200,
-                20),
-                "Real size:" + currentImage.getWidth() + " x " + currentImage.getHeight(),
-                AdvancedGraphics.Side.LEFT
-        );
-        AdvancedGraphics.drawText(g2,
-                new Rectangle(this.getContentX()+10,
-                this.getContentY()+20,
-                200,
-                20),
-                "Scaled ("+currentImage.getScale()+"): " + imageWidth + "x" + imageHeight,
-                AdvancedGraphics.Side.LEFT
-        );
+        int y = 0;
+        for(String text: hintText){
+            AdvancedGraphics.drawText(g2,
+                    new Rectangle(this.getContentX()+10,
+                            this.getContentY()+y,
+                            200,
+                            lineHeight),
+                    text,
+                    AdvancedGraphics.Side.LEFT
+            );
+            y += lineHeight;
+        }
 
         currentImage.draw(g2, getImagePosition());
 
+
         int offsetY = 0;
+        int textWidth = 150;
+        int previewWidth = currentImage.getWidth() + textWidth;
         for(PathDrawable op: currentImage.getOparations()){
-            Position preview_pos = this.getContentPosition().getOffset(this.getContentWidth()-currentImage.getWidth(),offsetY-componentsScroll.getScrollY());
+            Position preview_pos = this.getContentPosition().getOffset(this.getContentWidth()-previewWidth,offsetY-componentsScroll.getScrollY());
 
             g2.setColor(theme.getColorByName("secondary"));
-            g2.drawRect(preview_pos.x, preview_pos.y, currentImage.getWidth(), currentImage.getHeight());
-            g2.setColor(theme.getColorByName("selection"));
-            g2.fillRect(preview_pos.x, preview_pos.y, currentImage.getWidth(), currentImage.getHeight());
-            op.draw(g2,preview_pos,theme);
+            g2.fillRect(preview_pos.x, preview_pos.y, previewWidth, currentImage.getHeight());
 
-            for(Position pos: op.getPositions()){
-                if(getRealPosition(pos).getDistanceTo(lastMousePosition) < 20){
-                    drawSelection(g2, getRealPosition(pos));
+            g2.setColor(theme.getColorByName("accent"));
+            int segment = textWidth/op.getPositions().size();
+            int i = 0;
+            for (Position pos: op.getPositions()){
+                if(selected.contains(pos)){
+                    g2.fillRect(preview_pos.x+segment*i, preview_pos.y, segment, 10);
                 }
-
-                drawGrabPoint(g2, getRealPosition(pos));
+                i++;
             }
+
+            g2.setColor(theme.getColorByName("text1"));
+            AdvancedGraphics.drawText(g2,new Rectangle(preview_pos.x+10, preview_pos.y, previewWidth, currentImage.getHeight()),
+                    op.getName() + "[" + currentImage.getOparations().indexOf(op) + "]", AdvancedGraphics.Side.LEFT);
+
+            g2.setColor(theme.getColorByName("selection"));
+            g2.fillRect(preview_pos.x+textWidth, preview_pos.y, currentImage.getWidth(), currentImage.getHeight());
+
+            op.draw(g2,preview_pos.getOffset(textWidth,0),theme);
 
             offsetY += currentImage.getHeight()+5;
         }
 
-        componentsScroll.setMaxScrollY(offsetY);
+        HashMap<String, ArrayList<Position>> grabbable = getGrabbablePositions();
+        for(String key: grabbable.keySet()){
+            ArrayList<Position> positions = grabbable.get(key);
 
-        if(selected != null){
-            for(Position pos: selected) {
-                drawSelection(g2, pos.getMultiplied(currentImage.getScale()).getOffset(getImagePosition()));
+            if(positions.size() == 1){
+                drawGrabPoint(g2,getRealPosition(positions.get(0)), getAssociatedOperation(positions.get(0)).getColor());
+
+                if(getRealPosition(positions.get(0)).getDistanceTo(lastMousePosition) < 10){
+                    drawSelection(g2, getRealPosition(positions.get(0)), getAssociatedOperation(positions.get(0)).getColor());
+                }
+                else if(selected.contains(positions.get(0))){
+                    drawSelection(g2, getRealPosition(positions.get(0)), getAssociatedOperation(positions.get(0)).getColor());
+                }
+
+                continue;
+            }
+
+            double segment = (Math.PI*2) / (double)positions.size();
+            int grabOffsetX, grabOffsetY;
+            int radius = 10;
+            int i = 0;
+            Position finalPositon;
+
+            for (Position pos: positions){
+                grabOffsetX = (int) (Math.cos(segment*i) * radius);
+                grabOffsetY = (int) (Math.sin(segment*i) * radius);
+
+                finalPositon = getRealPosition(pos).getOffset(grabOffsetX,grabOffsetY);
+
+
+                drawGrabPoint(g2,finalPositon, getAssociatedOperation(pos).getColor());
+                if(finalPositon.getDistanceTo(lastMousePosition) < 10){
+                    drawSelection(g2, finalPositon, getAssociatedOperation(pos).getColor());
+                }
+                else if(selected.contains(pos)){
+                    drawSelection(g2, finalPositon, getAssociatedOperation(pos).getColor());
+                }
+
+                i += 1;
             }
         }
+
+        componentsScroll.setMaxScrollY(offsetY);
 
         if(selectionRectangle != null){
             Color c = new Color(
@@ -146,6 +202,35 @@ public class PIconEditor extends Frame implements EditorLike {
         }
     }
 
+    public PathDrawable getAssociatedOperation(Position pos){
+        for(PathDrawable op: currentImage.getOparations()){
+            for(Position pos2: op.getPositions()){
+                if(pos2 == pos){
+                    return op;
+                }
+            }
+        }
+        return null;
+    }
+
+    public HashMap<String, ArrayList<Position>> getGrabbablePositions(){
+        HashMap<String, ArrayList<Position>> grabbable = new HashMap<>();
+
+        for(PathDrawable op: currentImage.getOparations()){
+            for(Position pos: op.getPositions()){
+                if(grabbable.containsKey(pos.encode())){
+                    grabbable.get(pos.encode()).add(pos);
+                }
+                else {
+                    grabbable.put(pos.encode(), new ArrayList<>());
+                    grabbable.get(pos.encode()).add(pos);
+                }
+            }
+        }
+
+        return grabbable;
+    }
+
     public Position getImagePosition(){
         return new Position(
                 this.getContentX()+this.getContentWidth()/2-(int)((currentImage.getWidth()/2)*currentImage.getScale()),
@@ -153,13 +238,17 @@ public class PIconEditor extends Frame implements EditorLike {
         );
     }
 
-    public void drawSelection(Graphics2D g2, Position pos){
+    public void drawSelection(Graphics2D g2, Position pos, String color){
         g2.setColor(theme.getColorByName("selection"));
-        g2.drawArc(pos.x-10, pos.y-10, 20,20,0,360);
+        g2.fillArc(pos.x-9, pos.y-9, 18,18,0,360);
+        g2.setColor(theme.getColorByName(color));
+        g2.fillArc(pos.x-8, pos.y-8, 16,16,0,360);
     }
 
-    public void drawGrabPoint(Graphics2D g2, Position pos){
+    public void drawGrabPoint(Graphics2D g2, Position pos, String color){
         g2.setColor(theme.getColorByName("selection"));
+        g2.fillArc(pos.x-8, pos.y-8, 16,16,0,360);
+        g2.setColor(theme.getColorByName(color));
         g2.fillArc(pos.x-5, pos.y-5, 10,10,0,360);
     }
 
@@ -172,7 +261,44 @@ public class PIconEditor extends Frame implements EditorLike {
         boolean selectedSomething = false;
         switch (e.getButton()) {
             case 1 -> {
-                for (PathDrawable op : currentImage.getOparations()) {
+                HashMap<String, ArrayList<Position>> grabbable = getGrabbablePositions();
+
+                for(String key: grabbable.keySet()){
+                    ArrayList<Position> positions = grabbable.get(key);
+
+                    if(positions.size() == 1){
+                        if(checkPositionForSelection(positions.get(0),getRealPosition(positions.get(0)))){
+                            selectedSomething = true;
+                            break;
+                        }
+                        continue;
+                    }
+
+                    double segment = (Math.PI*2) / (double)positions.size();
+                    int grabOffsetX, grabOffsetY;
+                    int radius = 10;
+                    int i = 0;
+                    Position finalPositon;
+
+                    for (Position pos: positions){
+                        grabOffsetX = (int) (Math.cos(segment*i) * radius);
+                        grabOffsetY = (int) (Math.sin(segment*i) * radius);
+
+                        finalPositon = getRealPosition(pos).getOffset(grabOffsetX,grabOffsetY);
+
+                        if(checkPositionForSelection(pos,finalPositon)){
+                            selectedSomething = true;
+                            break;
+                        }
+
+                        i += 1;
+                    }
+                    if(selectedSomething){
+                        break;
+                    }
+                }
+
+                /*for (PathDrawable op : currentImage.getOparations()) {
                     for(Position pos: op.getPositions()){
                         if(checkPositionForSelection(pos)){
                             selectedSomething = true;
@@ -182,7 +308,7 @@ public class PIconEditor extends Frame implements EditorLike {
                     if (selectedSomething){
                         break;
                     }
-                }
+                }*/
             }
             case 3 -> {
                 selected.clear();
@@ -218,9 +344,8 @@ public class PIconEditor extends Frame implements EditorLike {
         return pos.getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
     }
 
-    public boolean checkPositionForSelection(Position pos){
-        Position realPosition = pos.getMultiplied(currentImage.getScale()).getOffset(getImagePosition());
-        if (realPosition.getDistanceTo(lastMousePosition) < 20) {
+    public boolean checkPositionForSelection(Position pos, Position checkPosition){
+        if (checkPosition.getDistanceTo(lastMousePosition) < 10) {
             return addSelectedPosition(pos);
         }
         return false;
@@ -234,6 +359,7 @@ public class PIconEditor extends Frame implements EditorLike {
     }
     private boolean addSelectedPosition(Position pos){
         if(selected.contains(pos)){
+            selected.remove(pos);
             return false;
         }
 

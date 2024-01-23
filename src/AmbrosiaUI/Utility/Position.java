@@ -38,6 +38,15 @@ public class Position {
         this.y += position.y;
     }
 
+    public String encode(){
+        return x + "x" + y;
+    }
+    public void fromCode(String code){
+        String[] cd = code.split("x");
+        x = Integer.parseInt(cd[0]);
+        y = Integer.parseInt(cd[1]);
+    }
+
     public Position getOffset(Position pos){
         return new Position(pos.x+x,pos.y+y);
     }
