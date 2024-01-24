@@ -3,5 +3,6 @@ name Java
 
 group numbers \b(?:([0-9]+))\b
 
-group accent \b(?:return|continue|public|static|private|protected|int|float|double|boolean|char|if|else|break|switch|void|class|new|import|package|extends|implements|for)\b
+group accent \b(?:abstract|continue|for|new|switch|assert|default|goto|package|synchronized|boolean|do|if|private|this|break|double|implements|protected|throw|byte|else|import|public|throws|case|enum|instanceof|return|transient|catch|extends|int|short|try|char|final|interface|static|void|class|finally|long|strictfp|volatile|const|float|native|super|while)\b
 group strings (\"[^\"]*\")|'[^']*'
+group accent2 (@\w+(?:\.\w+)?)

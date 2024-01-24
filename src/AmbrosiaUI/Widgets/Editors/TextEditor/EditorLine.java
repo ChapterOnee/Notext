@@ -10,8 +10,8 @@ public class EditorLine{
         this.raw_content = contents;
     }
 
-    public void draw(Graphics2D g2, int x, int y, int lineHeight){
-        g2.drawString(this.getText(),x,y+lineHeight);
+    public void draw(Graphics2D g2, int x, int y, int lineHeight, int xstart, int xend){
+        g2.drawString(this.getText().substring(xstart,xend),x,y+lineHeight);
     }
 
 

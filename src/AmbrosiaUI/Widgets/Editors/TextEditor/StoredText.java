@@ -5,6 +5,9 @@ import AmbrosiaUI.Utility.Position;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -106,6 +109,10 @@ public class StoredText {
                     Logger.printWarning("Max amount of lines reached. For safety reasons cutting reading of text");
                     break;
                 }
+            }
+
+            if(all_data.toString().equals("")){
+                return false;
             }
 
             this.storeState();

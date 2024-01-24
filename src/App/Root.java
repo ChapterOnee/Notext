@@ -2,6 +2,7 @@ package App;
 
 import AmbrosiaUI.Prompts.CreateFilePrompt;
 import AmbrosiaUI.Prompts.FilePrompt;
+import AmbrosiaUI.Prompts.FolderPrompt;
 import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Button;
@@ -26,6 +27,8 @@ import AmbrosiaUI.Widgets.Window;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Root extends Window {
     private EditorLike editorInFocus;
@@ -103,7 +106,8 @@ public class Root extends Window {
                 CreateFilePrompt f = new CreateFilePrompt(theme){
                     @Override
                     public void onSubmited(PromptResult result) {
-                        editorInFocus.clear();
+                        setCurrentEditor(addEditor());
+
                         editorInFocus.setCurrentFile(result.getContent());
                         editorInFocus.saveToCurrentlyOpenFile();
                         win.update();
@@ -194,6 +198,22 @@ public class Root extends Window {
         };
         open_file_in_new_editor_icon.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
+        Button open_folder = new Button("Open Folder", "small", 0,0,4) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                FolderPrompt f = new FolderPrompt(theme){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        fw.setPath(result.getContent());
+                        Root.this.update();
+                    }
+                };
+                f.setPath(fw.getPath());
+                f.ask();
+            }
+        };
+        open_folder.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
         save_file.setDisabled(true);
         save_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
@@ -233,6 +253,7 @@ public class Root extends Window {
         menu.addMenuItem(new DropdownMenuItem(new_file));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(openMenu));
+        menu.addMenuItem(new DropdownMenuItem(open_folder));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(save_file));
         menu.addMenuItem(new DropdownMenuItem(save_file_as));
@@ -479,6 +500,7 @@ public class Root extends Window {
 
     public void setCurrentEditor(EditorLike editor){
         editorInFocus = editor;
+        element_in_focus = (Widget) editorInFocus;
 
         for(TabbedFrameTab tab: editorSpace.getTabs()){
             EditorLike editorf = ((EditorLike) tab.getBoundElement().getChildrenPlacement().getChildren().get(0).getBoundElement());

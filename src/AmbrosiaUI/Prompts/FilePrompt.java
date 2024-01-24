@@ -24,7 +24,7 @@ public class FilePrompt extends Prompt{
 
     protected FolderView folderView;
     public FilePrompt(Theme theme) {
-        super(theme);
+        super(theme,800,500);
         initializeWindow();
     }
 

@@ -4,7 +4,7 @@ fillPoly4 9 31 9 21 32 21 29 31 accent
 line 9 31 14 21 text2 1
 line 28 16 20 16 text2 1
 line 28 21 28 16 text2 1
-fillPoly4 16 12 20 16 9 16 9 12 accent
+fillPoly4 16 12 21 17 9 17 9 12 accent
 line 9 31 29 31 text2 1
 line 16 12 9 12 text2 1
 line 14 21 32 21 text2 1

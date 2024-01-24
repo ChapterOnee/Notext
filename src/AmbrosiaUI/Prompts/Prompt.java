@@ -7,7 +7,7 @@ public abstract class Prompt {
 
     protected PromptResult result;
     protected final Window win;
-    public Prompt(Theme theme) {
+    public Prompt(Theme theme, int width, int height) {
         win = new Window(theme){
             @Override
             public void close() {
@@ -18,6 +18,9 @@ public abstract class Prompt {
                 onSubmited(result);
             }
         };
+        win.show();
+        win.hide();
+        win.setSize(width,height);
     }
 
     public void ask(){

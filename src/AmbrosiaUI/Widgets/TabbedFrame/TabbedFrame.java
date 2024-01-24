@@ -171,13 +171,9 @@ public class TabbedFrame extends Frame {
     }
 
     public void removeTab(TabbedFrameTab tab){
-        int index = tabs.indexOf(tab);
         tabs.remove(tab);
 
-        if(selectedTab == index && selectedTab != 0){
-            selectTab(index-1);
-        }
-        else{
+        if (selectedTab != 0){
             selectTab(selectedTab-1);
         }
     }

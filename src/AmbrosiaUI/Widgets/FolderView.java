@@ -1,5 +1,8 @@
 package AmbrosiaUI.Widgets;
 
+import AmbrosiaUI.Prompts.FolderPrompt;
+import AmbrosiaUI.Prompts.PromptResult;
+import AmbrosiaUI.Prompts.TextPrompt;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Widgets.Icons.Icon;
 import AmbrosiaUI.Widgets.Icons.PathImage;
@@ -25,6 +28,8 @@ public class FolderView extends Frame {
     protected Scrollbar filesDisplayScrollbar;
     protected VerticalPlacement filesDisplayPlacement;
 
+    private boolean foldersOnly = false;
+
     protected int itemHeight = 25;
     public FolderView(Theme theme) {
         super("primary",0);
@@ -48,13 +53,28 @@ public class FolderView extends Frame {
 
     public void initialize() {
         corePlacement = new GridPlacement(theme);
-        corePlacement.setColumnTemplateFromString("auto 20px");
+        corePlacement.setColumnTemplateFromString("auto 20px 20px");
         corePlacement.setRowTemplateFromString("40px auto");
+
+        Icon addFolder = new Icon("secondary","accent",dirImage){
+            @Override
+            public void onMousePressed(MouseEvent e) {
+                TextPrompt f = new TextPrompt(theme, "New Folder Name:"){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        new File(Paths.get(path,result.getContent()).toString()).mkdir();
+                    }
+                };
+                f.ask();
+            }
+        };
+        addFolder.setMargin(1);
+        corePlacement.add(addFolder, 0 , 1, 1,2 );
 
         this.setChildrenPlacement(corePlacement);
 
         pathDisplayFrame = new Frame("primary", 1);
-        corePlacement.add(pathDisplayFrame, 0, 0, 1, 2);
+        corePlacement.add(pathDisplayFrame, 0, 0, 1, 1);
         pathDisplayFrame.setHoverEffectDisabled(true);
 
         pathDisplayPlacement = new HorizontalPlacement(theme);
@@ -84,7 +104,7 @@ public class FolderView extends Frame {
             }
         };
 
-        corePlacement.add(filesDisplayScrollbar, 1, 1, 1, 1);
+        corePlacement.add(filesDisplayScrollbar, 1, 2, 1, 1);
 
         updateFiles();
     }
@@ -284,6 +304,10 @@ public class FolderView extends Frame {
             allContents.add(f);
         }
 
+        if(foldersOnly){
+            return allContents;
+        }
+
         for(File f: filesUnsorted){
             if(f.isDirectory()){
                 continue;
@@ -318,5 +342,13 @@ public class FolderView extends Frame {
 
     public ScrollController getScrollController(){
         return filesDisplayFrame.getScrollController();
+    }
+
+    public boolean isFoldersOnly() {
+        return foldersOnly;
+    }
+
+    public void setFoldersOnly(boolean foldersOnly) {
+        this.foldersOnly = foldersOnly;
     }
 }

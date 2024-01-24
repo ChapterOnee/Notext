@@ -1,0 +1,4 @@
+for .snx
+name Syntax
+
+group accent \b(?:for|name|group)\b

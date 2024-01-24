@@ -632,6 +632,11 @@ public class Window {
         panel.repaint();
     }
 
+    public void setSize(int width, int height){
+        frame.setSize(width, height);
+        update();
+    }
+
     public Frame getCoreFrame() {
         return coreFrame;
     }

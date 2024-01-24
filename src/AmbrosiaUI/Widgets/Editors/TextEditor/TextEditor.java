@@ -168,7 +168,6 @@ public class TextEditor extends Frame implements EditorLike {
         //
         // Draw all text
         //
-        int line_number = 0;
         String line_text;
         int x,y;
 
@@ -181,9 +180,21 @@ public class TextEditor extends Frame implements EditorLike {
             g2.setColor(theme.getColorByName("text1"));
             g2.drawString(line_text, x-fm.stringWidth(line_text), y+text_height-fm.getDescent());
 
+            /*
+                Dont draw characters off screen.
+             */
+            String lineText = text.getLines().get(i).getText();
+
+            int totalWidth = 0;
+            int chrI = 0;
+            while (totalWidth < getContentWidth() && chrI < lineText.length()){
+                totalWidth += fm.stringWidth(lineText.charAt(chrI)+"");
+                chrI++;
+            }
+
             g2.setColor(theme.getColorByName("text2"));
             // Draw line content
-            text.getLines().get(i).draw(g2, x+ LINE_OFFSET_X,y-fm.getDescent(), text_height);
+            text.getLines().get(i).draw(g2, x+ LINE_OFFSET_X,y-fm.getDescent(), text_height,0,chrI);
         }
 
         //
@@ -396,7 +407,7 @@ public class TextEditor extends Frame implements EditorLike {
 
     @Override
     public String getAllowedFiles() {
-        return ".*\\.(txt|py|java|json|thm|snx|pimg)";
+        return ".*";
     }
 
     public void onCurrentFileChanged(){
