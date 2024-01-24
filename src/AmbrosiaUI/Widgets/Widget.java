@@ -338,6 +338,9 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public static int getStringWidth(String text, Font font){
+        if(text == null){
+            return 0;
+        }
         return fontsizecanvas.getFontMetrics(font).stringWidth(text);
     }
 

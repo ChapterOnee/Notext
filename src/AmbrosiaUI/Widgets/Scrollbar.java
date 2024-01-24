@@ -38,6 +38,9 @@ public class Scrollbar extends Frame {
 
         Rectangle handle = getHandle();
 
+        if(controller.getMaxScrollX() == 0 && controller.getMaxScrollY() == 0){
+            return;
+        }
 
         g2.setColor(theme.getColorByName(handleColor));
 

@@ -4,6 +4,7 @@ import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.GraphicsBorderModifier;
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.Frame;
+import AmbrosiaUI.Widgets.Icons.PathOperations.PathDrawable;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.PlacementCell;
 import AmbrosiaUI.Widgets.Widget;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 public class TabbedFrame extends Frame {
     private ArrayList<TabbedFrameTab> tabs = new ArrayList<>();
     private int selectedTab = -1;
-    private int tabHeight = 50;
+    private int tabHeight = 35;
     private GridPlacement corePlacement;
 
     public TabbedFrame(String backgroudColor, int margin) {
@@ -76,7 +77,12 @@ public class TabbedFrame extends Frame {
         int i = 0;
         for (Rectangle rect: getTabRectangles()) {
             if(lastMousePosition.inRectangle(rect)){
-                selectedTab = i;
+                if(e.getButton() == 1) {
+                    selectTab(i);
+                }
+                else if (e.getButton() == 3){
+                    removeTab(i);
+                }
             }
             i++;
         }
@@ -131,12 +137,12 @@ public class TabbedFrame extends Frame {
         return tabs.get(selectedTab);
     }
 
-    public Frame addTab(String name){
+    public TabbedFrameTab addTab(String name){
         Frame frm = new Frame(backgroudColor,0);
         corePlacement.add(frm,0,0,1,1);
         tabs.add(new TabbedFrameTab(frm, name));
 
-        return frm;
+        return tabs.get(tabs.size()-1);
     }
 
     @Override
@@ -154,5 +160,33 @@ public class TabbedFrame extends Frame {
         }
 
         return output;
+    }
+
+    public void selectTab(int index){
+        if(index < 0 || index >= tabs.size()){
+            return;
+        }
+
+        selectedTab = index;
+    }
+
+    public void removeTab(TabbedFrameTab tab){
+        int index = tabs.indexOf(tab);
+        tabs.remove(tab);
+
+        if(selectedTab == index && selectedTab != 0){
+            selectTab(index-1);
+        }
+        else{
+            selectTab(selectedTab-1);
+        }
+    }
+
+    public void removeTab(int tabIndex){
+        removeTab(tabs.get(tabIndex));
+    }
+
+    public ArrayList<TabbedFrameTab> getTabs() {
+        return tabs;
     }
 }

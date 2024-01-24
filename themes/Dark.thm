@@ -16,8 +16,6 @@ color strings 100 100 100
 color comment 50 50 50
 color numbers 150 150 200
 
-Copperplate Gothic Bold
-
 load_font "fonts/RobotoMono/static/RobotoMono-Regular.ttf" roboto
 
 font normal Monospaced 14

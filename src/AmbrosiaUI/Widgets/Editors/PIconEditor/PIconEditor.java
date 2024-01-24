@@ -90,10 +90,13 @@ public class PIconEditor extends Frame implements EditorLike {
             maxWidth = Math.max(maxWidth, getStringWidth(text, theme.getFontByName("normal"))+20);
         }
 
+        int hintX = this.getContentX();
+        int hintY = this.getContentY()+this.getContentHeight()-(hintText.size()*lineHeight+20);
+
         g2.setColor(theme.getColorByName("secondary"));
         g2.fillRect(
-                this.getContentX(),
-                this.getContentY(),
+                hintX,
+                hintY,
                 maxWidth,
                 hintText.size()*lineHeight+20
         );
@@ -102,9 +105,9 @@ public class PIconEditor extends Frame implements EditorLike {
         int y = 0;
         for(String text: hintText){
             AdvancedGraphics.drawText(g2,
-                    new Rectangle(this.getContentX()+10,
-                            this.getContentY()+y,
-                            200,
+                    new Rectangle(hintX+10,
+                            hintY+y,
+                            maxWidth,
                             lineHeight),
                     text,
                     AdvancedGraphics.Side.LEFT

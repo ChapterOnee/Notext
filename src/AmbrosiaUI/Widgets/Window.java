@@ -627,7 +627,7 @@ public class Window {
     }
 
     public void update(){
-        innerFrame.getChildrenPlacement().resize(innerFrame.getChildrenPlacement().getRootSize());
+        innerFrame.getChildrenPlacement().update();
         innerFrame.fullUpdate(eventStatus);
         panel.repaint();
     }

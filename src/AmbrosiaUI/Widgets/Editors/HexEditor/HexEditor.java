@@ -200,6 +200,8 @@ public class HexEditor extends Frame implements EditorLike {
     public void openFile(String filename) {
         try {
             contents = Files.readAllBytes(Paths.get(filename));
+            currentFile = filename;
+            onCurrentFileChanged();
         } catch (IOException e) {
             Logger.printError("Failed to load file in hex editor: " + e);
         }

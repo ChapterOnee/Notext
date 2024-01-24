@@ -20,6 +20,7 @@ import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Editors.EditorLike;
 import AmbrosiaUI.Widgets.Editors.TextEditor.TextEditor;
 import AmbrosiaUI.Widgets.TabbedFrame.TabbedFrame;
+import AmbrosiaUI.Widgets.TabbedFrame.TabbedFrameTab;
 import AmbrosiaUI.Widgets.Window;
 
 import javax.swing.*;
@@ -51,7 +52,36 @@ public class Root extends Window {
         FolderView fw = new FolderView(theme){
             @Override
             protected void fileSelected(String file) {
-                editorInFocus.openFile(file);
+                boolean found = false;
+
+                for(TabbedFrameTab tab: editorSpace.getTabs()){
+                    EditorLike editor = ((EditorLike) tab.getBoundElement().getChildrenPlacement().getChildren().get(0).getBoundElement());
+
+                    if(editor.getCurrentFile() != null && editor.getCurrentFile().equals(file)){
+                        Root.this.setCurrentEditor(editor);
+                        editorSpace.selectTab(editorSpace.getTabs().indexOf(tab));
+                        found = true;
+                        break;
+                    }
+                }
+
+                if(!found){
+                    EditorLike newEditor;
+                    if(file.matches(".*\\.pimg")){
+                        newEditor = addPIconEditor();
+                    }
+                    else {
+                        newEditor = addEditor();
+                    }
+                    newEditor.openFile(file);
+                    editorSpace.selectTab(editorSpace.getTabs().size()-1);
+
+                    if(newEditor.getCurrentFile() == null){
+                        editorSpace.removeTab(editorSpace.getTabs().size()-1);
+                        return;
+                    }
+                    setCurrentEditor(newEditor);
+                }
                 Root.this.update();
             }
 
@@ -116,7 +146,7 @@ public class Root extends Window {
                 FilePrompt f = new FilePrompt(theme){
                     @Override
                     public void onSubmited(PromptResult result) {
-                        editorInFocus = addEditor();
+                        Root.this.setCurrentEditor(addEditor());
                         editorInFocus.openFile(result.getContent());
                         Root.this.update();
                     }
@@ -134,7 +164,7 @@ public class Root extends Window {
                 FilePrompt f = new FilePrompt(theme){
                     @Override
                     public void onSubmited(PromptResult result) {
-                        editorInFocus = addHexEditor();
+                        Root.this.setCurrentEditor(addHexEditor());
                         editorInFocus.openFile(result.getContent());
                         Root.this.update();
                     }
@@ -152,7 +182,7 @@ public class Root extends Window {
                 FilePrompt f = new FilePrompt(theme){
                     @Override
                     public void onSubmited(PromptResult result) {
-                        editorInFocus = addPIconEditor();
+                        Root.this.setCurrentEditor(addPIconEditor());
                         editorInFocus.openFile(result.getContent());
                         Root.this.update();
                     }
@@ -217,7 +247,19 @@ public class Root extends Window {
         scrollbar = new Scrollbar("primary", null, UnitValue.Direction.VERTICAL);
 
 
-        editorSpace = new TabbedFrame("primary", 0);
+        editorSpace = new TabbedFrame("primary", 0) {
+            @Override
+            public void selectTab(int index) {
+                super.selectTab(index);
+
+                EditorLike editor = ((EditorLike) this.getTabs().get(index).getBoundElement().getChildrenPlacement().getChildren().get(0).getBoundElement());
+
+                if(editor != editorInFocus) {
+                    setCurrentEditor(editor);
+                }
+                Root.this.update();
+            }
+        };
         mainPlacement.add(editorSpace,0,1,1,1);
         editorSpace.initialize();
 
@@ -236,72 +278,78 @@ public class Root extends Window {
     }
 
     public TextEditor addEditor(){
+        TabbedFrameTab tab = editorSpace.addTab("unnamed *");
+
         TextEditor editor = new TextEditor() {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
-                scrollbar.setController(this.getScrollController());
-                Root.this.editorInFocus = this;
+                Root.this.setCurrentEditor(this);
             }
 
             @Override
             public void onCurrentFileChanged() {
                 super.onCurrentFileChanged();
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
+                tab.setName(new File(getCurrentFile()).getName());
                 save_file.setDisabled(!editorInFocus.hasFile());
             }
         };
-        Frame tab = editorSpace.addTab("AAAAAAAAA");
+        Frame tabFrame = (Frame) tab.getBoundElement();
         HorizontalPlacement temp = new HorizontalPlacement(theme);
-        tab.setChildrenPlacement(temp);
+        tabFrame.setChildrenPlacement(temp);
         temp.add(editor,new UnitValue(0, UnitValue.Unit.AUTO));
 
         return editor;
     }
 
     public HexEditor addHexEditor(){
+        TabbedFrameTab tab = editorSpace.addTab("unnamed *");
+
         HexEditor editor = new HexEditor() {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
-                scrollbar.setController(this.getScrollController());
-                Root.this.editorInFocus = this;
+                Root.this.setCurrentEditor(this);
             }
 
             @Override
             public void onCurrentFileChanged() {
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
+                tab.setName(new File(getCurrentFile()).getName());
                 save_file.setDisabled(!editorInFocus.hasFile());
             }
         };
 
-        Frame tab = editorSpace.addTab("BBBBBBBB");
+        Frame tabFrame = (Frame) tab.getBoundElement();
         HorizontalPlacement temp = new HorizontalPlacement(theme);
-        tab.setChildrenPlacement(temp);
+        tabFrame.setChildrenPlacement(temp);
         temp.add(editor,new UnitValue(0, UnitValue.Unit.AUTO));
 
         return editor;
     }
 
     public PIconEditor addPIconEditor(){
+        TabbedFrameTab tab = editorSpace.addTab("unnamed *");
+
         PIconEditor editor = new PIconEditor("primary",0) {
             @Override
             public void onMouseClicked(MouseEvent e) {
                 super.onMouseClicked(e);
-                scrollbar.setController(this.getScrollController());
-                Root.this.editorInFocus = this;
+                Root.this.setCurrentEditor(this);
             }
 
             @Override
             public void onCurrentFileChanged() {
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
+                tab.setName(new File(getCurrentFile()).getName());
                 save_file.setDisabled(!editorInFocus.hasFile());
             }
         };
 
-        Frame tab = editorSpace.addTab("VVVVVVV");
+        Frame tabFrame = (Frame) tab.getBoundElement();
         HorizontalPlacement temp = new HorizontalPlacement(theme);
-        tab.setChildrenPlacement(temp);
+        tabFrame.setChildrenPlacement(temp);
         temp.add(editor,new UnitValue(0, UnitValue.Unit.AUTO));
 
         return editor;
@@ -427,6 +475,22 @@ public class Root extends Window {
                 editorInFocus.revert();
             }
         };
+    }
+
+    public void setCurrentEditor(EditorLike editor){
+        editorInFocus = editor;
+
+        for(TabbedFrameTab tab: editorSpace.getTabs()){
+            EditorLike editorf = ((EditorLike) tab.getBoundElement().getChildrenPlacement().getChildren().get(0).getBoundElement());
+
+            if(editorf == editorInFocus){
+                editorSpace.selectTab(editorSpace.getTabs().indexOf(tab));
+                break;
+            }
+        }
+
+        scrollbar.setController(editorInFocus.getScrollController());
+        update();
     }
 
     @Override
