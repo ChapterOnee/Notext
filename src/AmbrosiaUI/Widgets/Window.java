@@ -1,5 +1,6 @@
 package AmbrosiaUI.Widgets;
 
+import AmbrosiaUI.ContextMenus.ContextMenu;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.Icons.Icon;
@@ -16,8 +17,19 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Window {
+    private static ArrayList<Window> allOpenWindows = new ArrayList<>();
+
+    public static void reloadAllWindows(){
+        for(Window win: allOpenWindows){
+            win.update();
+        }
+    }
+
+    protected ArrayList<ContextMenu> openContextMenus = new ArrayList<>();
+
     protected Frame coreFrame;
     protected Frame coreHeader;
 
@@ -31,6 +43,14 @@ public class Window {
         DOWN_LEFT,
         LEFT,
         NONE
+    }
+
+    private enum MouseEventType{
+        MOVE,
+        DRAG,
+        PRESSED,
+        CLICKED,
+        RELEASED
     }
 
     protected Widget element_in_focus;
@@ -75,6 +95,8 @@ public class Window {
     }
 
     private void initialize(){
+        allOpenWindows.add(this);
+
         if(System.getProperty("os.name").startsWith("Windows")){
             customFrame = true;
         };
@@ -139,6 +161,10 @@ public class Window {
                 g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
                 innerFrame.draw(g2);
 
+                for(ContextMenu menu: openContextMenus){
+                    menu.draw(g2);
+                }
+
                 if(!DEBUG) {
                     return;
                 }
@@ -156,6 +182,9 @@ public class Window {
                 eventStatus.getMousePosition().y = e.getY();
                 update();
 
+                if(checkForContextMenus(e, MouseEventType.DRAG)){
+                    return;
+                }
                 if(element_in_focus == null){
                     return;
                 }
@@ -171,6 +200,10 @@ public class Window {
                 eventStatus.getMousePosition().x = e.getX();
                 eventStatus.getMousePosition().y = e.getY();
                 update();
+
+                if(checkForContextMenus(e, MouseEventType.MOVE)){
+                    return;
+                }
                 if(element_in_focus == null){
                     return;
                 }
@@ -186,13 +219,16 @@ public class Window {
             @Override
             public void mouseClicked(MouseEvent e) {
 
+                if(checkForContextMenus(e, MouseEventType.CLICKED)){
+                    return;
+                }
                 if(element_in_focus == null){
                     return;
                 }
                 if(element_in_focus.isDisabled()){
                     return;
                 }
-                element_in_focus.onMouseClicked(e);
+                element_in_focus.onMouseClickedPre(e);
             }
 
             @Override
@@ -204,6 +240,9 @@ public class Window {
                 //editor.startSelection();
                 update();
 
+                if(checkForContextMenus(e,MouseEventType.PRESSED)){
+                    return;
+                }
                 if(element_in_focus == null){
                     return;
                 }
@@ -218,6 +257,9 @@ public class Window {
                 eventStatus.setMouseDown(false);
                 update();
 
+                if(checkForContextMenus(e,MouseEventType.RELEASED)){
+                    return;
+                }
                 if(element_in_focus == null){
                     return;
                 }
@@ -620,6 +662,34 @@ public class Window {
         }
 
         return direction;
+    }
+
+    public void showContextMenu(ContextMenu menu){
+        if(menu == null){
+            return;
+        }
+
+        openContextMenus.add(menu);
+    }
+
+    private boolean checkForContextMenus(MouseEvent e, MouseEventType type){
+        for (ContextMenu menu: openContextMenus){
+            if(new Position(e.getX(),e.getY()).inRectangle(menu.getBoundingRect())){
+                switch (type){
+                    case MOVE -> menu.onMouseMoved(e);
+                    case DRAG -> menu.onMouseDragged(e);
+                    case CLICKED -> menu.onMouseClicked(e);
+                    case PRESSED -> menu.onMousePressed(e);
+                    case RELEASED -> menu.onMouseReleased(e);
+                }
+                return true;
+            }
+        }
+
+        if (type != MouseEventType.MOVE && type != MouseEventType.DRAG) {
+            openContextMenus.clear();
+        }
+        return false;
     }
 
     public void onFrameLoad(){

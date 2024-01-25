@@ -1,0 +1,12 @@
+size 40 40
+line 9 31 14 21 text1 1
+line 28 16 20 16 text1 1
+line 28 21 28 16 text1 1
+line 9 31 29 31 text1 1
+line 16 12 9 12 text1 1
+line 14 21 32 21 text1 1
+line 20 16 16 12 text1 1
+line 29 31 32 21 text1 1
+line 9 12 9 31 text1 1
+line 22 26 28 26 accent 1
+line 25 23 25 29 accent 1

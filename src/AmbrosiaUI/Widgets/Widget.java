@@ -1,5 +1,6 @@
 package AmbrosiaUI.Widgets;
 
+import AmbrosiaUI.ContextMenus.ContextMenu;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
@@ -39,6 +40,8 @@ public abstract class Widget implements Comparable<Widget>{
     protected final boolean DEBUG = false;
 
     protected Size minimalSize = new Size(0,0);
+
+    protected ContextMenu contextMenu;
 
     protected static final Canvas fontsizecanvas = new Canvas();
 
@@ -356,6 +359,14 @@ public abstract class Widget implements Comparable<Widget>{
                 '}';
     }
 
+    public void setContextMenu(ContextMenu contextMenu) {
+        this.contextMenu = contextMenu;
+    }
+
+    public ContextMenu getContextMenu(){
+        return contextMenu;
+    }
+
     public boolean isMouseOver() {
         return mouseOver;
     }
@@ -372,8 +383,28 @@ public abstract class Widget implements Comparable<Widget>{
 
     }
 
-    public void onMouseClicked(MouseEvent e){
+    public void onMouseClickedPre(MouseEvent e){
+        if(e.getButton() == 3){
+            ContextMenu menu = getContextMenu();
 
+            if (menu == null){
+                onMouseClicked(e);
+                return;
+            }
+
+            menu.setPosition(new Position(e.getX(),e.getY()));
+
+            window.showContextMenu(getContextMenu());
+        }
+        else{
+            onMouseClicked(e);
+        }
+    }
+
+    public void onMouseClicked(MouseEvent e){
+        if(e.getButton() == 3){
+            window.showContextMenu(getContextMenu());
+        }
     }
 
     public void onMousePressed(MouseEvent e){

@@ -95,6 +95,7 @@ public class Root extends Window {
             }
         };
         mainPlacement.add(fw, 0,0,1,1);
+        fw.setCanAddFolders(false);
         fw.initialize();
 
         fw.addAllowed(".*");
@@ -412,7 +413,7 @@ public class Root extends Window {
                     @Override
                     public void onSelected() {
                         theme.loadFromFile(listOfFile.getAbsolutePath());
-                        Root.this.update();
+                        Window.reloadAllWindows();
                     }
                 });
 
@@ -478,9 +479,13 @@ public class Root extends Window {
             }
         };
 
-        Keybind closeEditor = new Keybind("CloseEditor", panel, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK)) {
+        Keybind reloadEditor = new Keybind("ReloadEditor", panel, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK)) {
             @Override
             public void activated(ActionEvent e) {
+                if (editorInFocus != null){
+                    editorInFocus.openFile(editorInFocus.getCurrentFile());
+                }
+                PathImage.reloadAllImagesFromFiles();
                 /*if(editorSpacePlacement.getChildren().size() < 2){
                     return;
                 }

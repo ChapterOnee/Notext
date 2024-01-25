@@ -1,5 +1,7 @@
 package AmbrosiaUI.Widgets;
 
+import AmbrosiaUI.ContextMenus.ContextMenu;
+import AmbrosiaUI.ContextMenus.ContextMenuOption;
 import AmbrosiaUI.Prompts.FolderPrompt;
 import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Prompts.TextPrompt;
@@ -29,6 +31,7 @@ public class FolderView extends Frame {
     protected VerticalPlacement filesDisplayPlacement;
 
     private boolean foldersOnly = false;
+    private boolean canAddFolders = true;
 
     protected int itemHeight = 25;
     public FolderView(Theme theme) {
@@ -50,26 +53,31 @@ public class FolderView extends Frame {
     protected static final PathImage expandImage = new PathImage("icons/expand.pimg");
     protected static final PathImage expandedImage = new PathImage("icons/expanded.pimg");
 
+    protected static final PathImage addFolderImage = new PathImage("icons/addFolder.pimg");
+
 
     public void initialize() {
         corePlacement = new GridPlacement(theme);
         corePlacement.setColumnTemplateFromString("auto 20px 20px");
         corePlacement.setRowTemplateFromString("40px auto");
 
-        Icon addFolder = new Icon("secondary","accent",dirImage){
-            @Override
-            public void onMousePressed(MouseEvent e) {
-                TextPrompt f = new TextPrompt(theme, "New Folder Name:"){
-                    @Override
-                    public void onSubmited(PromptResult result) {
-                        new File(Paths.get(path,result.getContent()).toString()).mkdir();
-                    }
-                };
-                f.ask();
-            }
-        };
-        addFolder.setMargin(1);
-        corePlacement.add(addFolder, 0 , 1, 1,2 );
+        if(canAddFolders) {
+            Icon addFolder = new Icon("secondary", "accent", addFolderImage) {
+                @Override
+                public void onMousePressed(MouseEvent e) {
+                    TextPrompt f = new TextPrompt(theme, "New Folder Name:") {
+                        @Override
+                        public void onSubmited(PromptResult result) {
+                            new File(Paths.get(path, result.getContent()).toString()).mkdir();
+                            updateFiles();
+                        }
+                    };
+                    f.ask();
+                }
+            };
+            addFolder.setMargin(2);
+            corePlacement.add(addFolder, 0, 1, 1, 2);
+        }
 
         this.setChildrenPlacement(corePlacement);
 
@@ -170,6 +178,14 @@ public class FolderView extends Frame {
                             setPath(file.getAbsolutePath());
                         }
                     };
+                    ContextMenu menu = new ContextMenu(theme);
+                    menu.addOption(new ContextMenuOption("Rename"){
+                        @Override
+                        protected void execute() {
+                            System.out.println(name);
+                        }
+                    });
+                    tempLabel.setContextMenu(menu);
 
                     icon.setImage(dirImage.getScaled((double) itemHeight / dirImage.getHeight()));
 
@@ -350,5 +366,13 @@ public class FolderView extends Frame {
 
     public void setFoldersOnly(boolean foldersOnly) {
         this.foldersOnly = foldersOnly;
+    }
+
+    public boolean canAddFolders() {
+        return canAddFolders;
+    }
+
+    public void setCanAddFolders(boolean canAddFolders) {
+        this.canAddFolders = canAddFolders;
     }
 }

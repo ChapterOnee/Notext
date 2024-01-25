@@ -16,6 +16,19 @@ import java.util.ArrayList;
 public class PathImage extends FileInterpreter {
     private ArrayList<PathDrawable> oparations = new ArrayList<>();
 
+    private static ArrayList<PathImage> allLoadedImages = new ArrayList<>();
+
+    public static void reloadAllImagesFromFiles(){
+        for (PathImage image: allLoadedImages){
+            if(image.path != null) {
+                image.oparations.clear();
+                image.loadFromFile(image.path);
+            }
+        }
+    }
+
+    private String path;
+
     private Size size = new Size(0, 0);
     private Theme Theme;
 
@@ -24,11 +37,16 @@ public class PathImage extends FileInterpreter {
     public PathImage(Size size) {
         this.size = size;
         initFileloaderCommands();
+
+        allLoadedImages.add(this);
     }
 
     public PathImage(String path) {
         initFileloaderCommands();
         loadFromFile(path);
+        this.path = path;
+
+        allLoadedImages.add(this);
     }
 
     public PathImage(ArrayList<PathDrawable> oparations, Size size, AmbrosiaUI.Widgets.Theme theme, double scale) {

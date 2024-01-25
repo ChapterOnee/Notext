@@ -36,10 +36,6 @@ public class TabbedFrame extends Frame {
         setupDraw(g2);
         g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
 
-        if(tabs.size() < 2) {
-            return;
-        }
-
         g2.setColor(theme.getColorByName("secondary"));
         g2.fillRect(this.getX(),this.getContentY()-2,this.getWidth(),2);
 
@@ -109,20 +105,12 @@ public class TabbedFrame extends Frame {
 
     @Override
     public int getContentHeight() {
-        if(tabs.size() > 1){
-            return super.getContentHeight() - tabHeight;
-        }
-
-        return super.getContentHeight();
+        return super.getContentHeight() - tabHeight;
     }
 
     @Override
     public int getContentY() {
-        if(tabs.size() > 1){
-            return super.getContentY() + tabHeight;
-        }
-
-        return super.getContentY();
+        return super.getContentY() + tabHeight;
     }
 
     public TabbedFrameTab getSelectedTab(){
@@ -171,6 +159,10 @@ public class TabbedFrame extends Frame {
     }
 
     public void removeTab(TabbedFrameTab tab){
+        if(tabs.size() < 2){
+            return;
+        }
+
         tabs.remove(tab);
 
         if (selectedTab != 0){
