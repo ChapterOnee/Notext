@@ -2,17 +2,18 @@ package AmbrosiaUI.Widgets;
 
 import AmbrosiaUI.ContextMenus.ContextMenu;
 import AmbrosiaUI.ContextMenus.ContextMenuOption;
-import AmbrosiaUI.Prompts.FolderPrompt;
 import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Prompts.TextPrompt;
 import AmbrosiaUI.Utility.*;
+import AmbrosiaUI.Widgets.Editors.TextEditor.TextEditor;
 import AmbrosiaUI.Widgets.Icons.Icon;
 import AmbrosiaUI.Widgets.Icons.PathImage;
 import AmbrosiaUI.Widgets.Placements.*;
+import org.w3c.dom.Text;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +55,9 @@ public class FolderView extends Frame {
     protected static final PathImage expandedImage = new PathImage("icons/expanded.pimg");
 
     protected static final PathImage addFolderImage = new PathImage("icons/addFolder.pimg");
+    protected static final PathImage addFileImage = new PathImage("icons/addFile.pimg");
+
+    protected static final PathImage renameFileImage = new PathImage("icons/rename.pimg");
 
 
     public void initialize() {
@@ -155,124 +159,189 @@ public class FolderView extends Frame {
     public void addFilesToPlacement(ArrayList<File> allContents, VerticalPlacement placement){
         for (File file : allContents) {
             if (!file.isHidden() && !file.getName().startsWith(".")) {
-                String name = file.getName();
-
-                Frame temp = new Frame("primary",1);
-                placement.add(temp, new UnitValue(0, UnitValue.Unit.FIT));
-                temp.setLockedToView(filesDisplayFrame);
-
-                GridPlacement tempPlacement = new GridPlacement(theme);
-                tempPlacement.setColumnTemplateFromString(itemHeight+"px auto 40px");
-                tempPlacement.setRowTemplateFromString(itemHeight+"px auto");
-                temp.setChildrenPlacement(tempPlacement);
-
-                Icon icon = new Icon("primary", "primary", new PathImage(new Size(0,0)));
-
-                Label tempLabel;
-                Icon expand = null;
-
-                if(file.isDirectory()){
-                    tempLabel = new Label(name, "small",0,0,4){
-                        @Override
-                        public void onMouseClicked(MouseEvent e) {
-                            setPath(file.getAbsolutePath());
-                        }
-                    };
-                    ContextMenu menu = new ContextMenu(theme);
-                    menu.addOption(new ContextMenuOption("Rename"){
-                        @Override
-                        protected void execute() {
-                            System.out.println(name);
-                        }
-                    });
-                    tempLabel.setContextMenu(menu);
-
-                    icon.setImage(dirImage.getScaled((double) itemHeight / dirImage.getHeight()));
-
-                    expand = new Icon("primary", "accent", expandImage){
-                        private boolean expanded = false;
-                        private Frame content;
-                        @Override
-                        public void onMouseClicked(MouseEvent e) {
-                            if(!expanded) {
-                                content = new Frame("primary", 0);
-                                content.setBorderColor("primary");
-                                content.setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
-                                content.setBorderWidth(10);
-                                content.setLockedToView(filesDisplayFrame);
-
-                                VerticalPlacement contentPlacement = new VerticalPlacement(theme){
-                                    @Override
-                                    public void resize(Size new_size) {
-                                        super.resize(new_size);
-                                        temp.setMinHeight(getMinimalHeight()+itemHeight+5);
-                                    }
-                                };
-                                tempPlacement.add(content, 1, 0,1,3);
-                                content.setChildrenPlacement(contentPlacement);
-
-                                ArrayList<File> data = getAllFilesInDirectory(file.getAbsolutePath());
-                                addFilesToPlacement(data,contentPlacement);
-
-                                this.setImage(expandedImage);
-
-                                expanded = true;
-                            }
-                            else{
-                                System.out.println(expandImage);
-                                this.setImage(expandImage);
-
-                                tempPlacement.remove(content);
-
-                                temp.setMinHeight(itemHeight);
-                                expanded = false;
-                            }
-
-                            window.update();
-                            window.update();
-                            window.update();
-                            window.update();
-                        }
-                    };
-                }
-                else {
-                    tempLabel = new Label(name, "small", 0, 0, 4) {
-                        @Override
-                        public void onMouseClicked(MouseEvent e) {
-                            fileSelected(file.getAbsolutePath());
-                        }
-                    };
-
-                    PathImage finalImage = fileImage;
-
-                    if (name.matches(".*\\.py")) {
-                        finalImage = pyFileImage;
-                    }
-
-                    icon.setImage(finalImage.getScaled((double) itemHeight / fileImage.getHeight()));
-                }
-
-                icon.setLockedToView(filesDisplayFrame);
-                tempLabel.setBackgroudColor("primary");
-                tempLabel.setForegroundColor("text2");
-                tempLabel.setLockedToView(filesDisplayFrame);
-                tempLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
-
-                tempPlacement.add(icon, 0,0,1,1);
-
-                if(expand != null) {
-                    expand.setLockedToView(filesDisplayFrame);
-                    tempPlacement.add(expand, 0,2,1,1);
-                    tempPlacement.add(tempLabel, 0,1,1,1);
-                }
-                else{
-                    tempPlacement.add(tempLabel, 0,1,1,2);
-                }
-                //temp.setTextPlacement(AdvancedGraphics.Side.LEFT);
-
-                temp.setMinHeight(itemHeight);
+                generateFileWidget(file,placement);
             }
         }
+    }
+
+    protected Frame generateFileWidget(File file, VerticalPlacement placement){
+        String name = file.getName();
+
+        Frame temp = new Frame("primary",1);
+        placement.add(temp, new UnitValue(0, UnitValue.Unit.FIT));
+        temp.setLockedToView(filesDisplayFrame);
+
+        GridPlacement tempPlacement = new GridPlacement(theme);
+        tempPlacement.setColumnTemplateFromString(itemHeight+"px auto 40px");
+        tempPlacement.setRowTemplateFromString(itemHeight+"px auto");
+        temp.setChildrenPlacement(tempPlacement);
+
+        Icon icon = new Icon("primary", "primary", new PathImage(new Size(0,0)));
+
+        Label tempLabel;
+        Icon expand = null;
+
+        if(file.isDirectory()){
+            tempLabel = new Label(name, "small",0,0,4){
+                @Override
+                public void onMouseClicked(MouseEvent e) {
+                    setPath(file.getAbsolutePath());
+                }
+            };
+
+            icon.setImage(dirImage.getScaled((double) itemHeight / dirImage.getHeight()));
+
+            boolean expanded = false;
+            Frame content = new Frame("primary", 0);
+            content.setBorderColor("primary");
+            content.setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
+            content.setBorderWidth(10);
+            content.setLockedToView(filesDisplayFrame);
+
+            expand = new Icon("primary", "accent", expandImage){
+                private boolean expanded;
+
+                private Icon init(boolean var, Frame content){
+                    this.expanded = var;
+                    this.content = content;
+                    return this;
+                }
+
+                private Frame content;
+                @Override
+                public void onMouseClicked(MouseEvent e) {
+                    if(!expanded) {
+                        VerticalPlacement contentPlacement = new VerticalPlacement(theme){
+                            @Override
+                            public void resize(Size new_size) {
+                                super.resize(new_size);
+                                temp.setMinHeight(getMinimalHeight()+itemHeight+5);
+                            }
+                        };
+                        tempPlacement.add(content, 1, 0,1,3);
+                        content.setChildrenPlacement(contentPlacement);
+
+                        ArrayList<File> data = getAllFilesInDirectory(file.getAbsolutePath());
+                        addFilesToPlacement(data,contentPlacement);
+
+                        this.setImage(expandedImage);
+
+                        expanded = true;
+                    }
+                    else{
+                        this.setImage(expandImage);
+
+                        tempPlacement.remove(content);
+
+                        temp.setMinHeight(itemHeight);
+                        expanded = false;
+                    }
+
+                    window.update();
+                    window.update();
+                    window.update();
+                    window.update();
+                }
+            }.init(expanded, content);
+
+            ContextMenu menu = new ContextMenu(theme);
+            menu.addOption(new ContextMenuOption("Rename",renameFileImage){
+                @Override
+                protected void execute() {
+                    TextPrompt prompt = new TextPrompt(theme, "New File Name:"){
+                        @Override
+                        public void onSubmited(PromptResult result) {
+                            if(file.renameTo(new File(Paths.get(file.getParentFile().getAbsolutePath(),result.getContent()).toString()))){
+                                tempLabel.setText(result.getContent());
+                            }
+                        }
+                    };
+                    prompt.ask();
+                }
+            });
+            menu.addOption(new ContextMenuOption("New File",addFileImage){
+                @Override
+                protected void execute() {
+                    TextPrompt prompt = new TextPrompt(theme, "New File Name:"){
+                        @Override
+                        public void onSubmited(PromptResult result) {
+                            File nw = new File(Paths.get(file.getAbsolutePath(),result.getContent()).toString());
+                            try {
+                                if(nw.createNewFile()){
+                                    if(content.getChildrenPlacement() == null){
+                                        return;
+                                    }
+
+                                    generateFileWidget(nw,(VerticalPlacement) content.getChildrenPlacement());
+                                }
+                            } catch (IOException e) {
+                                Logger.printError("Failed to create file. " + e);
+                            }
+                        }
+                    };
+                    prompt.ask();
+                }
+            });
+            menu.addOption(new ContextMenuOption("New Folder", addFolderImage){
+                @Override
+                protected void execute() {
+                    TextPrompt f = new TextPrompt(theme, "New Folder Name:") {
+                        @Override
+                        public void onSubmited(PromptResult result) {
+                            File nw = new File(Paths.get(file.getAbsolutePath(), result.getContent()).toString());
+
+                            if(nw.mkdir()){
+                                if(content.getChildrenPlacement() == null){
+                                    return;
+                                }
+
+                                generateFileWidget(nw,(VerticalPlacement) content.getChildrenPlacement());
+                            }
+                        }
+                    };
+                    f.ask();
+                }
+            });
+            tempLabel.setContextMenu(menu);
+        }
+        else {
+            tempLabel = new Label(name, "small", 0, 0, 4) {
+                @Override
+                public void onMouseClicked(MouseEvent e) {
+                    fileSelected(file.getAbsolutePath());
+                }
+            };
+
+            PathImage finalImage = fileImage;
+
+            if (name.matches(".*\\.py")) {
+                finalImage = pyFileImage;
+            }
+
+            icon.setImage(finalImage.getScaled((double) itemHeight / fileImage.getHeight()));
+        }
+
+        icon.setLockedToView(filesDisplayFrame);
+        tempLabel.setBackgroudColor("primary");
+        tempLabel.setForegroundColor("text2");
+        tempLabel.setLockedToView(filesDisplayFrame);
+        tempLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
+        tempPlacement.add(icon, 0,0,1,1);
+
+        if(expand != null) {
+            expand.setLockedToView(filesDisplayFrame);
+            tempPlacement.add(expand, 0,2,1,1);
+            tempPlacement.add(tempLabel, 0,1,1,1);
+        }
+        else{
+            tempPlacement.add(tempLabel, 0,1,1,2);
+        }
+        //temp.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
+        temp.setMinHeight(itemHeight);
+
+        return temp;
     }
 
     protected void updateFiles(){

@@ -13,9 +13,9 @@ import java.util.ArrayList;
 public class ContextMenu {
     private ArrayList<ContextMenuOption> options = new ArrayList<>();
 
-    private final int itemHeight = 20;
-    private int padding = 10;
-    private int itemVerticalPadding = 5;
+    private final int itemHeight = 22;
+    private int padding = 5;
+    private int itemVerticalPadding = 0;
 
     private Position position = new Position(0,0);
 
@@ -30,30 +30,30 @@ public class ContextMenu {
     }
 
     public void draw(Graphics2D g2){
-        AdvancedGraphics.borderedRect(g2, getBoundingRect(), 1, theme.getColorByName("primary"),theme.getColorByName("accent"),AdvancedGraphics.BORDER_FULL);
+        AdvancedGraphics.borderedRect(g2, getBoundingRect(), 1, theme.getColorByName("secondary"),theme.getColorByName("primary"),AdvancedGraphics.BORDER_FULL);
 
-        g2.setColor(theme.getColorByName("text2"));
-        g2.setFont(theme.getFontByName("normal"));
         for (ContextMenuOption option: options){
-            AdvancedGraphics.drawText(g2,option.getBoundingRectangle(),option.getText(), AdvancedGraphics.Side.LEFT);
+            option.draw(g2, theme);
         }
     }
 
     public Rectangle getBoundingRect(){
         int width = 0;
 
-        int y = 0;
         for (ContextMenuOption text: options){
-            int tempWidth = StringUtil.getStringWidth(text.getText(), theme.getFontByName("normal"))+padding*2;
+            int tempWidth = StringUtil.getStringWidth(text.getText(), theme.getFontByName("small"));
             width = Math.max(width, tempWidth);
+        }
+        width += padding*2 + 100;
 
-            text.setBoundingRectangle(new Rectangle(position.x, position.y+y,tempWidth,itemHeight));
-            text.getBoundingRectangle().applyMargin(4);
+        int y = padding;
+        for(ContextMenuOption option: options){
+            option.setBoundingRectangle(new Rectangle(position.x+padding+itemHeight, position.y+y+itemVerticalPadding,width-padding*2-itemHeight,itemHeight));
 
-            y+=itemVerticalPadding+itemHeight;
+            y+=itemVerticalPadding*2+itemHeight;
         }
 
-        int height = (itemHeight+itemVerticalPadding*2)*options.size();
+        int height = (itemHeight+itemVerticalPadding*2)*options.size()+padding*2;
 
         return new Rectangle(position.x,position.y,width,height);
     }
@@ -99,11 +99,17 @@ public class ContextMenu {
     }
 
     public void onMouseMoved(MouseEvent e){
-
+        for (ContextMenuOption option: options){
+            option.setMouseOver(new Position(e.getX(), e.getY()).inRectangle(option.getBoundingRectangle()));
+        }
     }
 
     public void onMouseClicked(MouseEvent e){
-
+        for (ContextMenuOption option: options){
+            if(option.isMouseOver()){
+                option.execute();
+            }
+        }
     }
 
     public void onMousePressed(MouseEvent e){

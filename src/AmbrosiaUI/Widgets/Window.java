@@ -682,6 +682,8 @@ public class Window {
                     case PRESSED -> menu.onMousePressed(e);
                     case RELEASED -> menu.onMouseReleased(e);
                 }
+                eventStatus.setMousePosition(new Position(-1,-1));
+                update();
                 return true;
             }
         }

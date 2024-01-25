@@ -3,6 +3,7 @@ package AmbrosiaUI.Widgets.Icons;
 import AmbrosiaUI.Utility.FileInterpreter.FileInterpreter;
 import AmbrosiaUI.Utility.FileInterpreter.InterpretedCommand;
 import AmbrosiaUI.Utility.Position;
+import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Utility.Size;
 import AmbrosiaUI.Widgets.Icons.PathOperations.*;
 import AmbrosiaUI.Widgets.Theme;
@@ -25,6 +26,12 @@ public class PathImage extends FileInterpreter {
                 image.loadFromFile(image.path);
             }
         }
+    }
+    public Position getCenteredPosition(Rectangle bounds){
+        return new Position(
+                bounds.getX()+bounds.getWidth()/2-(int)((getWidth()/2)*getScale()),
+                bounds.getY()+bounds.getHeight()/2-(int)((getHeight()/2)*getScale())
+        );
     }
 
     private String path;
