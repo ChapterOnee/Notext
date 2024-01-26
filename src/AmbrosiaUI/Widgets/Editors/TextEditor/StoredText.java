@@ -111,9 +111,9 @@ public class StoredText {
                 }
             }
 
-            if(all_data.toString().equals("")){
+            /*if(all_data.toString().equals("")){
                 return false;
-            }
+            }*/
 
             this.storeState();
             this.setText(all_data.toString());

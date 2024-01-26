@@ -40,12 +40,10 @@ public class Root extends Window {
 
     private Window settingsWindow;
 
-    private GridPlacement mainPlacement;
+    private HorizontalPlacement mainPlacement;
     public Root() {
         super();
-        mainPlacement = new GridPlacement(theme);
-        mainPlacement.setColumnTemplateFromString("20% auto 20px");
-        mainPlacement.setRowTemplateFromString("auto");
+        mainPlacement = new HorizontalPlacement(theme);
 
         coreFrame.setChildrenPlacement(mainPlacement);
 
@@ -94,7 +92,7 @@ public class Root extends Window {
                 Root.this.update();
             }
         };
-        mainPlacement.add(fw, 0,0,1,1);
+        mainPlacement.add(fw, new UnitValue(0, UnitValue.Unit.FIT));
         fw.setCanAddFolders(false);
         fw.initialize();
 
@@ -282,7 +280,7 @@ public class Root extends Window {
                 Root.this.update();
             }
         };
-        mainPlacement.add(editorSpace,0,1,1,1);
+        mainPlacement.add(editorSpace,new UnitValue(0, UnitValue.Unit.AUTO));
         editorSpace.initialize();
 
         editorInFocus = addEditor();
@@ -290,7 +288,7 @@ public class Root extends Window {
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
 
-        mainPlacement.add(scrollbar, 0, 2, 1, 1);
+        mainPlacement.add(scrollbar, new UnitValue(20, UnitValue.Unit.PIXELS));
         //core.resize(Size.fromDimension(this.getSize()));
 
         panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
@@ -422,19 +420,6 @@ public class Root extends Window {
             }
         }
 
-        SelectBox selection2 = new SelectBox("normal", 0,2,4);
-        selection2.setItemSize(new Size(200,40));
-
-        for(int i = 0;i < 9;i++){
-            selection2.addOption(new SelectBoxOption((10+(i*5))+"%"){
-                @Override
-                public void onSelected() {
-                    mainPlacement.getColumnTemplate().get(0).setValue((10+(index*5)));
-                    update();
-                }
-            });
-        }
-        selection2.setSelected(2);
 
         settingsWindow.getCoreFrame().setChildrenPlacement(grid);
 
@@ -444,17 +429,8 @@ public class Root extends Window {
         themeLabel.setBackgroudColor("primary");
         themeLabel.setHoverEffectDisabled(true);
 
-        Label sidebarWidthLabel = new Label("File sidebar width:", "normal", 0,0,4);
-        sidebarWidthLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
-        sidebarWidthLabel.setForegroundColor("text2");
-        sidebarWidthLabel.setBackgroudColor("primary");
-        sidebarWidthLabel.setHoverEffectDisabled(true);
-
         grid.add(themeLabel,0,0,1,1);
         grid.add(selection,0,1,1,1);
-
-        grid.add(sidebarWidthLabel,1,0,1,1);
-        grid.add(selection2,1,1,1,1);
     }
 
     public void bindEvents(){

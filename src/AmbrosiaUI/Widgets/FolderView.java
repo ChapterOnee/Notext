@@ -248,7 +248,7 @@ public class FolderView extends Frame {
             menu.addOption(new ContextMenuOption("Rename",renameFileImage){
                 @Override
                 protected void execute() {
-                    TextPrompt prompt = new TextPrompt(theme, "New File Name:"){
+                    TextPrompt prompt = new TextPrompt(theme, "New Folder Name:"){
                         @Override
                         public void onSubmited(PromptResult result) {
                             if(file.renameTo(new File(Paths.get(file.getParentFile().getAbsolutePath(),result.getContent()).toString()))){
@@ -406,10 +406,24 @@ public class FolderView extends Frame {
     public void setPath(String path){
         this.path = path;
         updateFiles();
+        window.update();
     }
 
     protected void fileSelected(String file){
 
+    }
+
+    @Override
+    public int getMinWidth() {
+        int width = 5;
+
+        for(PlacementCell cell: pathDisplayPlacement.getChildren()){
+            HorizontalPlacement.HorizontalPlacementCell cell2 = (HorizontalPlacement.HorizontalPlacementCell) cell;
+
+            width += cell2.getWidth().toPixels(pathDisplayPlacement.getRootSize(),cell2.getBoundElement(), UnitValue.Direction.HORIZONTAL);
+        }
+
+        return Math.max(width,250);
     }
 
     public String getPath() {
