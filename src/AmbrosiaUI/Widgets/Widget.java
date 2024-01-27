@@ -394,7 +394,7 @@ public abstract class Widget implements Comparable<Widget>{
 
             menu.setPosition(new Position(e.getX(),e.getY()));
 
-            window.showContextMenu(getContextMenu());
+            window.showContextMenu(menu);
         }
         else{
             onMouseClicked(e);
@@ -402,9 +402,7 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public void onMouseClicked(MouseEvent e){
-        if(e.getButton() == 3){
-            window.showContextMenu(getContextMenu());
-        }
+
     }
 
     public void onMousePressed(MouseEvent e){

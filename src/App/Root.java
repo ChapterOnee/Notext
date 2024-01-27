@@ -261,12 +261,35 @@ public class Root extends Window {
         DropdownMenu tools = new DropdownMenu("Tools", "small",0,0,4,new Size(200,30));
         tools.setzIndex(1);
 
+        Label open_console = new Label("Open Console", "small", 0,0,4){
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                if(System.getProperty("os.name").startsWith("Windows")){
+                    try {
+                        Runtime.getRuntime().exec("cmd /c start cmd.exe");
+                    } catch (IOException ignored) {
+
+                    }
+                }
+                else if(System.getProperty("os.name").startsWith("Linux")){
+                    try {
+                        Runtime.getRuntime().exec("gnome-terminal --working-directory=" + fw.getPath());
+                    } catch (IOException ignored) {
+                        System.out.println(ignored);
+                    }
+                }
+            }
+        };
+        open_console.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
         DropdownMenu openMenu = new DropdownMenu("Open..", "small", 0, 0, 4, new Size(200,30));
         openMenu.setzIndex(1);
         openMenu.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
         header_placement.add(menu, new UnitValue(0, UnitValue.Unit.FIT));
         header_placement.add(tools, new UnitValue(0, UnitValue.Unit.FIT));
+
+        tools.addMenuItem(new DropdownMenuItem(open_console));
 
         menu.addMenuItem(new DropdownMenuItem(new_file));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer

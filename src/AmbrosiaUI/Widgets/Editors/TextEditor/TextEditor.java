@@ -59,7 +59,7 @@ public class TextEditor extends Frame implements EditorLike {
         highlighter.addQuery(new HighlightQuery("(#.*)|(//.*)", "primary", "secondary"));*/
 
         this.highlighter = new SyntaxHighlighter("default");
-        this.highlighter.loadFromDirectory("syntax/default");
+        this.highlighter.loadFromDirectory("syntax");
 
         //this.highlighter.loadFromFile("syntax/default/theme.snx");
     }

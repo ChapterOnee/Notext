@@ -127,14 +127,16 @@ public class PIconEditor extends Frame implements EditorLike {
             g2.setColor(theme.getColorByName("secondary"));
             g2.fillRect(preview_pos.x, preview_pos.y, previewWidth, currentImage.getHeight());
 
-            g2.setColor(theme.getColorByName("accent"));
-            int segment = textWidth/op.getPositions().size();
-            int i = 0;
-            for (Position pos: op.getPositions()){
-                if(selected.contains(pos)){
-                    g2.fillRect(preview_pos.x+segment*i, preview_pos.y, segment, currentImage.getHeight()/10);
+            if(op.getPositions().size() > 0) {
+                g2.setColor(theme.getColorByName("accent"));
+                int segment = textWidth / op.getPositions().size();
+                int i = 0;
+                for (Position pos : op.getPositions()) {
+                    if (selected.contains(pos)) {
+                        g2.fillRect(preview_pos.x + segment * i, preview_pos.y, segment, currentImage.getHeight() / 10);
+                    }
+                    i++;
                 }
-                i++;
             }
 
             g2.setColor(theme.getColorByName("text1"));

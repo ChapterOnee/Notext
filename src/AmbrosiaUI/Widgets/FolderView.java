@@ -62,7 +62,7 @@ public class FolderView extends Frame {
     protected static final PathImage addFileImage = new PathImage("icons/addFile.pimg");
 
     protected static final PathImage renameFileImage = new PathImage("icons/rename.pimg");
-
+    protected static final PathImage removeFileImage = new PathImage("icons/remove.pimg");
 
     public void initialize() {
         corePlacement = new GridPlacement(theme);
@@ -97,7 +97,44 @@ public class FolderView extends Frame {
         pathDisplayFrame.setChildrenPlacement(pathDisplayPlacement);
         //pathDisplayFrame.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-        filesDisplayFrame = new Frame("primary", 1);
+        filesDisplayFrame = new Frame("primary", 1){
+            @Override
+            public ContextMenu getContextMenu() {
+                ContextMenu menu = new ContextMenu(theme);
+                menu.addOption(new ContextMenuOption("New Folder", addFolderImage){
+                    @Override
+                    protected void execute() {
+                        TextPrompt f = new TextPrompt(theme, "New Folder Name:") {
+                            @Override
+                            public void onSubmited(PromptResult result) {
+                                FileUtil.createFolder(path, result.getContent());
+                                updateFiles();
+                            }
+                        };
+                        f.ask();
+                    }
+                });
+                menu.addOption(new ContextMenuOption("New File",addFileImage){
+                    @Override
+                    protected void execute() {
+                        TextPrompt prompt = new TextPrompt(theme, "New File Name:"){
+                            @Override
+                            public void onSubmited(PromptResult result) {
+                                File nw = new File(Paths.get(path,result.getContent()).toString());
+                                try {
+                                    nw.createNewFile();
+                                    updateFiles();
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        };
+                        prompt.ask();
+                    }
+                });
+                return menu;
+            }
+        };
         corePlacement.add(filesDisplayFrame, 1, 0, 1, 1);
 
         filesDisplayPlacement = new VerticalPlacement(theme) {
@@ -236,7 +273,9 @@ public class FolderView extends Frame {
 
                         expanded = true;
 
-                        expandedPaths.add(file.getAbsolutePath());
+                        if(!expandedPaths.contains(file.getAbsolutePath())) {
+                            expandedPaths.add(file.getAbsolutePath());
+                        }
                     }
                     else{
                         this.setImage(expandImage);
@@ -267,6 +306,14 @@ public class FolderView extends Frame {
                         }
                     };
                     prompt.ask();
+                }
+            });
+
+            menu.addOption(new ContextMenuOption("Remove",removeFileImage){
+                @Override
+                protected void execute() {
+                    file.delete();
+                    updateFiles();
                 }
             });
             menu.addOption(new ContextMenuOption("New File",addFileImage){
@@ -322,6 +369,13 @@ public class FolderView extends Frame {
                     prompt.ask();
                 }
             });
+            menu.addOption(new ContextMenuOption("Remove",removeFileImage){
+                @Override
+                protected void execute() {
+                    file.delete();
+                    updateFiles();
+                }
+            });
 
             PathImage finalImage = fileImage;
 
@@ -369,8 +423,6 @@ public class FolderView extends Frame {
         if(allContents.isEmpty()){
             return;
         }
-
-        System.out.println(expandedPaths);
 
         addFilesToPlacement(allContents, filesDisplayPlacement);
 

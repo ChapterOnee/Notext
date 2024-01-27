@@ -1,8 +1,8 @@
 size 40 40
-fillPoly4 12 6 21 6 27 12 12 12 secondary
-fillPoly4 12 12 12 33 27 33 27 12 secondary
+fillPoly4 12 6 21 6 28 12 12 12 secondary
+fillPoly4 12 12 12 33 28 33 28 12 secondary
 line 12 6 21 6 text2 1
-line 21 6 27 12 text2 1
-line 27 12 27 33 text2 1
-line 27 33 12 33 text2 1
+line 21 6 28 12 text2 1
+line 28 12 28 33 text2 1
+line 28 33 12 33 text2 1
 line 12 33 12 6 text2 1
