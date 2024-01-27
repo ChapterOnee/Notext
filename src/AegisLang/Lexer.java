@@ -7,58 +7,50 @@ import java.util.regex.Pattern;
 
 public class Lexer {
 
-    private HashMap<String, LexerOperation> operations = new HashMap<>();
-    public enum LexerOperation {
-        MULTIPLY,
-        ADD,
-        SUBTRACT,
-        DIVIDE,
-        SET,
+    private HashMap<String, LexerTokenType> tokenTypes = new HashMap<>();
+    public enum LexerTokenType {
+        OPERATION,
         END_EXPRESSION,
-        NUMBER
+        NUMBER,
+        ID
     }
 
     public Lexer() {
-        operations.put("=", LexerOperation.SET);
-        operations.put("\\*", LexerOperation.MULTIPLY);
-        operations.put("-", LexerOperation.SUBTRACT);
-        operations.put("\\+", LexerOperation.ADD);
-        operations.put("/", LexerOperation.DIVIDE);
-        operations.put("\\d+", LexerOperation.NUMBER);
-        operations.put(";", LexerOperation.END_EXPRESSION);
+        tokenTypes.put("=|\\+|-|\\*|/", LexerTokenType.OPERATION);
+        tokenTypes.put("\\d+", LexerTokenType.NUMBER);
+        tokenTypes.put(";", LexerTokenType.END_EXPRESSION);
+        tokenTypes.put("[a-zA-Z_]+", LexerTokenType.ID);
     }
 
-    public void lexData(String data){
+    public ArrayList<LexerToken> lexData(String data){
         StringBuilder operationsPattern = new StringBuilder();
 
-        for (String op: operations.keySet()){
-            operationsPattern.append(Pattern.quote(op)).append("|");
+        for (String op: tokenTypes.keySet()){
+            operationsPattern.append(op).append("|");
         }
         operationsPattern.deleteCharAt(operationsPattern.length()-1);
 
         Pattern pattern = Pattern.compile(String.join("|",operationsPattern.toString()));
         Matcher matcher = pattern.matcher(data);
 
-        ArrayList<LexerToken> tokens = new ArrayList<>();
+        ArrayList<AegisLang.LexerToken> tokens = new ArrayList<>();
 
-        int last = 0;
-        String content;
-        LexerOperation operation = LexerOperation.END_EXPRESSION;
+        LexerTokenType operation = LexerTokenType.END_EXPRESSION;
         while(matcher.find()){
-            content = data.substring(last, matcher.start());
-
-            for(String op: operations.keySet()){
+            for(String op: tokenTypes.keySet()){
                 if(matcher.group().matches(op)){
-                    operation = operations.get(op);
+                    operation = tokenTypes.get(op);
                     break;
                 }
             }
 
-            tokens.add(new LexerToken(content, operation));
-
-            last = matcher.end();
+            tokens.add(new AegisLang.LexerToken(matcher.group(), operation));
         }
 
-        System.out.println(tokens);
+        /*for(LexerToken token: tokens){
+            System.out.println(token);
+        }*/
+
+        return tokens;
     }
 }

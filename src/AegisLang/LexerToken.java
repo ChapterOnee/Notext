@@ -2,11 +2,15 @@ package AegisLang;
 
 public class LexerToken {
     private String content;
-    private Lexer.LexerOperation operation;
+    private Lexer.LexerTokenType type;
 
-    public LexerToken(String content, Lexer.LexerOperation operation) {
+    public LexerToken(String content, Lexer.LexerTokenType type) {
         this.content = content;
-        this.operation = operation;
+        this.type = type;
+    }
+    public LexerToken(ASTreeNode node){
+        this.content = node.getValue();
+        this.type = node.getType();
     }
 
     public String getContent() {
@@ -17,19 +21,19 @@ public class LexerToken {
         this.content = content;
     }
 
-    public Lexer.LexerOperation getOperation() {
-        return operation;
+    public Lexer.LexerTokenType getType() {
+        return type;
     }
 
-    public void setOperation(Lexer.LexerOperation operation) {
-        this.operation = operation;
+    public void setType(Lexer.LexerTokenType type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
         return "LexerToken{" +
                 "content='" + content + '\'' +
-                ", operation=" + operation +
+                ", operation=" + type +
                 '}';
     }
 }

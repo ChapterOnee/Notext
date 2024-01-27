@@ -1,4 +1,5 @@
 import AegisLang.Lexer;
+import AegisLang.Parser;
 import AmbrosiaUI.Prompts.FilePrompt;
 import AmbrosiaUI.Prompts.Prompt;
 import AmbrosiaUI.Prompts.PromptResult;
@@ -16,7 +17,7 @@ public class Main {
         //root.show();
 
         Lexer lex = new Lexer();
-
+        Parser parser = new Parser();
 
         try(BufferedReader bf = new BufferedReader(new FileReader("AegisCode/main.ag"))){
             StringBuilder allData = new StringBuilder();
@@ -26,7 +27,7 @@ public class Main {
             }
 
 
-            lex.lexData(allData.toString());
+            parser.parseAbstractSyntaxTrees(lex.lexData(allData.toString()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
