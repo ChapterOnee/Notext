@@ -11,6 +11,7 @@ import AmbrosiaUI.Widgets.Icons.PathImage;
 import AmbrosiaUI.Widgets.Placements.*;
 import org.w3c.dom.Text;
 
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class FolderView extends Frame {
     protected String path = System.getProperty("user.home");
 
     protected final ArrayList<String> allowedRegex = new ArrayList<>();
+    protected final ArrayList<String> expandedPaths = new ArrayList<>();
 
     protected Frame pathDisplayFrame;
     protected HorizontalPlacement pathDisplayPlacement;
@@ -33,6 +35,8 @@ public class FolderView extends Frame {
 
     private boolean foldersOnly = false;
     private boolean canAddFolders = true;
+
+    private boolean navigationOnFolderClick = true;
 
     protected int itemHeight = 25;
     public FolderView(Theme theme) {
@@ -72,7 +76,7 @@ public class FolderView extends Frame {
                     TextPrompt f = new TextPrompt(theme, "New Folder Name:") {
                         @Override
                         public void onSubmited(PromptResult result) {
-                            new File(Paths.get(path, result.getContent()).toString()).mkdir();
+                            FileUtil.createFolder(path, result.getContent());
                             updateFiles();
                         }
                     };
@@ -151,7 +155,7 @@ public class FolderView extends Frame {
                     setPath(paths.get(placementIndex));
                 }
             };
-            pathDisplayPlacement.add(temp, new UnitValue(getStringWidth(name,theme.getFontByName("small"))+10, UnitValue.Unit.PIXELS));
+            pathDisplayPlacement.add(temp, new UnitValue(0, UnitValue.Unit.FIT));
         }
     }
 
@@ -181,11 +185,15 @@ public class FolderView extends Frame {
         Label tempLabel;
         Icon expand = null;
 
+        ContextMenu menu = new ContextMenu(theme);
+
         if(file.isDirectory()){
             tempLabel = new Label(name, "small",0,0,4){
                 @Override
                 public void onMouseClicked(MouseEvent e) {
-                    setPath(file.getAbsolutePath());
+                    if(navigationOnFolderClick) {
+                        setPath(file.getAbsolutePath());
+                    }
                 }
             };
 
@@ -227,6 +235,8 @@ public class FolderView extends Frame {
                         this.setImage(expandedImage);
 
                         expanded = true;
+
+                        expandedPaths.add(file.getAbsolutePath());
                     }
                     else{
                         this.setImage(expandImage);
@@ -235,6 +245,8 @@ public class FolderView extends Frame {
 
                         temp.setMinHeight(itemHeight);
                         expanded = false;
+
+                        expandedPaths.remove(file.getAbsolutePath());
                     }
 
                     window.update();
@@ -244,16 +256,14 @@ public class FolderView extends Frame {
                 }
             }.init(expanded, content);
 
-            ContextMenu menu = new ContextMenu(theme);
             menu.addOption(new ContextMenuOption("Rename",renameFileImage){
                 @Override
                 protected void execute() {
-                    TextPrompt prompt = new TextPrompt(theme, "New Folder Name:"){
+                    TextPrompt prompt = new TextPrompt(theme, "New Name:"){
                         @Override
                         public void onSubmited(PromptResult result) {
-                            if(file.renameTo(new File(Paths.get(file.getParentFile().getAbsolutePath(),result.getContent()).toString()))){
-                                tempLabel.setText(result.getContent());
-                            }
+                            FileUtil.renameFile(file, result.getContent());
+                            updateFiles();
                         }
                     };
                     prompt.ask();
@@ -267,15 +277,10 @@ public class FolderView extends Frame {
                         public void onSubmited(PromptResult result) {
                             File nw = new File(Paths.get(file.getAbsolutePath(),result.getContent()).toString());
                             try {
-                                if(nw.createNewFile()){
-                                    if(content.getChildrenPlacement() == null){
-                                        return;
-                                    }
-
-                                    generateFileWidget(nw,(VerticalPlacement) content.getChildrenPlacement());
-                                }
+                                nw.createNewFile();
+                                updateFiles();
                             } catch (IOException e) {
-                                Logger.printError("Failed to create file. " + e);
+                                throw new RuntimeException(e);
                             }
                         }
                     };
@@ -288,21 +293,13 @@ public class FolderView extends Frame {
                     TextPrompt f = new TextPrompt(theme, "New Folder Name:") {
                         @Override
                         public void onSubmited(PromptResult result) {
-                            File nw = new File(Paths.get(file.getAbsolutePath(), result.getContent()).toString());
-
-                            if(nw.mkdir()){
-                                if(content.getChildrenPlacement() == null){
-                                    return;
-                                }
-
-                                generateFileWidget(nw,(VerticalPlacement) content.getChildrenPlacement());
-                            }
+                            FileUtil.createFolder(file.getAbsolutePath(), result.getContent());
+                            updateFiles();
                         }
                     };
                     f.ask();
                 }
             });
-            tempLabel.setContextMenu(menu);
         }
         else {
             tempLabel = new Label(name, "small", 0, 0, 4) {
@@ -312,6 +309,20 @@ public class FolderView extends Frame {
                 }
             };
 
+            menu.addOption(new ContextMenuOption("Rename",renameFileImage){
+                @Override
+                protected void execute() {
+                    TextPrompt prompt = new TextPrompt(theme, "New File Name:"){
+                        @Override
+                        public void onSubmited(PromptResult result) {
+                            FileUtil.renameFile(file, result.getContent());
+                            updateFiles();
+                        }
+                    };
+                    prompt.ask();
+                }
+            });
+
             PathImage finalImage = fileImage;
 
             if (name.matches(".*\\.py")) {
@@ -320,6 +331,7 @@ public class FolderView extends Frame {
 
             icon.setImage(finalImage.getScaled((double) itemHeight / fileImage.getHeight()));
         }
+        tempLabel.setContextMenu(menu);
 
         icon.setLockedToView(filesDisplayFrame);
         tempLabel.setBackgroudColor("primary");
@@ -341,6 +353,10 @@ public class FolderView extends Frame {
 
         temp.setMinHeight(itemHeight);
 
+        if(expandedPaths.contains(file.getAbsolutePath())){
+            expand.onMouseClicked(null);
+        }
+
         return temp;
     }
 
@@ -354,10 +370,15 @@ public class FolderView extends Frame {
             return;
         }
 
+        System.out.println(expandedPaths);
+
         addFilesToPlacement(allContents, filesDisplayPlacement);
 
         filesDisplayFrame.getScrollController().setScrollY(0);
         filesDisplayFrame.getScrollController().setMaxScrollY(Math.max(filesDisplayPlacement.getMinimalHeight(),0));
+
+        //expandedPaths.clear();
+        window.update();
     }
 
     private ArrayList<File> getAllFilesInDirectory(String path){
@@ -405,8 +426,8 @@ public class FolderView extends Frame {
 
     public void setPath(String path){
         this.path = path;
+        expandedPaths.clear();
         updateFiles();
-        window.update();
     }
 
     protected void fileSelected(String file){
@@ -423,7 +444,7 @@ public class FolderView extends Frame {
             width += cell2.getWidth().toPixels(pathDisplayPlacement.getRootSize(),cell2.getBoundElement(), UnitValue.Direction.HORIZONTAL);
         }
 
-        return Math.max(width,250);
+        return Math.max(width,350);
     }
 
     public String getPath() {
@@ -457,5 +478,13 @@ public class FolderView extends Frame {
 
     public void setCanAddFolders(boolean canAddFolders) {
         this.canAddFolders = canAddFolders;
+    }
+
+    public boolean canNavigateOnFolderClick() {
+        return navigationOnFolderClick;
+    }
+
+    public void setNavigationOnFolderClick(boolean navigationOnFolderClick) {
+        this.navigationOnFolderClick = navigationOnFolderClick;
     }
 }

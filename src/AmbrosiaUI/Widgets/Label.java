@@ -3,6 +3,7 @@ package AmbrosiaUI.Widgets;
 import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Utility.Rectangle;
+import AmbrosiaUI.Utility.StringUtil;
 
 import java.awt.*;
 
@@ -54,6 +55,11 @@ public class Label extends Frame {
             drawText(g2);
         }
         //System.out.println(this.getX() + "x" + this.getY() + " " + text + g2.getFont());
+    }
+
+    @Override
+    public int getMinWidth() {
+        return StringUtil.getStringWidth(text, theme.getFontByName(font)) + 10;
     }
 
     public void drawText(Graphics2D g2){

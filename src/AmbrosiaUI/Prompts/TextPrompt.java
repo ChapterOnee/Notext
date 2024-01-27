@@ -4,6 +4,7 @@ import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -27,7 +28,17 @@ public class TextPrompt extends Prompt{
         promptLabel.setForegroundColor("text2");
         promptLabel.setHoverEffectDisabled(true);
 
-        Input mainInput = new Input("normal",0,5,4);
+        Input mainInput = new Input("normal",0,5,4){
+            @Override
+            public void onKeyPressed(KeyEvent keyEvent) {
+                super.onKeyPressed(keyEvent);
+
+                if(keyEvent.getKeyCode() == 10){
+                    result = new PromptResult(this.getText());
+                    win.close();
+                }
+            }
+        };
         mainInput.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
         Button confirm = new Button("Confirm","normal",0,5,4){
@@ -50,6 +61,8 @@ public class TextPrompt extends Prompt{
         corePlacement.add(mainInput,2,0,1,3);
         corePlacement.add(confirm,4,0,1,1);
         corePlacement.add(cancel,4,2,1,1);
+
+        win.setElement_in_focus(mainInput);
 
         win.update();
     }

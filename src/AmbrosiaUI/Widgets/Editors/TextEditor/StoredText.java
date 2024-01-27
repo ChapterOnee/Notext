@@ -78,6 +78,7 @@ public class StoredText {
         if(raw_text.isBlank()){
             raw_text = " \n\n";
         }
+        raw_text = raw_text.replaceAll("\t", "    ");
 
         this.storeState();
         String[] data = raw_text.split("\n\r|\n|\r");

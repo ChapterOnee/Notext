@@ -29,6 +29,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Root extends Window {
     private EditorLike editorInFocus;
@@ -51,6 +53,7 @@ public class Root extends Window {
         coreHeader.setChildrenPlacement(header_placement);
 
         FolderView fw = new FolderView(theme){
+
             @Override
             protected void fileSelected(String file) {
                 boolean found = false;
@@ -91,13 +94,25 @@ public class Root extends Window {
                 super.setPath(path);
                 Root.this.update();
             }
+
+            @Override
+            protected void updatePath() {
+                pathDisplayPlacement.clear();
+                String name = path;
+
+                Label temp = new Label(name,"small",0,0,5);
+                temp.setHoverEffectDisabled(true);
+                pathDisplayPlacement.add(temp, new UnitValue(getStringWidth(name,theme.getFontByName("small"))+10, UnitValue.Unit.PIXELS));
+            }
         };
         mainPlacement.add(fw, new UnitValue(0, UnitValue.Unit.FIT));
         fw.setCanAddFolders(false);
+        fw.setNavigationOnFolderClick(false);
         fw.initialize();
 
         fw.addAllowed(".*");
-        fw.setPath("C:\\Users\\filah\\IdeaProjects\\TextEditor");
+        //fw.setPath("C:\\Users\\filah\\IdeaProjects\\TextEditor");
+        fw.setPath("/home/hades/IdeaProjects/text_editor");
 
         Button new_file = new Button("New", "small", 0,0,4) {
             @Override
@@ -243,11 +258,15 @@ public class Root extends Window {
         DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(200,30));
         menu.setzIndex(1);
 
+        DropdownMenu tools = new DropdownMenu("Tools", "small",0,0,4,new Size(200,30));
+        tools.setzIndex(1);
+
         DropdownMenu openMenu = new DropdownMenu("Open..", "small", 0, 0, 4, new Size(200,30));
         openMenu.setzIndex(1);
         openMenu.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-        header_placement.add(menu, new UnitValue(50, UnitValue.Unit.PIXELS));
+        header_placement.add(menu, new UnitValue(0, UnitValue.Unit.FIT));
+        header_placement.add(tools, new UnitValue(0, UnitValue.Unit.FIT));
 
         menu.addMenuItem(new DropdownMenuItem(new_file));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer

@@ -728,4 +728,8 @@ public class Window {
     public JPanel getPanel() {
         return panel;
     }
+
+    public void setElement_in_focus(Widget element_in_focus) {
+        this.element_in_focus = element_in_focus;
+    }
 }
