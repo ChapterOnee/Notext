@@ -31,21 +31,18 @@ public class LexerToken implements Comparable<LexerToken>{
 
     public int getOperationPriority(){
         return switch (content){
-            case "+" -> 0;
-            case "-" -> 0;
-            case "*" -> 1;
-            case "/" -> 1;
-            case "=" -> 2;
+            case "+" -> 2;
+            case "-" -> 1;
+            case "*" -> 0;
+            case "/" -> 0;
+            case "=" -> 3;
             default -> 0;
         };
     }
 
     @Override
     public String toString() {
-        return "LexerToken{" +
-                "content='" + content + '\'' +
-                ", operation=" + type +
-                '}';
+        return type + ":" + content;
     }
 
     @Override

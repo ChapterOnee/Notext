@@ -6,8 +6,8 @@ public class ASTreeNode implements Comparable<ASTreeNode>{
     private Lexer.LexerTokenType type;
     private String value;
 
-    private ArrayList<ASTreeNode> leftChildNodes = new ArrayList<>();
-    private ArrayList<ASTreeNode> rightChildNodes = new ArrayList<>();
+    private ASTreeNode leftChildNode;
+    private ASTreeNode rightChildNode;
 
     public ASTreeNode(Lexer.LexerTokenType type, String value) {
         this.type = type;
@@ -18,12 +18,6 @@ public class ASTreeNode implements Comparable<ASTreeNode>{
         this.value = token.getContent();
     }
 
-    public void addChildNodeLeft(ASTreeNode node){
-        leftChildNodes.add(node);
-    }
-    public void addChildNodeRight(ASTreeNode node){
-        rightChildNodes.add(node);
-    }
 
     public Lexer.LexerTokenType getType() {
         return type;
@@ -41,25 +35,25 @@ public class ASTreeNode implements Comparable<ASTreeNode>{
         this.value = value;
     }
 
-    public ArrayList<ASTreeNode> getLeftChildNodes() {
-        return leftChildNodes;
+    public ASTreeNode getLeftChildNode() {
+        return leftChildNode;
     }
 
-    public void setLeftChildNodes(ArrayList<ASTreeNode> leftChildNodes) {
-        this.leftChildNodes = leftChildNodes;
+    public void setLeftChildNode(ASTreeNode leftChildNode) {
+        this.leftChildNode = leftChildNode;
     }
 
-    public ArrayList<ASTreeNode> getRightChildNodes() {
-        return rightChildNodes;
+    public ASTreeNode getRightChildNode() {
+        return rightChildNode;
     }
 
-    public void setRightChildNodes(ArrayList<ASTreeNode> rightChildNodes) {
-        this.rightChildNodes = rightChildNodes;
+    public void setRightChildNode(ASTreeNode rightChildNode) {
+        this.rightChildNode = rightChildNode;
     }
 
     @Override
     public String toString() {
-        return (leftChildNodes.isEmpty() ? "" : leftChildNodes+"<-")+"("+type+" "+value+")"+(rightChildNodes.isEmpty()?"":"->"+rightChildNodes);
+        return (leftChildNode == null ? "" : leftChildNode+"<-")+"("+type+":"+value+")"+(rightChildNode == null ? "" : "->" + rightChildNode);
     }
 
     public int getOperationPriority(){
