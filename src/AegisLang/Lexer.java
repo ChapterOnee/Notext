@@ -10,6 +10,10 @@ public class Lexer {
     private HashMap<String, LexerTokenType> tokenTypes = new HashMap<>();
     public enum LexerTokenType {
         OPERATION,
+
+        CONTEXT_OPENER,
+        CONTEXT_CLOSER,
+        CONTEXT,
         END_EXPRESSION,
         NUMBER,
         ID
@@ -20,6 +24,8 @@ public class Lexer {
         tokenTypes.put("\\d+", LexerTokenType.NUMBER);
         tokenTypes.put(";", LexerTokenType.END_EXPRESSION);
         tokenTypes.put("[a-zA-Z_]+", LexerTokenType.ID);
+        tokenTypes.put("\\(|\\{", LexerTokenType.CONTEXT_OPENER);
+        tokenTypes.put("\\)|\\}", LexerTokenType.CONTEXT_CLOSER);
     }
 
     public ArrayList<LexerToken> lexData(String data){

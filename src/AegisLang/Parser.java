@@ -1,90 +1,95 @@
 package AegisLang;
 
+import AmbrosiaUI.Utility.Logger;
+
 import javax.print.MultiDocPrintService;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Parser {
     public void parseAbstractSyntaxTrees(ArrayList<LexerToken> tokens){
-        ArrayList<LexerToken> keyOperationTokens = new ArrayList<>();
+        ArrayList<ArrayList<LexerToken>> expressionTokens = new ArrayList<>();
+        expressionTokens.add(new ArrayList<>());
 
-        boolean blocked = false;
         for(LexerToken token: tokens){
-            if(token.getType() == Lexer.LexerTokenType.OPERATION && !blocked){
-                blocked = true;
-                keyOperationTokens.add(token);
+            if(token.getType() == Lexer.LexerTokenType.END_EXPRESSION) {
+                expressionTokens.add(new ArrayList<>());
+                continue;
             }
-            if(blocked && token.getType() == Lexer.LexerTokenType.END_EXPRESSION){
-                blocked = false;
-            }
-        }
-        ArrayList<ASTreeNode> keyNodes = new ArrayList<>();
-        for(LexerToken token: keyOperationTokens){
-            ASTreeNode node = new ASTreeNode(token);
-            keyNodes.add(node);
 
-            ArrayList<LexerToken> usedTokens = new ArrayList<>();
-            usedTokens.add(token);
-            addChildNodes(tokens, node, tokens.indexOf(token), usedTokens);
+            expressionTokens.get(expressionTokens.size()-1).add(token);
+        }
+
+        ArrayList<ASTreeNode> keyNodes = new ArrayList<>();
+        for(ArrayList<LexerToken> expression: expressionTokens){
+            keyNodes.add(generateTreeFromExpression(expression));
         }
 
         System.out.println(keyNodes);
     }
 
-    private void addChildNodes(ArrayList<LexerToken> tokens, ASTreeNode coreNode, int coreNodeIndex, ArrayList<LexerToken> usedTokens){
+    public ASTreeNode generateTreeFromExpression(ArrayList<LexerToken> tokens){
         /*
-            Everything up/left from the operations
+            Find all contexts
          */
-        boolean foundLeft = false;
-        for(int j = coreNodeIndex-1;j >= 0;j--){
-            if(usedTokens.contains(tokens.get(j)) || tokens.get(j).getType() == Lexer.LexerTokenType.END_EXPRESSION){
-                break;
-            }
 
-            if(tokens.get(j).getType() == Lexer.LexerTokenType.OPERATION){
-                ASTreeNode node = new ASTreeNode(tokens.get(j));
-                usedTokens.add(tokens.get(j));
-                addChildNodes(tokens, node, j, usedTokens);
-                coreNode.addChildNodeLeft(node);
-                foundLeft = true;
-                break;
-            }
-        }
-
-        if(!foundLeft){
-            for(int j = coreNodeIndex-1;j >= 0;j--){
-                if(usedTokens.contains(tokens.get(j)) || tokens.get(j).getType() == Lexer.LexerTokenType.END_EXPRESSION){
-                    break;
+        ArrayList<ASTreeNode> nodesWithContexts = new ArrayList<>();
+        for(int i = 0;i < tokens.size();i++){
+            if(tokens.get(i).getType() == Lexer.LexerTokenType.CONTEXT_OPENER){
+                for(int j = tokens.size()-1; j >= i;j--){
+                    if(tokens.get(j).getType() == Lexer.LexerTokenType.CONTEXT_CLOSER){
+                        System.out.println("Found context" + i + "->" + j);
+                        ASTreeNode nwNode = generateTreeFromExpression(new ArrayList<>(tokens.subList(i,j)));
+                        nwNode.setType(Lexer.LexerTokenType.CONTEXT);
+                        nodesWithContexts.add(nwNode);
+                        i = j;
+                    }
                 }
-                coreNode.addChildNodeLeft(new ASTreeNode(tokens.get(j)));
+                continue;
             }
+
+            nodesWithContexts.add(new ASTreeNode(tokens.get(i)));
         }
+
+        ASTreeNode outNode = new ASTreeNode(null,null);
 
         /*
-            Everything down/right from the operations
+            Find operation with highest priority
          */
-        boolean foundRight = false;
-        for(int j = coreNodeIndex+1;j < tokens.size();j++){
-            if(usedTokens.contains(tokens.get(j)) || tokens.get(j).getType() == Lexer.LexerTokenType.END_EXPRESSION){
-                break;
-            }
-
-            if(tokens.get(j).getType() == Lexer.LexerTokenType.OPERATION){
-                ASTreeNode node = new ASTreeNode(tokens.get(j));
-                usedTokens.add(tokens.get(j));
-                addChildNodes(tokens, node, j, usedTokens);
-                coreNode.addChildNodeRight(node);
-                foundRight = true;
-                break;
+        ArrayList<ASTreeNode> foundOperations = new ArrayList<>();
+        for(ASTreeNode node:  nodesWithContexts){
+            if(node.getType() == Lexer.LexerTokenType.OPERATION){
+                foundOperations.add(node);
             }
         }
+        Collections.sort(foundOperations);
 
-        if(!foundRight){
-            for(int j = coreNodeIndex+1;j < tokens.size();j++){
-                if(usedTokens.contains(tokens.get(j)) || tokens.get(j).getType() == Lexer.LexerTokenType.END_EXPRESSION){
-                    break;
-                }
-                coreNode.addChildNodeRight(new ASTreeNode(tokens.get(j)));
+        if(foundOperations.isEmpty()){
+            if(nodesWithContexts.isEmpty()){
+                return outNode;
             }
+            outNode.setType(nodesWithContexts.get(0).getType());
+            outNode.setValue(nodesWithContexts.get(0).getValue());
+            return outNode;
         }
+        outNode.setType(foundOperations.get(0).getType());
+        outNode.setValue(foundOperations.get(0).getValue());
+        /*
+            Generate left and right nodes
+         */
+        ArrayList<LexerToken> leftTokens = new ArrayList<>();
+        for(int i = nodesWithContexts.indexOf(foundOperations.get(0))-1;i >= 0;i--){
+            leftTokens.add(new LexerToken(nodesWithContexts.get(i)));
+        }
+        outNode.addChildNodeLeft(generateTreeFromExpression(leftTokens));
+
+        // Right
+        ArrayList<LexerToken> rightTokens = new ArrayList<>();
+        for(int i = nodesWithContexts.indexOf(foundOperations.get(0))+1;i < nodesWithContexts.size();i++){
+            rightTokens.add(new LexerToken(nodesWithContexts.get(i)));
+        }
+        outNode.addChildNodeRight(generateTreeFromExpression(rightTokens));
+
+        return outNode;
     }
 }

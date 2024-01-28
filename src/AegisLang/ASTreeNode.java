@@ -2,7 +2,7 @@ package AegisLang;
 
 import java.util.ArrayList;
 
-public class ASTreeNode {
+public class ASTreeNode implements Comparable<ASTreeNode>{
     private Lexer.LexerTokenType type;
     private String value;
 
@@ -60,5 +60,20 @@ public class ASTreeNode {
     @Override
     public String toString() {
         return (leftChildNodes.isEmpty() ? "" : leftChildNodes+"<-")+"("+type+" "+value+")"+(rightChildNodes.isEmpty()?"":"->"+rightChildNodes);
+    }
+
+    public int getOperationPriority(){
+        return switch (value){
+            case "+" -> 0;
+            case "-" -> 0;
+            case "*" -> 1;
+            case "/" -> 1;
+            case "=" -> 2;
+            default -> 0;
+        };
+    }
+    @Override
+    public int compareTo(ASTreeNode o) {
+        return Integer.compare(o.getOperationPriority(), getOperationPriority());
     }
 }
