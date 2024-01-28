@@ -11,6 +11,8 @@ public class Parser {
         ArrayList<ArrayList<LexerToken>> expressionTokens = new ArrayList<>();
         expressionTokens.add(new ArrayList<>());
 
+        System.out.println(tokens);
+
         for(LexerToken token: tokens){
             if(token.getType() == Lexer.LexerTokenType.END_EXPRESSION) {
                 expressionTokens.add(new ArrayList<>());
@@ -22,11 +24,13 @@ public class Parser {
 
         ArrayList<ASTreeNode> keyNodes = new ArrayList<>();
         for(ArrayList<LexerToken> expression: expressionTokens){
+            System.out.println(expression);
             if (expression.isEmpty()){
                 continue;
             }
             keyNodes.add(generateTreeFromExpression(expression));
         }
+
 
         for (ASTreeNode node: keyNodes) {
             displayTree(node);
@@ -37,12 +41,24 @@ public class Parser {
         /*
             Find all contexts
          */
+        ASTreeNode outNode = new ASTreeNode(null,null);
 
-        if(tokens.get(0).getType() == Lexer.LexerTokenType.CONTEXT_OPENER && tokens.get(tokens.size()-1).getType() == Lexer.LexerTokenType.CONTEXT_CLOSER){
-            tokens = new ArrayList<>(tokens.subList(1, tokens.size()-1));
+        System.out.println(tokens);
+        if(tokens.size() == 0){
+            return outNode;
         }
 
-        ASTreeNode outNode = new ASTreeNode(null,null);
+        if(tokens.get(0).getType() == Lexer.LexerTokenType.CONTEXT_OPENER){
+            int j = 0;
+            for(int i = 0;i < tokens.size();i++){
+                if(tokens.get(i).getType() == Lexer.LexerTokenType.CONTEXT_CLOSER){
+                    j = i;
+                    break;
+                }
+            }
+            outNode.setLeftChildNode(generateTreeFromExpression(new ArrayList<>(tokens.subList(j+1, tokens.size()))));
+            tokens = new ArrayList<>(tokens.subList(1, j));
+        }
 
         /*
             Find operation with highest priority
@@ -59,24 +75,37 @@ public class Parser {
                 continue;
             }
 
-            if(tokens.get(i).getType() == Lexer.LexerTokenType.OPERATION){
+            if(tokens.get(i).getType() == Lexer.LexerTokenType.OPERATION || tokens.get(i).getType() == Lexer.LexerTokenType.END_EXPRESSION){
                 foundOperations.add(tokens.get(i));
             }
         }
-        Collections.sort(foundOperations);
+        Collections.reverse(foundOperations);
 
         if(foundOperations.isEmpty()){
+            if(tokens.size() > 1){
+                outNode.setRightChildNode(generateTreeFromExpression(new ArrayList<>(tokens.subList(1,tokens.size()))));
+            }
             outNode.setType(tokens.get(0).getType());
             outNode.setValue(tokens.get(0).getContent());
             return outNode;
         }
-        outNode.setType(foundOperations.get(0).getType());
-        outNode.setValue(foundOperations.get(0).getContent());
+
+        LexerToken highestPriorityToken = foundOperations.get(0);
+        for(LexerToken token: foundOperations){
+            if(token.getOperationPriority() > highestPriorityToken.getOperationPriority()){
+                highestPriorityToken = token;
+            }
+        }
+
+        outNode.setType(highestPriorityToken.getType());
+        outNode.setValue(highestPriorityToken.getContent());
+
+
         /*
             Generate left and right nodes
          */
         ArrayList<LexerToken> leftTokens = new ArrayList<>();
-        for(int i = tokens.indexOf(foundOperations.get(0))-1;i >= 0;i--){
+        for(int i = tokens.indexOf(highestPriorityToken)-1;i >= 0;i--){
             leftTokens.add(tokens.get(i));
         }
         Collections.reverse(leftTokens);
@@ -84,7 +113,7 @@ public class Parser {
 
         // Right
         ArrayList<LexerToken> rightTokens = new ArrayList<>();
-        for(int i = tokens.indexOf(foundOperations.get(0))+1;i < tokens.size();i++){
+        for(int i = tokens.indexOf(highestPriorityToken)+1;i < tokens.size();i++){
             rightTokens.add(tokens.get(i));
         }
         outNode.setRightChildNode(generateTreeFromExpression(rightTokens));

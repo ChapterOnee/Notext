@@ -14,18 +14,26 @@ public class Lexer {
         CONTEXT_OPENER,
         CONTEXT_CLOSER,
         CONTEXT,
+        GROUP_OPENER,
+        GROUP_CLOSER,
         END_EXPRESSION,
         NUMBER,
-        ID
+        ID,
     }
 
     public Lexer() {
+        tokenTypes.put("==", LexerTokenType.OPERATION);
         tokenTypes.put("=|\\+|-|\\*|/", LexerTokenType.OPERATION);
         tokenTypes.put("\\d+", LexerTokenType.NUMBER);
         tokenTypes.put(";", LexerTokenType.END_EXPRESSION);
         tokenTypes.put("[a-zA-Z_]+", LexerTokenType.ID);
-        tokenTypes.put("\\(|\\{", LexerTokenType.CONTEXT_OPENER);
-        tokenTypes.put("\\)|\\}", LexerTokenType.CONTEXT_CLOSER);
+        tokenTypes.put("\\(.*\\)", LexerTokenType.CONTEXT);
+        tokenTypes.put("\\{.*\\}", LexerTokenType.CONTEXT);
+
+        /*tokenTypes.put("\\(", LexerTokenType.CONTEXT_OPENER);
+        tokenTypes.put("\\)", LexerTokenType.CONTEXT_CLOSER);
+        tokenTypes.put("\\{", LexerTokenType.GROUP_OPENER);
+        tokenTypes.put("\\}", LexerTokenType.GROUP_CLOSER);*/
     }
 
     public ArrayList<LexerToken> lexData(String data){
@@ -36,7 +44,7 @@ public class Lexer {
         }
         operationsPattern.deleteCharAt(operationsPattern.length()-1);
 
-        Pattern pattern = Pattern.compile(String.join("|",operationsPattern.toString()));
+        Pattern pattern = Pattern.compile(String.join("|",operationsPattern.toString()), Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(data);
 
         ArrayList<AegisLang.LexerToken> tokens = new ArrayList<>();

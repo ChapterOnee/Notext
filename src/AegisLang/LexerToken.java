@@ -1,6 +1,6 @@
 package AegisLang;
 
-public class LexerToken implements Comparable<LexerToken>{
+public class LexerToken{
     private String content;
     private Lexer.LexerTokenType type;
 
@@ -31,11 +31,11 @@ public class LexerToken implements Comparable<LexerToken>{
 
     public int getOperationPriority(){
         return switch (content){
-            case "+" -> 2;
+            case "+" -> 1;
             case "-" -> 1;
             case "*" -> 0;
             case "/" -> 0;
-            case "=" -> 3;
+            case "=" -> 2;
             default -> 0;
         };
     }
@@ -43,10 +43,5 @@ public class LexerToken implements Comparable<LexerToken>{
     @Override
     public String toString() {
         return type + ":" + content;
-    }
-
-    @Override
-    public int compareTo(LexerToken o) {
-        return Integer.compare(o.getOperationPriority(), getOperationPriority());
     }
 }
