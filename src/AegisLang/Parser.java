@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Parser {
-    public void parseAbstractSyntaxTrees(ArrayList<LexerToken> tokens){
+
+    public static ArrayList<ASTreeNode> parseContext(ASTreeNode context){
+        return parseAbstractSyntaxTrees(Lexer.lexData(context.getValue().substring(1,context.getValue().length()-1)));
+    }
+    public static ArrayList<ASTreeNode> parseAbstractSyntaxTrees(ArrayList<LexerToken> tokens){
         ArrayList<ArrayList<LexerToken>> expressionTokens = new ArrayList<>();
         expressionTokens.add(new ArrayList<>());
-
-        System.out.println(tokens);
 
         LexerToken lastToken = null;
         for(LexerToken token: tokens){
@@ -32,7 +34,6 @@ public class Parser {
 
         ArrayList<ASTreeNode> keyNodes = new ArrayList<>();
         for(ArrayList<LexerToken> expression: expressionTokens){
-            System.out.println(expression);
             if (expression.isEmpty()){
                 continue;
             }
@@ -40,12 +41,14 @@ public class Parser {
         }
 
 
-        for (ASTreeNode node: keyNodes) {
+        /*for (ASTreeNode node: keyNodes) {
             displayTree(node);
-        }
+        }*/
+
+        return keyNodes;
     }
 
-    public ASTreeNode generateTreeFromExpression(ArrayList<LexerToken> tokens){
+    private static ASTreeNode generateTreeFromExpression(ArrayList<LexerToken> tokens){
         /*
             Find all contexts
          */
@@ -59,8 +62,7 @@ public class Parser {
          */
         ArrayList<LexerToken> foundOperations = new ArrayList<>();
         for (LexerToken lexerToken : tokens) {
-            if (lexerToken.getType() == Lexer.LexerTokenType.END_EXPRESSION ||
-                    lexerToken.getType() == Lexer.LexerTokenType.CONTEXT) {
+            if (lexerToken.getType() == Lexer.LexerTokenType.END_EXPRESSION) {
                 break;
             }
 
@@ -151,7 +153,7 @@ public class Parser {
         }
     }
 
-    public void displayTree(ASTreeNode node){
+    public static void displayTree(ASTreeNode node){
         ArrayList<DisplayTreeNode> lines = new ArrayList<>();
 
         addToDisplayTree(node, 0, lines, 0);
@@ -188,7 +190,7 @@ public class Parser {
             System.out.println();
         }
     }
-    private void addToDisplayTree(ASTreeNode node, int depth, ArrayList<DisplayTreeNode> lines, int offset){
+    private static void addToDisplayTree(ASTreeNode node, int depth, ArrayList<DisplayTreeNode> lines, int offset){
         depth += 1;
 
         String nd = nodeToString(node);
@@ -203,7 +205,7 @@ public class Parser {
         lines.add(new DisplayTreeNode(depth, offset, node));
     }
 
-    private String nodeToString(ASTreeNode node){
+    private static String nodeToString(ASTreeNode node){
         return (node.getLeftChildNode() != null ? "┌ " : "") + node.getType() + ":" + node.getValue() + (node.getRightChildNode() != null ? " ┐" : "");
     }
 }

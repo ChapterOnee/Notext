@@ -3,15 +3,11 @@ out = 8;
 if (out == 8) {
     out = 10;
 }
-else if(deez == (wdawd && bbb)){
 
+a = 7;
+while(a == 7){
+    a = a - 1;
 }
 
-while(true){
 
-}
-
-
-call();
-
-out = 10;
+return out;

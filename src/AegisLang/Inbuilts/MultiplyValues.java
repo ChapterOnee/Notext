@@ -1,16 +1,23 @@
 package AegisLang.Inbuilts;
 
 import AegisLang.InternalValue;
+import AegisLang.Interpreter;
 import AegisLang.InterpreterFunction;
 import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
 
 public class MultiplyValues extends InterpreterFunction {
+    public MultiplyValues(Interpreter interpreter) {
+        super(interpreter);
+    }
+
     @Override
     public InternalValue execute(ArrayList<InternalValue> values) {
+        values = replaceVariblesWithValues(values);
+
         if(values.size() == 0){
-            Logger.printWarning("Function subtract executed with no arguments.");
+            Logger.printWarning("Function multiply executed with no arguments.");
             return new InternalValue(InternalValue.ValueType.NONE);
         }
         if(values.size() == 1){

@@ -1,3 +1,5 @@
+import AegisLang.ASTreeNode;
+import AegisLang.Interpreter;
 import AegisLang.Lexer;
 import AegisLang.Parser;
 import AmbrosiaUI.Prompts.FilePrompt;
@@ -10,14 +12,15 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
         //Root root = new Root();
         //root.show();
 
-        Lexer lex = new Lexer();
-        Parser parser = new Parser();
+        Interpreter it = new Interpreter();
+
 
         try(BufferedReader bf = new BufferedReader(new FileReader("AegisCode/main.ag"))){
             StringBuilder allData = new StringBuilder();
@@ -26,8 +29,8 @@ public class Main {
                 allData.append(bf.readLine());
             }
 
+            it.execute(allData.toString());
 
-            parser.parseAbstractSyntaxTrees(lex.lexData(allData.toString()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

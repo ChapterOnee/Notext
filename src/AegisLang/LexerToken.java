@@ -36,6 +36,9 @@ public class LexerToken{
             case "*" -> 0;
             case "/" -> 0;
             case "=" -> 2;
+            case "&&" -> 4;
+            case "==" -> 3;
+            case "||" -> 4;
             default -> 0;
         };
     }
