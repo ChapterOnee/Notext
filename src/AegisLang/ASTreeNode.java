@@ -56,6 +56,10 @@ public class ASTreeNode implements Comparable<ASTreeNode>{
         return (leftChildNode == null ? "" : leftChildNode+"<-")+"("+type+":"+value+")"+(rightChildNode == null ? "" : "->" + rightChildNode);
     }
 
+    public boolean hasChildren(){
+        return leftChildNode != null || rightChildNode != null;
+    }
+
     public int getOperationPriority(){
         return switch (value){
             case "+" -> 0;

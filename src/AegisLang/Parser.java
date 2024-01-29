@@ -13,13 +13,21 @@ public class Parser {
 
         System.out.println(tokens);
 
+        LexerToken lastToken = null;
         for(LexerToken token: tokens){
             if(token.getType() == Lexer.LexerTokenType.END_EXPRESSION) {
                 expressionTokens.add(new ArrayList<>());
                 continue;
             }
+            else if(lastToken != null && lastToken.getType() == Lexer.LexerTokenType.CONTEXT && token.getType() == Lexer.LexerTokenType.ID){
+                lastToken = token;
+                expressionTokens.add(new ArrayList<>());
+                expressionTokens.get(expressionTokens.size()-1).add(token);
+                continue;
+            }
 
             expressionTokens.get(expressionTokens.size()-1).add(token);
+            lastToken = token;
         }
 
         ArrayList<ASTreeNode> keyNodes = new ArrayList<>();
@@ -43,40 +51,21 @@ public class Parser {
          */
         ASTreeNode outNode = new ASTreeNode(null,null);
 
-        System.out.println(tokens);
         if(tokens.size() == 0){
             return outNode;
         }
-
-        if(tokens.get(0).getType() == Lexer.LexerTokenType.CONTEXT_OPENER){
-            int j = 0;
-            for(int i = 0;i < tokens.size();i++){
-                if(tokens.get(i).getType() == Lexer.LexerTokenType.CONTEXT_CLOSER){
-                    j = i;
-                    break;
-                }
-            }
-            outNode.setLeftChildNode(generateTreeFromExpression(new ArrayList<>(tokens.subList(j+1, tokens.size()))));
-            tokens = new ArrayList<>(tokens.subList(1, j));
-        }
-
         /*
             Find operation with highest priority
          */
         ArrayList<LexerToken> foundOperations = new ArrayList<>();
-        for(int i = 0;i < tokens.size();i++){
-            if(tokens.get(i).getType() == Lexer.LexerTokenType.CONTEXT_OPENER){
-                for(int j = tokens.size()-1; j >= i;j--){
-                    if(tokens.get(j).getType() == Lexer.LexerTokenType.CONTEXT_CLOSER){
-                        i = j;
-                        break;
-                    }
-                }
-                continue;
+        for (LexerToken lexerToken : tokens) {
+            if (lexerToken.getType() == Lexer.LexerTokenType.END_EXPRESSION ||
+                    lexerToken.getType() == Lexer.LexerTokenType.CONTEXT) {
+                break;
             }
 
-            if(tokens.get(i).getType() == Lexer.LexerTokenType.OPERATION || tokens.get(i).getType() == Lexer.LexerTokenType.END_EXPRESSION){
-                foundOperations.add(tokens.get(i));
+            if (lexerToken.getType() == Lexer.LexerTokenType.OPERATION) {
+                foundOperations.add(lexerToken);
             }
         }
         Collections.reverse(foundOperations);

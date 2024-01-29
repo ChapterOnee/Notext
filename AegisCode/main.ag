@@ -3,8 +3,15 @@ out = 8;
 if (out == 8) {
     out = 10;
 }
-else if(deez == wdawd){
+else if(deez == (wdawd && bbb)){
 
-};
+}
+
+while(true){
+
+}
+
+
+call();
 
 out = 10;
