@@ -1,0 +1,6 @@
+for .ag
+name AegisCode
+
+group accent \b(?:if|while|return|print)\b
+group accent2 ;
+group accent (\"[^\"]*\")|'[^']*'

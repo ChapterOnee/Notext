@@ -31,14 +31,12 @@ public class LexerToken{
 
     public int getOperationPriority(){
         return switch (content){
-            case "+" -> 1;
-            case "-" -> 1;
+            case "+", "-" -> 1;
             case "*" -> 0;
             case "/" -> 0;
             case "=" -> 2;
-            case "&&" -> 4;
-            case "==" -> 3;
-            case "||" -> 4;
+            case "&&", "||" -> 4;
+            case "==", ">", "<" -> 3;
             default -> 0;
         };
     }

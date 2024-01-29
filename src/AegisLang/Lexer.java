@@ -20,17 +20,20 @@ public class Lexer {
         END_EXPRESSION,
         NUMBER,
         ID,
+
+        STRING
     }
 
     private static void initializeTokenTypes(){
         tokenTypes.put("==|&&|\\|\\|", LexerTokenType.OPERATION);
+        tokenTypes.put(">|<", LexerTokenType.OPERATION);
         tokenTypes.put("=|\\+|-|\\*|/", LexerTokenType.OPERATION);
         tokenTypes.put("\\d+", LexerTokenType.NUMBER);
         tokenTypes.put(";", LexerTokenType.END_EXPRESSION);
+        tokenTypes.put("(\\\"[^\\\"]*\\\")|'[^']*'", LexerTokenType.STRING);
         tokenTypes.put("[a-zA-Z_]+", LexerTokenType.ID);
 
         tokenTypes.put("\\(", LexerTokenType.EXPRESSION);
-        //tokenTypes.put("\\)", LexerTokenType.CONTEXT_CLOSER);
         tokenTypes.put("\\{", LexerTokenType.CONTEXT);
     }
 
@@ -124,7 +127,6 @@ public class Lexer {
         /*for(LexerToken token: tokens){
             System.out.println(token);
         }*/
-
         return tokens;
     }
 }

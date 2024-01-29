@@ -5,8 +5,9 @@ if (out == 8) {
 }
 
 a = 7;
-while(a == 7){
+while (a > 0 || a == 0){
     a = a - 1;
+    print("Number:" + a + " what is this? " + (a - 10) + " It works?");
 }
 
 

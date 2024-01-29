@@ -75,6 +75,6 @@ public class InternalValue{
 
     @Override
     public String toString() {
-        return type + ":" + value;
+        return value;
     }
 }

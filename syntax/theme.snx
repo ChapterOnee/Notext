@@ -1,7 +1,4 @@
 for .thm
 name Theme
 
-group accent \b(?:color)\b
-group accent2  \b(?:font)\b
-group accent2  \b(?:load_font)\b
-group accent [0-9]{1,3},[0-9]{1,3},[0-9]{1,3}
+group accent \b(?:if|while)\b

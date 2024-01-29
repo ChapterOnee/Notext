@@ -19,6 +19,8 @@ public class Interpreter {
         functions.put("compare", new CompareValues(this));
         functions.put("and", new BinaryAndValues(this));
         functions.put("or", new BinaryOrValues(this));
+        functions.put("greater", new CompareGreaterValues(this));
+        functions.put("lesser", new CompareLesserValues(this));
     }
 
     public InternalValue execute(String code){
@@ -49,7 +51,7 @@ public class Interpreter {
         InternalValue endValue = new InternalValue(InternalValue.ValueType.NONE);
 
         //Parser.displayTree(tree);
-        //Parser.displayTree(tree);
+
 
         if(tree.getType() == Lexer.LexerTokenType.EXPRESSION){
             ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
@@ -92,11 +94,11 @@ public class Interpreter {
         }
         else if(tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().equals("while")){
             if(tree.getRightChildNode() == null){
-                Logger.printError("If statement missing condition expression.");
+                Logger.printError("While statement missing condition expression.");
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
             if(tree.getRightChildNode().getRightChildNode() == null){
-                Logger.printError("If statement missing body context.");
+                Logger.printError("While statement missing body context.");
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
 
@@ -106,6 +108,21 @@ public class Interpreter {
                 executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()));
                 condition = evaluateExpression(tree.getRightChildNode());
             }
+
+            return new InternalValue(InternalValue.ValueType.NONE);
+        }
+        else if(tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().equals("print")){
+            if(tree.getRightChildNode() == null){
+                Logger.printError("Print statement missing printed expression.");
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+
+            InternalValue printed = evaluateExpression(tree.getRightChildNode());
+
+            if(printed.getType() == InternalValue.ValueType.ID){
+                printed = getVariableValue(printed);
+            }
+            System.out.println(printed);
 
             return new InternalValue(InternalValue.ValueType.NONE);
         }
@@ -123,10 +140,15 @@ public class Interpreter {
 
         if(!tree.hasChildren()){
             InternalValue.ValueType type = InternalValue.ValueType.NONE;
+            String value = tree.getValue();
 
             switch (tree.getType()){
                 case ID -> type = InternalValue.ValueType.ID;
                 case NUMBER -> type = InternalValue.ValueType.INT;
+                case STRING -> {
+                    type = InternalValue.ValueType.STRING;
+                    value = value.substring(1,value.length()-1);
+                }
                 case CONTEXT -> {
                     ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
 
@@ -138,7 +160,7 @@ public class Interpreter {
             }
 
 
-            endValue = new InternalValue(type, tree.getValue());
+            endValue = new InternalValue(type, value);
         }
 
         return endValue;
@@ -172,6 +194,10 @@ public class Interpreter {
                     return new InternalValue(InternalValue.ValueType.BOOL, "false");
                 }
 
+                if(value2.getType() == InternalValue.ValueType.ID){
+                    value2 = getVariableValue(value2);
+                }
+
                 variables.put(value1.getValue(), value2);
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
             }
@@ -183,6 +209,12 @@ public class Interpreter {
             }
             case "||" -> {
                 return functions.get("or").execute(new ArrayList<>(List.of(value1,value2)));
+            }
+            case ">" -> {
+                return functions.get("greater").execute(new ArrayList<>(List.of(value1,value2)));
+            }
+            case "<" -> {
+                return functions.get("lesser").execute(new ArrayList<>(List.of(value1,value2)));
             }
             default -> {
                 return new InternalValue(InternalValue.ValueType.NONE);
