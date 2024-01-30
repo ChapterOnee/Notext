@@ -1,4 +1,4 @@
-package AegisLang.Inbuilts;
+package AegisLang.Inbuilts.Mathematical;
 
 import AegisLang.InternalValue;
 import AegisLang.Interpreter;
@@ -7,8 +7,8 @@ import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
 
-public class SubtractValues extends InterpreterFunction {
-    public SubtractValues(Interpreter interpreter) {
+public class DivideValues extends InterpreterFunction {
+    public DivideValues(Interpreter interpreter) {
         super(interpreter);
     }
 
@@ -17,7 +17,7 @@ public class SubtractValues extends InterpreterFunction {
         values = replaceVariblesWithValues(values);
 
         if(values.size() == 0){
-            Logger.printWarning("Function subtract executed with no arguments.");
+            Logger.printWarning("Function divide executed with no arguments.");
             return new InternalValue(InternalValue.ValueType.NONE);
         }
         if(values.size() == 1){
@@ -27,16 +27,16 @@ public class SubtractValues extends InterpreterFunction {
         InternalValue out = values.get(0);
 
         for(int i = 1;i < values.size();i++){
-            out = subtractTwoValues(out, values.get(i));
+            out = divideTwoValues(out, values.get(i));
         }
 
         return out;
     }
 
-    private InternalValue subtractTwoValues(InternalValue value1, InternalValue value2){
+    private InternalValue divideTwoValues(InternalValue value1, InternalValue value2){
         if(value1.getType() == InternalValue.ValueType.INT && value2.getType() == InternalValue.ValueType.INT){
             return new InternalValue(InternalValue.ValueType.INT,
-                    Integer.parseInt(value1.getValue()) - Integer.parseInt(value2.getValue()) + "");
+                    Integer.parseInt(value1.getValue()) / Integer.parseInt(value2.getValue()) + "");
         }
 
         return new InternalValue(InternalValue.ValueType.NONE);

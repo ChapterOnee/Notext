@@ -16,23 +16,8 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        //Root root = new Root();
-        //root.show();
-
-        Interpreter it = new Interpreter();
-
-
-        try(BufferedReader bf = new BufferedReader(new FileReader("AegisCode/main.ag"))){
-            StringBuilder allData = new StringBuilder();
-
-            while (bf.ready()){
-                allData.append(bf.readLine());
-            }
-
-            it.execute(allData.toString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Root root = new Root();
+        root.show();
 
         //root.openFile("testFiles/test.txt");
 

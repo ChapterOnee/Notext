@@ -64,11 +64,13 @@ public class Rectangle {
     public Size getSize(){
         return new Size(width,height);
     }
-    public void applyMargin(int margin){
+    public Rectangle applyMargin(int margin){
         this.x += margin;
         this.y += margin;
         this.width -= 2*margin;
         this.height -= 2*margin;
+
+        return this;
     }
 
     @Override

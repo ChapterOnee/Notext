@@ -221,4 +221,11 @@ public class HexEditor extends Frame implements EditorLike {
     public boolean dontAutoScroll() {
         return false;
     }
+
+    @Override
+    public void reload() {
+        if(hasFile()){
+            openFile(getCurrentFile());
+        }
+    }
 }

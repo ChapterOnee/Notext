@@ -35,7 +35,7 @@ public class TextEditor extends Frame implements EditorLike {
 
     private final Cursor cursor;
 
-    private final SyntaxHighlighter highlighter;
+    private SyntaxHighlighter highlighter;
 
     public TextEditor() {
         super("primary", 0);
@@ -646,6 +646,15 @@ public class TextEditor extends Frame implements EditorLike {
     @Override
     public boolean dontAutoScroll() {
         return false;
+    }
+
+    @Override
+    public void reload() {
+        this.highlighter = new SyntaxHighlighter("default");
+        this.highlighter.loadFromDirectory("syntax");
+        if(hasFile()) {
+            openFile(this.getCurrentFile());
+        }
     }
 
     public StoredText getText() {

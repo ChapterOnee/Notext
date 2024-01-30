@@ -2,5 +2,7 @@ for .ag
 name AegisCode
 
 group accent \b(?:if|while|return|print)\b
-group accent2 ;
-group accent (\"[^\"]*\")|'[^']*'
+group accent2 \b(?:true|false)\b
+group accent2 (\"[^\"]*\")|'[^']*'
+
+group numbers \b(?:([0-9]+))\b

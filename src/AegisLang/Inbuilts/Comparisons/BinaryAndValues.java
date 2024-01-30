@@ -1,4 +1,4 @@
-package AegisLang.Inbuilts;
+package AegisLang.Inbuilts.Comparisons;
 
 import AegisLang.InternalValue;
 import AegisLang.Interpreter;
@@ -7,8 +7,9 @@ import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
 
-public class CompareLesserValues extends InterpreterFunction {
-    public CompareLesserValues(Interpreter interpreter) {
+public class BinaryAndValues extends InterpreterFunction {
+
+    public BinaryAndValues(Interpreter interpreter) {
         super(interpreter);
     }
 
@@ -17,7 +18,7 @@ public class CompareLesserValues extends InterpreterFunction {
         values = replaceVariblesWithValues(values);
 
         if(values.size() == 0){
-            Logger.printWarning("Function compare greater executed with no arguments.");
+            Logger.printWarning("Function compare executed with no arguments.");
             return new InternalValue(InternalValue.ValueType.NONE);
         }
         if(values.size() == 1){
@@ -27,7 +28,7 @@ public class CompareLesserValues extends InterpreterFunction {
         InternalValue out = values.get(0);
 
         for(int i = 1;i < values.size();i++){
-            if(!compareTwoValues(out, values.get(i))){
+            if(!andTwoValues(out, values.get(i))){
                 return new InternalValue(InternalValue.ValueType.BOOL, "false");
             }
         }
@@ -35,11 +36,8 @@ public class CompareLesserValues extends InterpreterFunction {
         return new InternalValue(InternalValue.ValueType.BOOL, "true");
     }
 
-    private boolean compareTwoValues(InternalValue value1, InternalValue value2){
-        if(value1.getType() == InternalValue.ValueType.INT && value2.getType() == InternalValue.ValueType.INT){
-            return Integer.parseInt(value1.getValue()) < Integer.parseInt(value2.getValue());
-        }
-
-        return false;
+    private boolean andTwoValues(InternalValue value1, InternalValue value2){
+        return value1.getType() == InternalValue.ValueType.BOOL && value2.getType() == InternalValue.ValueType.BOOL &&
+                value1.getValue().equals("true") && value2.getValue().equals("true");
     }
 }

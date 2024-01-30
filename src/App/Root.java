@@ -1,5 +1,8 @@
 package App;
 
+import AegisLang.InternalValue;
+import AegisLang.Interpreter;
+import AegisLang.InterpreterFunction;
 import AmbrosiaUI.Prompts.CreateFilePrompt;
 import AmbrosiaUI.Prompts.FilePrompt;
 import AmbrosiaUI.Prompts.FolderPrompt;
@@ -26,9 +29,7 @@ import AmbrosiaUI.Widgets.Window;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -39,12 +40,16 @@ public class Root extends Window {
     private final Scrollbar scrollbar;
 
     private final Button save_file;
+    private final Button run_file;
 
     private Window settingsWindow;
+
+    private Interpreter it = new Interpreter();
 
     private HorizontalPlacement mainPlacement;
     public Root() {
         super();
+        initializeInterpreter();
         mainPlacement = new HorizontalPlacement(theme);
 
         coreFrame.setChildrenPlacement(mainPlacement);
@@ -84,6 +89,7 @@ public class Root extends Window {
                         editorSpace.removeTab(editorSpace.getTabs().size()-1);
                         return;
                     }
+                    newEditor.onCurrentFileChanged();
                     setCurrentEditor(newEditor);
                 }
                 Root.this.update();
@@ -132,6 +138,7 @@ public class Root extends Window {
                 f.ask();
             }
         };
+        new_file.setBind(panel, KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
         new_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
         save_file = new Button("Save", "small", 0,0,4) {
@@ -141,6 +148,8 @@ public class Root extends Window {
                 editorInFocus.openFile(editorInFocus.getCurrentFile());
             }
         };
+        save_file.setBind(panel, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+
         Button open_file = new Button("In Current Editor", "small", 0,0,4) {
             @Override
             public void onMouseClicked(MouseEvent e) {
@@ -246,6 +255,7 @@ public class Root extends Window {
                 f.ask();
             }
         };
+        save_file_as.setBind(panel, KeyStroke.getKeyStroke(KeyEvent.VK_S,  KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
         save_file_as.setTextPlacement(AdvancedGraphics.Side.LEFT);
         Button settings = new Button("Settings", "small", 0,0,4) {
             @Override
@@ -261,12 +271,12 @@ public class Root extends Window {
         DropdownMenu tools = new DropdownMenu("Tools", "small",0,0,4,new Size(200,30));
         tools.setzIndex(1);
 
-        Label open_console = new Label("Open Console", "small", 0,0,4){
+        Button open_console = new Button("Open Console", "small", 0,0,4){
             @Override
             public void onMouseClicked(MouseEvent e) {
                 if(System.getProperty("os.name").startsWith("Windows")){
                     try {
-                        Runtime.getRuntime().exec("cmd /c start cmd.exe");
+                        Runtime.getRuntime().exec("cmd /c cmd.exe");
                     } catch (IOException ignored) {
 
                     }
@@ -280,7 +290,29 @@ public class Root extends Window {
                 }
             }
         };
+        open_console.setBind(panel, KeyStroke.getKeyStroke(KeyEvent.VK_T,  KeyEvent.CTRL_DOWN_MASK));
         open_console.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
+        run_file = new Button("Run file..", "small", 0,0,4){
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                if(editorInFocus.getCurrentFile().endsWith(".ag")){
+                    try(BufferedReader bf = new BufferedReader(new FileReader(editorInFocus.getCurrentFile()))){
+                        StringBuilder allData = new StringBuilder();
+
+                        while (bf.ready()){
+                            allData.append(bf.readLine());
+                        }
+
+                        it.execute(allData.toString());
+                    } catch (IOException ignored) {
+
+                    }
+                }
+            }
+        };
+        run_file.setBind(panel, KeyStroke.getKeyStroke(KeyEvent.VK_R,  KeyEvent.CTRL_DOWN_MASK));
+        run_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
         DropdownMenu openMenu = new DropdownMenu("Open..", "small", 0, 0, 4, new Size(200,30));
         openMenu.setzIndex(1);
@@ -290,6 +322,7 @@ public class Root extends Window {
         header_placement.add(tools, new UnitValue(0, UnitValue.Unit.FIT));
 
         tools.addMenuItem(new DropdownMenuItem(open_console));
+        tools.addMenuItem(new DropdownMenuItem(run_file));
 
         menu.addMenuItem(new DropdownMenuItem(new_file));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
@@ -319,6 +352,7 @@ public class Root extends Window {
                 if(editor != editorInFocus) {
                     setCurrentEditor(editor);
                 }
+                editor.onCurrentFileChanged();
                 Root.this.update();
             }
         };
@@ -339,6 +373,16 @@ public class Root extends Window {
         initializeSettings();
     }
 
+
+    private void initializeInterpreter(){
+        it.addFunction("addEditor", new InterpreterFunction(it) {
+            @Override
+            public InternalValue execute(ArrayList<InternalValue> values) {
+                addEditor();
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
+    }
     public TextEditor addEditor(){
         TabbedFrameTab tab = editorSpace.addTab("unnamed *");
 
@@ -352,11 +396,24 @@ public class Root extends Window {
             @Override
             public void onCurrentFileChanged() {
                 super.onCurrentFileChanged();
+
+                if(editorInFocus != this){
+                    return;
+                }
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
-                tab.setName(new File(getCurrentFile()).getName());
-                save_file.setDisabled(!editorInFocus.hasFile());
+                save_file.setDisabled(!this.hasFile());
+
+                if(this.hasFile()) {
+                    tab.setName(new File(getCurrentFile()).getName());
+                    run_file.setDisabled(!this.getCurrentFile().endsWith(".ag"));
+                }
+                else {
+                    run_file.setDisabled(true);
+                }
             }
         };
+        editor.onCurrentFileChanged();
+
         Frame tabFrame = (Frame) tab.getBoundElement();
         HorizontalPlacement temp = new HorizontalPlacement(theme);
         tabFrame.setChildrenPlacement(temp);
@@ -378,10 +435,18 @@ public class Root extends Window {
             @Override
             public void onCurrentFileChanged() {
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
-                tab.setName(new File(getCurrentFile()).getName());
-                save_file.setDisabled(!editorInFocus.hasFile());
+                if(editorInFocus != this){
+                    return;
+                }
+
+                if(this.hasFile()) {
+                    tab.setName(new File(getCurrentFile()).getName());
+                }
+                save_file.setDisabled(!this.hasFile());
+                run_file.setDisabled(true);
             }
         };
+        editor.onCurrentFileChanged();
 
         Frame tabFrame = (Frame) tab.getBoundElement();
         HorizontalPlacement temp = new HorizontalPlacement(theme);
@@ -403,11 +468,19 @@ public class Root extends Window {
 
             @Override
             public void onCurrentFileChanged() {
+                if(editorInFocus != this){
+                    return;
+                }
+
                 //System.out.println("A"+ editorInFocus.getText().hasFile());
-                tab.setName(new File(getCurrentFile()).getName());
-                save_file.setDisabled(!editorInFocus.hasFile());
+                if(this.hasFile()) {
+                    tab.setName(new File(getCurrentFile()).getName());
+                }
+                save_file.setDisabled(!this.hasFile());
+                run_file.setDisabled(true);
             }
         };
+        editor.onCurrentFileChanged();
 
         Frame tabFrame = (Frame) tab.getBoundElement();
         HorizontalPlacement temp = new HorizontalPlacement(theme);
@@ -501,7 +574,7 @@ public class Root extends Window {
             @Override
             public void activated(ActionEvent e) {
                 if (editorInFocus != null){
-                    editorInFocus.openFile(editorInFocus.getCurrentFile());
+                    editorInFocus.reload();
                 }
                 PathImage.reloadAllImagesFromFiles();
                 /*if(editorSpacePlacement.getChildren().size() < 2){

@@ -1,6 +1,11 @@
 package AegisLang;
 
 import AegisLang.Inbuilts.*;
+import AegisLang.Inbuilts.Comparisons.*;
+import AegisLang.Inbuilts.Mathematical.AddValues;
+import AegisLang.Inbuilts.Mathematical.DivideValues;
+import AegisLang.Inbuilts.Mathematical.MultiplyValues;
+import AegisLang.Inbuilts.Mathematical.SubtractValues;
 import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
@@ -47,6 +52,7 @@ public class Interpreter {
         return returnValue;
     }
 
+    private String lastStatement;
     private InternalValue evaluateExpression(ASTreeNode tree){
         InternalValue leftValue = null;
         InternalValue rightValue = null;
@@ -54,6 +60,8 @@ public class Interpreter {
 
         //Parser.displayTree(tree);
 
+
+        boolean foundStatement = false;
 
         if(tree.getType() == Lexer.LexerTokenType.EXPRESSION){
             ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
@@ -74,46 +82,58 @@ public class Interpreter {
             }
 
             returnedValue.setReturned(true);
+            lastStatement = "";
             return returnedValue;
         }
-        else if(tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().equals("if")){
-            if(tree.getRightChildNode() == null){
-                Logger.printError("If statement missing condition expression.");
-                return new InternalValue(InternalValue.ValueType.NONE);
-            }
-            if(tree.getRightChildNode().getRightChildNode() == null){
-                Logger.printError("If statement missing body context.");
-                return new InternalValue(InternalValue.ValueType.NONE);
-            }
+        else if(tree.getType() == Lexer.LexerTokenType.ID
+                && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.EXPRESSION
+                && tree.getRightChildNode().getRightChildNode() != null && tree.getRightChildNode().getRightChildNode().getType() == Lexer.LexerTokenType.CONTEXT
+        ){
+            switch (tree.getValue()){
+                case "if" -> {
+                    InternalValue condition = evaluateExpression(tree.getRightChildNode());
 
-            InternalValue condition = evaluateExpression(tree.getRightChildNode());
+                    if(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
+                        executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()));
+                        lastStatement =  "if_success";
+                    }
+                    else{
+                        lastStatement =  "if_fail";
+                    }
 
-            if(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
-                executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()));
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+                case "while" -> {
+                    InternalValue condition = evaluateExpression(tree.getRightChildNode());
+
+                    while(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
+                        executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()));
+                        condition = evaluateExpression(tree.getRightChildNode());
+                    }
+
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+                default -> {
+
+                }
             }
+        } else if (tree.getType() == Lexer.LexerTokenType.ID
+                && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.CONTEXT
+                && tree.getValue().equals("else")) {
 
-            return new InternalValue(InternalValue.ValueType.NONE);
+            if(lastStatement.equals("")){
+                Logger.printError("Else statement missing if before it.");
+            }
+            if(lastStatement.equals("if_fail")){
+                executeNodes(Parser.parseContext(tree.getRightChildNode()));
+            }
         }
-        else if(tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().equals("while")){
-            if(tree.getRightChildNode() == null){
-                Logger.printError("While statement missing condition expression.");
-                return new InternalValue(InternalValue.ValueType.NONE);
-            }
-            if(tree.getRightChildNode().getRightChildNode() == null){
-                Logger.printError("While statement missing body context.");
-                return new InternalValue(InternalValue.ValueType.NONE);
-            }
 
-            InternalValue condition = evaluateExpression(tree.getRightChildNode());
 
-            while(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
-                executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()));
-                condition = evaluateExpression(tree.getRightChildNode());
-            }
-
-            return new InternalValue(InternalValue.ValueType.NONE);
-        }
-        else if(tree.getType() == Lexer.LexerTokenType.ID && !variables.containsKey(tree.getValue()) && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.EXPRESSION){
+        if(!foundStatement && tree.getType() == Lexer.LexerTokenType.ID
+                && !variables.containsKey(tree.getValue())
+                && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.EXPRESSION
+        ){
             if(!functions.containsKey(tree.getValue())){
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
@@ -138,16 +158,23 @@ public class Interpreter {
                 ArrayList<ASTreeNode> nodes = Parser.parseAbstractSyntaxTrees(argumentTokens);
 
                 if(nodes.size() == 0){
-                    Logger.printError("Invalid expression in function argument.");
-                    return new InternalValue(InternalValue.ValueType.NONE);
+                    continue;
                 }
                 else if(nodes.size() > 1){
                     Logger.printError("Illegal context in function argument.");
                     return new InternalValue(InternalValue.ValueType.NONE);
                 }
 
-                arguments.add(evaluateExpression(nodes.get(0)));
+                InternalValue value = evaluateExpression(nodes.get(0));
+
+                if(value.getType() == InternalValue.ValueType.ID){
+                    value = getVariableValue(value);
+                }
+
+                arguments.add(value);
             }
+
+            lastStatement = "";
 
             return functions.get(tree.getValue()).execute(arguments);
         }
@@ -161,6 +188,7 @@ public class Interpreter {
 
         if(leftValue != null && rightValue != null && tree.getType() == Lexer.LexerTokenType.OPERATION){
             endValue = evaluateOperation(leftValue,rightValue,tree.getValue());
+            lastStatement = "";
         }
 
         if(!tree.hasChildren()){
@@ -248,5 +276,9 @@ public class Interpreter {
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         }
+    }
+
+    public void addFunction(String name, InterpreterFunction function){
+        functions.put(name,function);
     }
 }

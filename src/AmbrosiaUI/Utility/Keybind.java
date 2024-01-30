@@ -8,8 +8,10 @@ public class Keybind {
 
     static ArrayList<String> names_in_use = new ArrayList<>();
     private String name;
+    private KeyStroke keybinds;
 
     public Keybind(String name, JPanel bound_element, KeyStroke keybinds) {
+        this.keybinds =  keybinds;
         if(names_in_use.contains(name)){
             Logger.printWarning("An already existing keybind was overwritten '" + name + "'.");
         }
@@ -24,6 +26,10 @@ public class Keybind {
 
         bound_element.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keybinds, name);
         bound_element.getActionMap().put(name, action);
+    }
+
+    public KeyStroke getKeybinds() {
+        return keybinds;
     }
 
     public String getName() {

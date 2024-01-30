@@ -21,4 +21,6 @@ public interface EditorLike {
     ScrollController getScrollController();
 
     boolean dontAutoScroll();
+
+    void reload();
 }

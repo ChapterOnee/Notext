@@ -486,4 +486,11 @@ public class PIconEditor extends Frame implements EditorLike {
     public boolean dontAutoScroll() {
         return true;
     }
+
+    @Override
+    public void reload() {
+        if(hasFile()){
+            openFile(getCurrentFile());
+        }
+    }
 }

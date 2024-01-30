@@ -1,4 +1,4 @@
-package AegisLang.Inbuilts;
+package AegisLang.Inbuilts.Comparisons;
 
 import AegisLang.InternalValue;
 import AegisLang.Interpreter;
