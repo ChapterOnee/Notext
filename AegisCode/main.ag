@@ -5,10 +5,10 @@ if (out == 8) {
 }
 
 a = 7;
-while (a > 0 || a == 0){
+while (a > -100) {
     a = a - 1;
-    print("Number:" + a + " what is this? " + (a - 10) + " It works?");
+    b = add(a,10,20);
+    print("Hello World! " + a, a + b * 10);
 }
-
 
 return out;

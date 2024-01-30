@@ -16,10 +16,10 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        Root root = new Root();
-        root.show();
+        //Root root = new Root();
+        //root.show();
 
-        /*Interpreter it = new Interpreter();
+        Interpreter it = new Interpreter();
 
 
         try(BufferedReader bf = new BufferedReader(new FileReader("AegisCode/main.ag"))){
@@ -32,7 +32,7 @@ public class Main {
             it.execute(allData.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }*/
+        }
 
         //root.openFile("testFiles/test.txt");
 

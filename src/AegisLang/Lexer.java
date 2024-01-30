@@ -4,34 +4,39 @@ import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Lexer {
 
-    private static HashMap<String, LexerTokenType> tokenTypes = new HashMap<>();
+    private static LinkedHashMap<String, LexerTokenType> tokenTypes = new LinkedHashMap<>();
     public enum LexerTokenType {
         OPERATION,
         EXPRESSION,
         CONTEXT,
-        GROUP_OPENER,
-        GROUP_CLOSER,
         END_EXPRESSION,
         NUMBER,
         ID,
-
-        STRING
+        STRING,
+        BOOL,
+        ARGUMENT_SPLITTER
     }
 
     private static void initializeTokenTypes(){
+        tokenTypes.put(",", LexerTokenType.ARGUMENT_SPLITTER);
+
+        tokenTypes.put("-?\\d+", LexerTokenType.NUMBER);
+        tokenTypes.put("(\\\"[^\\\"]*\\\")|'[^']*'", LexerTokenType.STRING);
+        tokenTypes.put("true|false", LexerTokenType.BOOL);
+
         tokenTypes.put("==|&&|\\|\\|", LexerTokenType.OPERATION);
         tokenTypes.put(">|<", LexerTokenType.OPERATION);
         tokenTypes.put("=|\\+|-|\\*|/", LexerTokenType.OPERATION);
-        tokenTypes.put("\\d+", LexerTokenType.NUMBER);
         tokenTypes.put(";", LexerTokenType.END_EXPRESSION);
-        tokenTypes.put("(\\\"[^\\\"]*\\\")|'[^']*'", LexerTokenType.STRING);
         tokenTypes.put("[a-zA-Z_]+", LexerTokenType.ID);
+
 
         tokenTypes.put("\\(", LexerTokenType.EXPRESSION);
         tokenTypes.put("\\{", LexerTokenType.CONTEXT);
@@ -123,7 +128,6 @@ public class Lexer {
 
             tokens.add(new AegisLang.LexerToken(matcher.group(), operation));
         }
-
         /*for(LexerToken token: tokens){
             System.out.println(token);
         }*/

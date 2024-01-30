@@ -21,6 +21,8 @@ public class Interpreter {
         functions.put("or", new BinaryOrValues(this));
         functions.put("greater", new CompareGreaterValues(this));
         functions.put("lesser", new CompareLesserValues(this));
+
+        functions.put("print", new Print(this));
     }
 
     public InternalValue execute(String code){
@@ -40,7 +42,7 @@ public class Interpreter {
             }
         }
 
-        System.out.println("Executed with return value = '"+ returnValue + "'");
+        //System.out.println("Executed with return value = '"+ returnValue + "'");
 
         return returnValue;
     }
@@ -111,20 +113,43 @@ public class Interpreter {
 
             return new InternalValue(InternalValue.ValueType.NONE);
         }
-        else if(tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().equals("print")){
-            if(tree.getRightChildNode() == null){
-                Logger.printError("Print statement missing printed expression.");
+        else if(tree.getType() == Lexer.LexerTokenType.ID && !variables.containsKey(tree.getValue()) && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.EXPRESSION){
+            if(!functions.containsKey(tree.getValue())){
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
 
-            InternalValue printed = evaluateExpression(tree.getRightChildNode());
+            ASTreeNode current = tree.getRightChildNode();
+            ArrayList<LexerToken> tokens = Lexer.lexData(current.getValue().substring(1,current.getValue().length()-1));
 
-            if(printed.getType() == InternalValue.ValueType.ID){
-                printed = getVariableValue(printed);
+            ArrayList<ArrayList<LexerToken>> individialArgumentTokens = new ArrayList<>();
+            individialArgumentTokens.add(new ArrayList<>());
+
+            for(LexerToken token: tokens){
+                if(token.getType() == Lexer.LexerTokenType.ARGUMENT_SPLITTER){
+                    individialArgumentTokens.add(new ArrayList<>());
+                    continue;
+                }
+
+                individialArgumentTokens.get(individialArgumentTokens.size()-1).add(token);
             }
-            System.out.println(printed);
 
-            return new InternalValue(InternalValue.ValueType.NONE);
+            ArrayList<InternalValue> arguments = new ArrayList<>();
+            for (ArrayList<LexerToken> argumentTokens: individialArgumentTokens){
+                ArrayList<ASTreeNode> nodes = Parser.parseAbstractSyntaxTrees(argumentTokens);
+
+                if(nodes.size() == 0){
+                    Logger.printError("Invalid expression in function argument.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+                else if(nodes.size() > 1){
+                    Logger.printError("Illegal context in function argument.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                arguments.add(evaluateExpression(nodes.get(0)));
+            }
+
+            return functions.get(tree.getValue()).execute(arguments);
         }
 
         if(tree.getLeftChildNode() != null){
@@ -148,6 +173,9 @@ public class Interpreter {
                 case STRING -> {
                     type = InternalValue.ValueType.STRING;
                     value = value.substring(1,value.length()-1);
+                }
+                case BOOL -> {
+                    type = InternalValue.ValueType.BOOL;
                 }
                 case CONTEXT -> {
                     ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
