@@ -2,6 +2,7 @@ package AegisLang.Inbuilts.Comparisons;
 
 import AegisLang.InternalValue;
 import AegisLang.Interpreter;
+import AegisLang.InterpreterContext;
 import AegisLang.InterpreterFunction;
 import AmbrosiaUI.Utility.Logger;
 
@@ -14,8 +15,8 @@ public class CompareValues extends InterpreterFunction {
     }
 
     @Override
-    public InternalValue execute(ArrayList<InternalValue> values) {
-        values = replaceVariblesWithValues(values);
+    public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+        values = replaceVariblesWithValues(values, context);
 
         if(values.size() == 0){
             Logger.printWarning("Function compare executed with no arguments.");

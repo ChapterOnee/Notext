@@ -2,6 +2,7 @@ package App;
 
 import AegisLang.InternalValue;
 import AegisLang.Interpreter;
+import AegisLang.InterpreterContext;
 import AegisLang.InterpreterFunction;
 import AmbrosiaUI.Prompts.CreateFilePrompt;
 import AmbrosiaUI.Prompts.FilePrompt;
@@ -31,7 +32,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Root extends Window {
     private EditorLike editorInFocus;
@@ -377,7 +377,7 @@ public class Root extends Window {
     private void initializeInterpreter(){
         it.addFunction("addEditor", new InterpreterFunction(it) {
             @Override
-            public InternalValue execute(ArrayList<InternalValue> values) {
+            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
                 addEditor();
                 return new InternalValue(InternalValue.ValueType.NONE);
             }

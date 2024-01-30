@@ -2,6 +2,7 @@ package AegisLang.Inbuilts;
 
 import AegisLang.InternalValue;
 import AegisLang.Interpreter;
+import AegisLang.InterpreterContext;
 import AegisLang.InterpreterFunction;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ public class Print extends InterpreterFunction {
     }
 
     @Override
-    public InternalValue execute(ArrayList<InternalValue> values) {
+    public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
         StringBuilder out = new StringBuilder();
 
         for(InternalValue value: values){
