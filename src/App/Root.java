@@ -4,16 +4,14 @@ import AegisLang.InternalValue;
 import AegisLang.Interpreter;
 import AegisLang.InterpreterContext;
 import AegisLang.InterpreterFunction;
-import AmbrosiaUI.Prompts.CreateFilePrompt;
-import AmbrosiaUI.Prompts.FilePrompt;
-import AmbrosiaUI.Prompts.FolderPrompt;
-import AmbrosiaUI.Prompts.PromptResult;
+import AmbrosiaUI.Prompts.*;
 import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Button;
 import AmbrosiaUI.Widgets.Editors.HexEditor.HexEditor;
 import AmbrosiaUI.Widgets.Editors.PIconEditor.PIconEditor;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Icons.PathImage;
+import AmbrosiaUI.Widgets.Label;
 import AmbrosiaUI.Widgets.Scrollbar;
 import AmbrosiaUI.Widgets.SelectBox.SelectBox;
 import AmbrosiaUI.Widgets.SelectBox.SelectBoxOption;
@@ -29,6 +27,7 @@ import AmbrosiaUI.Widgets.TabbedFrame.TabbedFrameTab;
 import AmbrosiaUI.Widgets.Window;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -304,7 +303,8 @@ public class Root extends Window {
                             allData.append(bf.readLine());
                         }
 
-                        it.execute(allData.toString());
+                        Thread askThread = new Thread(() -> { it.execute(allData.toString()); });
+                        askThread.start();  // Start the thread to show the window.
                     } catch (IOException ignored) {
 
                     }
@@ -380,6 +380,35 @@ public class Root extends Window {
             public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
                 addEditor();
                 return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
+        it.addFunction("setThemeColor", new InterpreterFunction(it){
+            @Override
+            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+                if(values.size() != 4){
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                Color clr = new Color(
+                    Integer.parseInt(values.get(1).getValue()),
+                    Integer.parseInt(values.get(2).getValue()),
+                    Integer.parseInt(values.get(3).getValue())
+                );
+
+                theme.setColor(values.get(0).getValue(), clr);
+
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
+        it.addFunction("update", new InterpreterFunction(it){
+            @Override
+            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+                try {
+                    Root.this.update();
+                }catch (Exception ignored){
+
+                }
+                return super.execute(values, context);
             }
         });
     }

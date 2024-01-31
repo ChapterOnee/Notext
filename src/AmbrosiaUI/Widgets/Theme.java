@@ -104,53 +104,7 @@ public class Theme extends FileInterpreter {
         }
     }
 
-    @Deprecated
-    public void handleTag(String tag, String name, String args) {
-        String[] arguments = args.split(",");
-        switch (tag){
-            /*case "font" -> {
-                //System.out.println(Arrays.toString(arguments));
-                if(arguments.length < 2 || !arguments[1].matches("\\d+")){
-                    Logger.printError("Invalid arguments for font.");
-                    return;
-                }
-
-                String fontName = arguments[0].strip();
-                int fontSize = Integer.parseInt(arguments[1]);
-
-                if(custom_fonts.containsKey(fontName)){
-                    //System.out.println(fontSize);
-                    fonts.put(name, custom_fonts.get(fontName).deriveFont((float) fontSize));
-                }
-                else {
-                    fonts.put(name, new Font(fontName, Font.PLAIN, fontSize));
-                }
-            }*/
-            /*case "color" -> {
-                if(arguments.length < 3
-                        || !arguments[0].matches("\\d+")
-                        || !arguments[1].matches("\\d+")
-                        || !arguments[2].matches("\\d+")
-                ){
-                    Logger.printError("Invalid arguments for color.");
-                    return;
-                }
-
-                colors.put(name, new Color(
-                        Integer.parseInt(arguments[0]),
-                        Integer.parseInt(arguments[1]),
-                        Integer.parseInt(arguments[2])
-                ));
-            }*/
-            /*case "load_font" -> {
-                if(arguments.length < 1){
-                    Logger.printError("Invalid arguments for load_font.");
-                    return;
-                }
-
-                loadFont(name, arguments[0].strip());
-            }
-            default -> {}*/
-        }
+    public void setColor(String name, Color color){
+        colors.put(name,color);
     }
 }

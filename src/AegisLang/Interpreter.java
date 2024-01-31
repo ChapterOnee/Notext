@@ -24,17 +24,54 @@ public class Interpreter {
 
         InterpreterFunction subtractFunction = new SubtractValues(this);
         globalContext.addFunction("subtract", subtractFunction);
-        assignedOperatorsToFunctions.put("-", addFunction);
+        assignedOperatorsToFunctions.put("-", subtractFunction);
 
-        globalContext.addFunction("divide", new DivideValues(this));
-        globalContext.addFunction("multiply", new MultiplyValues(this));
-        globalContext.addFunction("compare", new CompareValues(this));
-        globalContext.addFunction("and", new BinaryAndValues(this));
-        globalContext.addFunction("or", new BinaryOrValues(this));
-        globalContext.addFunction("greater", new CompareGreaterValues(this));
-        globalContext.addFunction("lesser", new CompareLesserValues(this));
+        InterpreterFunction divideFunction = new DivideValues(this);
+        globalContext.addFunction("divide", divideFunction);
+        assignedOperatorsToFunctions.put("/", divideFunction);
+
+        InterpreterFunction multiplyFunction = new MultiplyValues(this);
+        globalContext.addFunction("multiply", multiplyFunction);
+        assignedOperatorsToFunctions.put("*",multiplyFunction);
+
+        InterpreterFunction compareFunction = new CompareValues(this);
+        globalContext.addFunction("compare", compareFunction);
+        assignedOperatorsToFunctions.put("==", compareFunction);
+
+        InterpreterFunction andFunction = new BinaryAndValues(this);
+        globalContext.addFunction("and", andFunction);
+        assignedOperatorsToFunctions.put("&&", andFunction);
+
+        InterpreterFunction orFunction = new BinaryOrValues(this);
+        globalContext.addFunction("or", orFunction);
+        assignedOperatorsToFunctions.put("||", orFunction);
+
+        InterpreterFunction greaterFunction = new CompareGreaterValues(this);
+        globalContext.addFunction("greater", greaterFunction);
+        assignedOperatorsToFunctions.put(">", greaterFunction);
+
+        InterpreterFunction lesserFunction = new CompareLesserValues(this);
+        globalContext.addFunction("lesser", lesserFunction);
+        assignedOperatorsToFunctions.put("<",  lesserFunction);
 
         globalContext.addFunction("print", new Print(this));
+        globalContext.addFunction("wait", new InterpreterFunction(this) {
+            @Override
+            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+                if(values.size() != 1){
+                    Logger.printError("Wait function missing time.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                try {
+                    Thread.sleep(Integer.parseInt(values.get(0).getValue()));
+                } catch (InterruptedException ignored) {
+
+                }
+
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
     }
 
     public InternalValue execute(String code){
@@ -104,6 +141,10 @@ public class Interpreter {
                 case "if" -> {
                     InternalValue condition = evaluateExpression(tree.getRightChildNode(), context);
 
+                    if(condition.getType() == InternalValue.ValueType.ID){
+                        condition = getVariableValue(condition, context);
+                    }
+
                     if(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
                         executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
                         lastStatement =  "if_success";
@@ -116,6 +157,11 @@ public class Interpreter {
                 }
                 case "elif" -> {
                     InternalValue condition = evaluateExpression(tree.getRightChildNode(), context);
+
+                    if(condition.getType() == InternalValue.ValueType.ID){
+                        condition = getVariableValue(condition, context);
+                    }
+
                     if(lastStatement.equals("if_fail") && condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
                         executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
                         lastStatement =  "if_success";
@@ -286,19 +332,11 @@ public class Interpreter {
     }
 
     private InternalValue evaluateOperation(InternalValue value1, InternalValue value2, String operation, InterpreterContext context){
+        if(assignedOperatorsToFunctions.containsKey(operation)){
+            return assignedOperatorsToFunctions.get(operation).execute(new ArrayList<>(List.of(value1,value2)), context);
+        }
+
         switch (operation){
-            case "+" -> {
-                return context.getFunction("add").execute(new ArrayList<>(List.of(value1,value2)), context);
-            }
-            case "-" -> {
-                return context.getFunction("subtract").execute(new ArrayList<>(List.of(value1,value2)), context);
-            }
-            case "*" -> {
-                return context.getFunction("multiply").execute(new ArrayList<>(List.of(value1,value2)), context);
-            }
-            case "/" -> {
-                return context.getFunction("divide").execute(new ArrayList<>(List.of(value1,value2)), context);
-            }
             case "=" -> {
                 if(value1.getType() != InternalValue.ValueType.ID){
                     return new InternalValue(InternalValue.ValueType.BOOL, "false");
@@ -310,21 +348,6 @@ public class Interpreter {
 
                 context.setVariable(value1.getValue(), value2);
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
-            }
-            case "==" -> {
-                return context.getFunction("compare").execute(new ArrayList<>(List.of(value1,value2)), context);
-            }
-            case "&&" -> {
-                return context.getFunction("and").execute(new ArrayList<>(List.of(value1,value2)), context);
-            }
-            case "||" -> {
-                return context.getFunction("or").execute(new ArrayList<>(List.of(value1,value2)), context);
-            }
-            case ">" -> {
-                return context.getFunction("greater").execute(new ArrayList<>(List.of(value1,value2)), context);
-            }
-            case "<" -> {
-                return context.getFunction("lesser").execute(new ArrayList<>(List.of(value1,value2)), context);
             }
             case "+=" -> {
                 if(value1.getType() != InternalValue.ValueType.ID){
