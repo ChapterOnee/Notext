@@ -21,7 +21,8 @@ public class Lexer {
         ID,
         STRING,
         BOOL,
-        ARGUMENT_SPLITTER
+        ARGUMENT_SPLITTER,
+        AFTER_OPERATION
     }
 
     private static void initializeTokenTypes(){
@@ -31,7 +32,9 @@ public class Lexer {
         tokenTypes.put("(\\\"[^\\\"]*\\\")|'[^']*'", LexerTokenType.STRING);
         tokenTypes.put("true|false", LexerTokenType.BOOL);
 
+        tokenTypes.put("\\+\\+|--", LexerTokenType.AFTER_OPERATION);
         tokenTypes.put("==|&&|\\|\\|", LexerTokenType.OPERATION);
+        tokenTypes.put(">=|<=", LexerTokenType.OPERATION);
         tokenTypes.put(">|<", LexerTokenType.OPERATION);
         tokenTypes.put("\\+=|-=|\\*=|/=", LexerTokenType.OPERATION);
         tokenTypes.put("=|\\+|-|\\*|/", LexerTokenType.OPERATION);
@@ -127,6 +130,11 @@ public class Lexer {
                 }
             }
 
+            if(matcher.group().equals("++") || matcher.group().equals("--")){
+                tokens.add(new AegisLang.LexerToken(matcher.group().equals("++") ? "+=" : "-=",LexerTokenType.OPERATION));
+                tokens.add(new LexerToken("1",LexerTokenType.NUMBER));
+                continue;
+            }
             tokens.add(new AegisLang.LexerToken(matcher.group(), operation));
         }
         /*for(LexerToken token: tokens){
@@ -134,4 +142,6 @@ public class Lexer {
         }*/
         return tokens;
     }
+
+
 }

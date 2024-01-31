@@ -26,11 +26,13 @@ import AmbrosiaUI.Widgets.TabbedFrame.TabbedFrame;
 import AmbrosiaUI.Widgets.TabbedFrame.TabbedFrameTab;
 import AmbrosiaUI.Widgets.Window;
 
+import javax.security.auth.login.LoginException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Root extends Window {
     private EditorLike editorInFocus;
@@ -396,6 +398,33 @@ public class Root extends Window {
                 );
 
                 theme.setColor(values.get(0).getValue(), clr);
+
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
+        it.addFunction("prompt", new InterpreterFunction(it){
+            @Override
+            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+                if(values.size() != 2 || values.get(0).getType() != InternalValue.ValueType.STRING || values.get(1).getType() != InternalValue.ValueType.ID){
+                    Logger.printError("Invalid arguments for prompt.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                if(!context.hasFunction(values.get(1).getValue())){
+                    Logger.printError("Function '" + values.get(1).getValue() + "' doesnt exist in this context.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                TextPrompt p = new TextPrompt(theme,values.get(0).getValue()){
+                    @Override
+                    public void onSubmited(PromptResult result) {
+                        ArrayList<InternalValue> val = new ArrayList<>();
+                        val.add(new InternalValue(InternalValue.ValueType.STRING,result.getContent()));
+
+                        context.getFunction(values.get(1).getValue()).execute(val, context);
+                    }
+                };
+                p.ask();
 
                 return new InternalValue(InternalValue.ValueType.NONE);
             }

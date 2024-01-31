@@ -54,6 +54,14 @@ public class Interpreter {
         globalContext.addFunction("lesser", lesserFunction);
         assignedOperatorsToFunctions.put("<",  lesserFunction);
 
+        InterpreterFunction greaterFunctionOrEqual = new CompareGreaterOrEqualValues(this);
+        globalContext.addFunction("greaterOrEqual", greaterFunctionOrEqual);
+        assignedOperatorsToFunctions.put(">=", greaterFunctionOrEqual);
+
+        InterpreterFunction lesserFunctionOrEqual = new CompareLesserOrEqualValues(this);
+        globalContext.addFunction("lesserOrEqual", lesserFunctionOrEqual);
+        assignedOperatorsToFunctions.put("<=",  lesserFunctionOrEqual);
+
         globalContext.addFunction("print", new Print(this));
         globalContext.addFunction("wait", new InterpreterFunction(this) {
             @Override
@@ -124,26 +132,17 @@ public class Interpreter {
             }
 
             InternalValue returnedValue = evaluateExpression(tree.getRightChildNode(), context);
-
-            if(returnedValue.getType() == InternalValue.ValueType.ID){
-                returnedValue = getVariableValue(returnedValue, context);
-            }
+            returnedValue = getVariableValue(returnedValue, context);
 
             returnedValue.setReturned(true);
             lastStatement = "";
             return returnedValue;
         }
-        else if(tree.getType() == Lexer.LexerTokenType.ID
-                && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.EXPRESSION
-                && tree.getRightChildNode().getRightChildNode() != null && tree.getRightChildNode().getRightChildNode().getType() == Lexer.LexerTokenType.CONTEXT
-        ){
+        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION, Lexer.LexerTokenType.CONTEXT)){
             switch (tree.getValue()){
                 case "if" -> {
                     InternalValue condition = evaluateExpression(tree.getRightChildNode(), context);
-
-                    if(condition.getType() == InternalValue.ValueType.ID){
-                        condition = getVariableValue(condition, context);
-                    }
+                    condition = getVariableValue(condition, context);
 
                     if(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
                         executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
@@ -157,10 +156,7 @@ public class Interpreter {
                 }
                 case "elif" -> {
                     InternalValue condition = evaluateExpression(tree.getRightChildNode(), context);
-
-                    if(condition.getType() == InternalValue.ValueType.ID){
-                        condition = getVariableValue(condition, context);
-                    }
+                    condition = getVariableValue(condition, context);
 
                     if(lastStatement.equals("if_fail") && condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
                         executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
@@ -219,10 +215,66 @@ public class Interpreter {
 
                 }
             }
-        } else if (tree.getType() == Lexer.LexerTokenType.ID
-                && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.CONTEXT
-                && tree.getValue().equals("else")) {
+        }
+        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION, Lexer.LexerTokenType.CONTEXT)){
+            if(!tree.getValue().equals("function")){
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
 
+            String name = tree.getRightChildNode().getValue();
+
+            ASTreeNode current = tree.getRightChildNode().getRightChildNode();
+            ArrayList<LexerToken> tokens = Lexer.lexData(current.getValue().substring(1,current.getValue().length()-1));
+
+            ArrayList<ArrayList<LexerToken>> individialArgumentTokens = new ArrayList<>();
+            individialArgumentTokens.add(new ArrayList<>());
+
+            for(LexerToken token: tokens){
+                if(token.getType() == Lexer.LexerTokenType.ARGUMENT_SPLITTER){
+                    individialArgumentTokens.add(new ArrayList<>());
+                    continue;
+                }
+
+                individialArgumentTokens.get(individialArgumentTokens.size()-1).add(token);
+            }
+
+            ArrayList<String> arguments = new ArrayList<>();
+
+            for (ArrayList<LexerToken> argumentTokens: individialArgumentTokens){
+                if(argumentTokens.size() == 0){
+                    break;
+                }
+                ArrayList<ASTreeNode> nodes = Parser.parseAbstractSyntaxTrees(argumentTokens);
+
+                if(nodes.size() != 1){
+                    Logger.printError("Illegal name for function argument.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                arguments.add(nodes.get(0).getValue());
+            }
+
+            ASTreeNode core = tree.getRightChildNode().getRightChildNode().getRightChildNode();
+
+            context.addFunction(name, new InterpreterFunction(this){
+                @Override
+                public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+                    InterpreterContext localFunctionContext = new InterpreterContext(context);
+
+                    if(values.size() != arguments.size()){
+                        Logger.printError("Invalid arguments for function " + name);
+                        return new InternalValue(InternalValue.ValueType.NONE);
+                    }
+
+                    for(int i = 0;i < arguments.size();i++){
+                        localFunctionContext.setVariable(arguments.get(i), values.get(i));
+                    }
+
+                    return executeNodes(Parser.parseContext(core), localFunctionContext);
+                }
+            });
+        }
+        else if (matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.CONTEXT)  && tree.getValue().equals("else")) {
             if(lastStatement.equals("")){
                 Logger.printError("Else statement missing if before it.");
             }
@@ -238,6 +290,7 @@ public class Interpreter {
                 && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.EXPRESSION
         ){
             if(!context.hasFunction(tree.getValue())){
+                Logger.printError("No function: " + tree.getValue() + " found in this context.");
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
 
@@ -269,10 +322,7 @@ public class Interpreter {
                 }
 
                 InternalValue value = evaluateExpression(nodes.get(0), context);
-
-                if(value.getType() == InternalValue.ValueType.ID){
-                    value = getVariableValue(value, context);
-                }
+                value = getVariableValue(value, context);
 
                 arguments.add(value);
             }
@@ -324,8 +374,7 @@ public class Interpreter {
 
     public InternalValue getVariableValue(InternalValue id, InterpreterContext context){
         if(!context.hasVariable(id.getValue())){
-            Logger.printError("No variable or identifier named: " + id.getValue());
-            return new InternalValue(InternalValue.ValueType.NONE);
+            return id;
         }
 
         return context.getVariable(id.getValue());
@@ -341,10 +390,7 @@ public class Interpreter {
                 if(value1.getType() != InternalValue.ValueType.ID){
                     return new InternalValue(InternalValue.ValueType.BOOL, "false");
                 }
-
-                if(value2.getType() == InternalValue.ValueType.ID){
-                    value2 = getVariableValue(value2, context);
-                }
+                value2 = getVariableValue(value2, context);
 
                 context.setVariable(value1.getValue(), value2);
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
@@ -355,9 +401,7 @@ public class Interpreter {
                     return new InternalValue(InternalValue.ValueType.BOOL, "false");
                 }
 
-                if(value2.getType() == InternalValue.ValueType.ID){
-                    value2 = getVariableValue(value2, context);
-                }
+                value2 = getVariableValue(value2, context);
 
                 context.setVariable(value1.getValue(), context.getFunction("add").execute(new ArrayList<>(List.of(value1,value2)), context));
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
@@ -368,9 +412,7 @@ public class Interpreter {
                     return new InternalValue(InternalValue.ValueType.BOOL, "false");
                 }
 
-                if(value2.getType() == InternalValue.ValueType.ID){
-                    value2 = getVariableValue(value2, context);
-                }
+                value2 = getVariableValue(value2, context);
 
                 context.setVariable(value1.getValue(), context.getFunction("subtract").execute(new ArrayList<>(List.of(value1,value2)), context));
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
@@ -381,9 +423,7 @@ public class Interpreter {
                     return new InternalValue(InternalValue.ValueType.BOOL, "false");
                 }
 
-                if(value2.getType() == InternalValue.ValueType.ID){
-                    value2 = getVariableValue(value2, context);
-                }
+                value2 = getVariableValue(value2, context);
 
                 context.setVariable(value1.getValue(), context.getFunction("multiply").execute(new ArrayList<>(List.of(value1,value2)), context));
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
@@ -394,9 +434,7 @@ public class Interpreter {
                     return new InternalValue(InternalValue.ValueType.BOOL, "false");
                 }
 
-                if(value2.getType() == InternalValue.ValueType.ID){
-                    value2 = getVariableValue(value2, context);
-                }
+                value2 = getVariableValue(value2, context);
 
                 context.setVariable(value1.getValue(), context.getFunction("divide").execute(new ArrayList<>(List.of(value1,value2)), context));
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
@@ -409,5 +447,23 @@ public class Interpreter {
 
     public void addFunction(String name, InterpreterFunction function){
         globalContext.addFunction(name,function);
+    }
+
+    private boolean matchesTreeSignature(ASTreeNode tree,Lexer.LexerTokenType... types){
+        int i = 0;
+
+        ASTreeNode current = tree;
+        while (i < types.length){
+            if(current.getType() != types[i]){
+                return false;
+            }
+            if(current.getRightChildNode() == null && i + 1 < types.length){
+                return false;
+            }
+            current = current.getRightChildNode();
+
+            i++;
+        }
+        return true;
     }
 }

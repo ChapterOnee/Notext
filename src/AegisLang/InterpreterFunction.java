@@ -18,11 +18,7 @@ public class InterpreterFunction {
         ArrayList<InternalValue> valuesOut = new ArrayList<>();
 
         for (InternalValue value: values){
-            if(value.getType() == InternalValue.ValueType.ID){
-                valuesOut.add(interpreter.getVariableValue(value, context));
-                continue;
-            }
-            valuesOut.add(value);
+            valuesOut.add(interpreter.getVariableValue(value, context));
         }
         
         return valuesOut;
