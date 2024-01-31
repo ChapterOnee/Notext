@@ -1,5 +1,8 @@
 package AegisLang;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
 public class InternalValue{
     public enum ValueType{
         INT,
@@ -14,6 +17,9 @@ public class InternalValue{
 
     private ValueType type;
     private String value;
+
+    private HashMap<String, InternalValue> subValues = new HashMap<>();
+    private HashMap<String, InterpreterFunction> subFunctions = new HashMap<>();
 
     private boolean returned;
 
@@ -47,6 +53,54 @@ public class InternalValue{
             default -> "NONE";
         };
         this.returned = returned;
+    }
+
+    public String getName(){
+        return this.value.split("\\.")[0];
+    }
+
+    public InternalValue resolvedSubValue(){
+        String[] path = this.value.split("\\.");
+        System.out.println(Arrays.toString(path));
+
+        InternalValue current = this;
+        for(String name: path){
+            if(current.hasSubVariable(name)){
+                current = current.getSubVariable(name);
+            }
+            else{
+                System.out.println("Variable has no property in: " + Arrays.toString(path));
+                return new InternalValue(ValueType.NONE);
+            }
+        }
+
+        return current;
+    }
+
+    public void setResolved(String pth, InternalValue value){
+        String[] path = pth.split("\\.");
+        System.out.println(Arrays.toString(path));
+
+        InternalValue current = this;
+        for(String name: path){
+            if(current.hasSubVariable(name)){
+                current = current.getSubVariable(name);
+            }
+            else{
+                System.out.println("Variable has no property in: " + Arrays.toString(path));
+                return;
+            }
+        }
+
+        current.setValue(value.getValue());
+        current.setType(value.getType());
+    }
+
+    protected InternalValue getSubVariable(String name){
+        return this.subValues.get(name);
+    }
+    protected boolean hasSubVariable(String name){
+        return this.subValues.containsKey(name);
     }
 
     public ValueType getType() {

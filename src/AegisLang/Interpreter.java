@@ -84,7 +84,7 @@ public class Interpreter {
 
     public InternalValue execute(String code){
         ArrayList<ASTreeNode> nodes = Parser.parseAbstractSyntaxTrees(Lexer.lexData(code));
-        return executeNodes(nodes,  globalContext);
+        return executeNodes(nodes,  new InterpreterContext(globalContext));
     }
 
     public InternalValue executeNodes(ArrayList<ASTreeNode> nodes,  InterpreterContext context){
