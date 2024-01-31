@@ -1,7 +1,7 @@
 for .ag
 name AegisCode
 
-group accent \b(?:if|while|return|print|elif|else)\b
+group accent \b(?:if|while|return|print|elif|else|for)\b
 group accent2 \b(?:true|false)\b
 group accent2 (\"[^\"]*\")|'[^']*'
 

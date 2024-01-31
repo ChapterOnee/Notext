@@ -9,14 +9,23 @@ import AegisLang.Inbuilts.Mathematical.SubtractValues;
 import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Interpreter {
     private InterpreterContext globalContext = new InterpreterContext();
 
+    private HashMap<String, InterpreterFunction> assignedOperatorsToFunctions = new HashMap<>();
+
     public Interpreter() {
-        globalContext.addFunction("add", new AddValues(this));
-        globalContext.addFunction("subtract", new SubtractValues(this));
+        InterpreterFunction addFunction = new AddValues(this);
+        globalContext.addFunction("add", addFunction);
+        assignedOperatorsToFunctions.put("+", addFunction);
+
+        InterpreterFunction subtractFunction = new SubtractValues(this);
+        globalContext.addFunction("subtract", subtractFunction);
+        assignedOperatorsToFunctions.put("-", addFunction);
+
         globalContext.addFunction("divide", new DivideValues(this));
         globalContext.addFunction("multiply", new MultiplyValues(this));
         globalContext.addFunction("compare", new CompareValues(this));
@@ -120,6 +129,42 @@ public class Interpreter {
                     while(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
                         executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
                         condition = evaluateExpression(tree.getRightChildNode(), context);
+                    }
+
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+                case "for" -> {
+                    ASTreeNode current = tree.getRightChildNode();
+                    ArrayList<LexerToken> tokens = Lexer.lexData(current.getValue().substring(1,current.getValue().length()-1));
+
+                    ArrayList<ArrayList<LexerToken>> individialArgumentTokens = new ArrayList<>();
+                    individialArgumentTokens.add(new ArrayList<>());
+
+                    for(LexerToken token: tokens){
+                        if(token.getType() == Lexer.LexerTokenType.END_EXPRESSION){
+                            individialArgumentTokens.add(new ArrayList<>());
+                            continue;
+                        }
+
+                        individialArgumentTokens.get(individialArgumentTokens.size()-1).add(token);
+                    }
+
+                    if(individialArgumentTokens.size() != 3){
+                        Logger.printError("Invalid body for 'for' loop.");
+                        return new InternalValue(InternalValue.ValueType.NONE);
+                    }
+
+                    ArrayList<LexerToken> initializeStatement = individialArgumentTokens.get(0);
+                    ArrayList<LexerToken> repeatCondition = individialArgumentTokens.get(1);
+                    ArrayList<LexerToken> repeatedStatement = individialArgumentTokens.get(2);
+
+                    executeNodes(Parser.parseAbstractSyntaxTrees(initializeStatement), localContext);
+
+                    InternalValue repeatConditionResult = evaluateExpression(Parser.parseAbstractSyntaxTrees(repeatCondition).get(0), localContext);
+                    while(repeatConditionResult.getType() == InternalValue.ValueType.BOOL && repeatConditionResult.getValue().equals("true")){
+                        executeNodes(Parser.parseAbstractSyntaxTrees(repeatedStatement), localContext);
+                        executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        repeatConditionResult = evaluateExpression(Parser.parseAbstractSyntaxTrees(repeatCondition).get(0), localContext);
                     }
 
                     return new InternalValue(InternalValue.ValueType.NONE);
@@ -280,6 +325,58 @@ public class Interpreter {
             }
             case "<" -> {
                 return context.getFunction("lesser").execute(new ArrayList<>(List.of(value1,value2)), context);
+            }
+            case "+=" -> {
+                if(value1.getType() != InternalValue.ValueType.ID){
+                    Logger.printError("Invalid use of the '+=' operator.");
+                    return new InternalValue(InternalValue.ValueType.BOOL, "false");
+                }
+
+                if(value2.getType() == InternalValue.ValueType.ID){
+                    value2 = getVariableValue(value2, context);
+                }
+
+                context.setVariable(value1.getValue(), context.getFunction("add").execute(new ArrayList<>(List.of(value1,value2)), context));
+                return new InternalValue(InternalValue.ValueType.BOOL, "true");
+            }
+            case "-=" -> {
+                if(value1.getType() != InternalValue.ValueType.ID){
+                    Logger.printError("Invalid use of the '-=' operator.");
+                    return new InternalValue(InternalValue.ValueType.BOOL, "false");
+                }
+
+                if(value2.getType() == InternalValue.ValueType.ID){
+                    value2 = getVariableValue(value2, context);
+                }
+
+                context.setVariable(value1.getValue(), context.getFunction("subtract").execute(new ArrayList<>(List.of(value1,value2)), context));
+                return new InternalValue(InternalValue.ValueType.BOOL, "true");
+            }
+            case "*=" -> {
+                if(value1.getType() != InternalValue.ValueType.ID){
+                    Logger.printError("Invalid use of the '*=' operator.");
+                    return new InternalValue(InternalValue.ValueType.BOOL, "false");
+                }
+
+                if(value2.getType() == InternalValue.ValueType.ID){
+                    value2 = getVariableValue(value2, context);
+                }
+
+                context.setVariable(value1.getValue(), context.getFunction("multiply").execute(new ArrayList<>(List.of(value1,value2)), context));
+                return new InternalValue(InternalValue.ValueType.BOOL, "true");
+            }
+            case "/=" -> {
+                if(value1.getType() != InternalValue.ValueType.ID){
+                    Logger.printError("Invalid use of the '/=' operator.");
+                    return new InternalValue(InternalValue.ValueType.BOOL, "false");
+                }
+
+                if(value2.getType() == InternalValue.ValueType.ID){
+                    value2 = getVariableValue(value2, context);
+                }
+
+                context.setVariable(value1.getValue(), context.getFunction("divide").execute(new ArrayList<>(List.of(value1,value2)), context));
+                return new InternalValue(InternalValue.ValueType.BOOL, "true");
             }
             default -> {
                 return new InternalValue(InternalValue.ValueType.NONE);

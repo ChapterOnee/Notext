@@ -33,6 +33,7 @@ public class Lexer {
 
         tokenTypes.put("==|&&|\\|\\|", LexerTokenType.OPERATION);
         tokenTypes.put(">|<", LexerTokenType.OPERATION);
+        tokenTypes.put("\\+=|-=|\\*=|/=", LexerTokenType.OPERATION);
         tokenTypes.put("=|\\+|-|\\*|/", LexerTokenType.OPERATION);
         tokenTypes.put(";", LexerTokenType.END_EXPRESSION);
         tokenTypes.put("[a-zA-Z_]+", LexerTokenType.ID);

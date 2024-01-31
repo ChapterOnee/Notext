@@ -1,17 +1,1 @@
-print("Hello World!!");
 
-a = 10;
-while(a > 0){
-    b = "";
-
-    i = a;
-    while(i > 0){
-        b = b + " #";
-        i = i - 1;
-    }
-
-
-    print(b);
-
-    a = a - 1;
-}
