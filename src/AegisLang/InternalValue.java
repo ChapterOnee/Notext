@@ -59,41 +59,76 @@ public class InternalValue{
         return this.value.split("\\.")[0];
     }
 
-    public InternalValue resolvedSubValue(){
-        String[] path = this.value.split("\\.");
-        System.out.println(Arrays.toString(path));
+    protected String[] getPath(String pth){
+        String[] result = pth.replace(getName() + ".", "").replace(getName(), "").strip().split("\\.");
+
+        if(result[0].isEmpty()){
+            return new String[0];
+        }
+
+        return result;
+    }
+
+    public boolean hasPath(){
+        return getPath(this.value).length > 0;
+    }
+
+    public InternalValue resolvedSubValue(InterpreterContext context){
+        String[] path = getPath(this.value);
 
         InternalValue current = this;
         for(String name: path){
+            if(name.isEmpty()){
+                break;
+            }
+
+            System.out.println(subValues);
+
             if(current.hasSubVariable(name)){
                 current = current.getSubVariable(name);
             }
             else{
-                System.out.println("Variable has no property in: " + Arrays.toString(path));
+                System.out.println("Variable has no property in: " + name);
                 return new InternalValue(ValueType.NONE);
             }
+        }
+
+        if(current == this){
+            current = context.getVariable(this.getName());
         }
 
         return current;
     }
 
     public void setResolved(String pth, InternalValue value){
-        String[] path = pth.split("\\.");
+        String[] path = getPath(pth);
         System.out.println(Arrays.toString(path));
 
         InternalValue current = this;
+
+        int i = 0;
         for(String name: path){
             if(current.hasSubVariable(name)){
                 current = current.getSubVariable(name);
             }
             else{
-                System.out.println("Variable has no property in: " + Arrays.toString(path));
+                if(i == path.length-1){
+                    current.setSubVariable(name, value);
+                    return;
+                }
+
+                System.out.println("Variable has no property in: " + name);
                 return;
             }
+            i++;
         }
 
         current.setValue(value.getValue());
         current.setType(value.getType());
+    }
+
+    protected void setSubVariable(String name, InternalValue value){
+        subValues.put(name,value);
     }
 
     protected InternalValue getSubVariable(String name){

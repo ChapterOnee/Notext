@@ -1,1 +1,5 @@
+core = 10;
 
+core.main = 0;
+
+print(core.main);

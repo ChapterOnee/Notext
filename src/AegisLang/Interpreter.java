@@ -373,11 +373,19 @@ public class Interpreter {
     }
 
     public InternalValue getVariableValue(InternalValue id, InterpreterContext context){
-        if(!context.hasVariable(id.getValue())){
+        if(!context.hasVariable(id.getName())){
             return id;
         }
+        if(id.hasPath()){
+            id = id.resolvedSubValue(context);
+        }
+        else{
+            id = context.getVariable(id.getName());
+        }
 
-        return context.getVariable(id.getValue());
+
+
+        return id;
     }
 
     private InternalValue evaluateOperation(InternalValue value1, InternalValue value2, String operation, InterpreterContext context){
@@ -392,7 +400,12 @@ public class Interpreter {
                 }
                 value2 = getVariableValue(value2, context);
 
-                context.setVariable(value1.getValue(), value2);
+                if(value1.hasPath()){
+                    value1.setResolved(value1.getValue(), value2);
+                }
+                else {
+                    context.setVariable(value1.getName(), value2);
+                }
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
             }
             case "+=" -> {
