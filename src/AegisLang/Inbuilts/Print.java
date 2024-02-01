@@ -14,6 +14,7 @@ public class Print extends InterpreterFunction {
 
     @Override
     public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+        values = replaceVariblesWithValues(values, context);
         StringBuilder out = new StringBuilder();
 
         for(InternalValue value: values){

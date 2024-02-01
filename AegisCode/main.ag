@@ -1,5 +1,5 @@
-core = 10;
+for(i = 0;i < 10;i++){
+    ["hello" + i] = i;
 
-core.main = 0;
-
-print(core.main);
+    print(hello3);
+}

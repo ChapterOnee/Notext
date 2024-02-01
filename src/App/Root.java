@@ -118,8 +118,8 @@ public class Root extends Window {
         fw.initialize();
 
         fw.addAllowed(".*");
-        //fw.setPath("C:\\Users\\filah\\IdeaProjects\\TextEditor");
-        fw.setPath("/home/hades/IdeaProjects/TextEditor");
+        fw.setPath(new File("").getAbsolutePath());
+        //fw.setPath("/home/hades/IdeaProjects/TextEditor");
 
         Button new_file = new Button("New", "small", 0,0,4) {
             @Override

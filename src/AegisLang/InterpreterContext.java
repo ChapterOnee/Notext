@@ -9,8 +9,18 @@ public class InterpreterContext {
 
     protected InterpreterContext parentContext;
 
+    private boolean modifiable = true;
+
     public InterpreterContext() {
 
+    }
+
+    public InterpreterContext(boolean modifiable) {
+        this.modifiable = modifiable;
+    }
+
+    public boolean isModifiable() {
+        return modifiable;
     }
 
     public InterpreterContext(InterpreterContext parentContext) {
@@ -89,6 +99,28 @@ public class InterpreterContext {
         }
 
         return out;
+    }
+
+    public InterpreterContext getHighestModifiableParent(){
+        InterpreterContext current = this;
+
+        while(current.parentContext != null && current.parentContext.modifiable){
+            current = current.parentContext;
+        }
+
+        return current;
+    }
+
+    public HashMap<String, InterpreterFunction> getFunctions() {
+        return functions;
+    }
+
+    public HashMap<String, InternalValue> getVariables() {
+        return variables;
+    }
+
+    public InterpreterContext getParentContext() {
+        return parentContext;
     }
 
     @Override

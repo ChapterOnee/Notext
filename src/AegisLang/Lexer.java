@@ -16,6 +16,8 @@ public class Lexer {
         OPERATION,
         EXPRESSION,
         CONTEXT,
+
+        IDENTIFIER_EXPRESSION,
         END_EXPRESSION,
         NUMBER,
         ID,
@@ -39,11 +41,12 @@ public class Lexer {
         tokenTypes.put("\\+=|-=|\\*=|/=", LexerTokenType.OPERATION);
         tokenTypes.put("=|\\+|-|\\*|/", LexerTokenType.OPERATION);
         tokenTypes.put(";", LexerTokenType.END_EXPRESSION);
-        tokenTypes.put("[a-zA-Z_.]+", LexerTokenType.ID);
+        tokenTypes.put("[a-zA-Z_.0-9]+", LexerTokenType.ID);
 
 
         tokenTypes.put("\\(", LexerTokenType.EXPRESSION);
         tokenTypes.put("\\{", LexerTokenType.CONTEXT);
+        tokenTypes.put("\\[", LexerTokenType.IDENTIFIER_EXPRESSION);
     }
 
     public Lexer() {
@@ -75,7 +78,7 @@ public class Lexer {
                 continue;
             }
 
-            if(matcher.group().matches("[({]")){
+            if(matcher.group().matches("[({\\[]")){
                 ArrayList<Character> contextOpeners = new ArrayList<>();
                 StringBuilder dataInContext = new StringBuilder();
 
@@ -91,7 +94,7 @@ public class Lexer {
                     i++;
                     dataInContext.append(currentChar);
 
-                    if(currentChar == '(' || currentChar == '{'){
+                    if(currentChar == '(' || currentChar == '{' || currentChar == '['){
                         if(firstOpener == ' '){
                             firstOpener  = currentChar;
                         }
@@ -101,7 +104,8 @@ public class Lexer {
 
                     if (
                             (contextOpeners.get(contextOpeners.size() - 1).equals('(') && currentChar == ')') ||
-                            (contextOpeners.get(contextOpeners.size() - 1).equals('{') && currentChar == '}')
+                            (contextOpeners.get(contextOpeners.size() - 1).equals('{') && currentChar == '}') ||
+                                    (contextOpeners.get(contextOpeners.size() - 1).equals('[') && currentChar == ']')
                     ) {
                         contextOpeners.remove(contextOpeners.size() - 1);
                     }
@@ -113,8 +117,11 @@ public class Lexer {
                 if(firstOpener == '('){
                     contextType = LexerTokenType.EXPRESSION;
                 }
-                else{
+                else if(firstOpener == '{'){
                     contextType = LexerTokenType.CONTEXT;
+                }
+                else{
+                    contextType = LexerTokenType.IDENTIFIER_EXPRESSION;
                 }
                 tokens.add(new AegisLang.LexerToken(dataInContext.toString(), contextType));
                 continue;

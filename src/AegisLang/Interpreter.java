@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Interpreter {
-    private InterpreterContext globalContext = new InterpreterContext();
+    private InterpreterContext globalContext = new InterpreterContext(false);
 
     private HashMap<String, InterpreterFunction> assignedOperatorsToFunctions = new HashMap<>();
 
@@ -63,6 +63,7 @@ public class Interpreter {
         assignedOperatorsToFunctions.put("<=",  lesserFunctionOrEqual);
 
         globalContext.addFunction("print", new Print(this));
+        globalContext.addFunction("global", new MakeGlobal(this));
         globalContext.addFunction("wait", new InterpreterFunction(this) {
             @Override
             public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
@@ -322,7 +323,7 @@ public class Interpreter {
                 }
 
                 InternalValue value = evaluateExpression(nodes.get(0), context);
-                value = getVariableValue(value, context);
+                //value = getVariableValue(value, context);
 
                 arguments.add(value);
             }
@@ -358,10 +359,15 @@ public class Interpreter {
                 case CONTEXT -> {
                     ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
 
-                    Parser.displayTree(nodes.get(0));
-
                     endValue = evaluateExpression(nodes.get(0), context);
                     return endValue;
+                }
+                case IDENTIFIER_EXPRESSION -> {
+                    ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
+
+                    endValue = evaluateExpression(nodes.get(0), context);
+                    endValue = getVariableValue(endValue, context);
+                    return new InternalValue(InternalValue.ValueType.ID,endValue.getValue());
                 }
             }
 
@@ -373,17 +379,17 @@ public class Interpreter {
     }
 
     public InternalValue getVariableValue(InternalValue id, InterpreterContext context){
-        if(!context.hasVariable(id.getName())){
+        if(!context.hasVariable(id.getValue())){
+            if(id.getType() == InternalValue.ValueType.ID){
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+
             return id;
         }
-        if(id.hasPath()){
-            id = id.resolvedSubValue(context);
-        }
-        else{
-            id = context.getVariable(id.getName());
-        }
 
-
+        if(id.getType() == InternalValue.ValueType.ID) {
+            id = context.getVariable(id.getValue());
+        }
 
         return id;
     }
@@ -400,12 +406,7 @@ public class Interpreter {
                 }
                 value2 = getVariableValue(value2, context);
 
-                if(value1.hasPath()){
-                    value1.setResolved(value1.getValue(), value2);
-                }
-                else {
-                    context.setVariable(value1.getName(), value2);
-                }
+                context.setVariable(value1.getValue(), value2);
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
             }
             case "+=" -> {

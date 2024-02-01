@@ -41,6 +41,6 @@ public class AddValues extends InterpreterFunction {
         }
 
         return new InternalValue(InternalValue.ValueType.STRING,
-                value1.getValue() + value2.getValue() + "");
+                value1.getValue() + value2.getValue());
     }
 }

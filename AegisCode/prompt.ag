@@ -1,0 +1,5 @@
+function onPromptSubmited(text){
+    print(text);
+}
+
+prompt("What is you name?", onPromptSubmited);

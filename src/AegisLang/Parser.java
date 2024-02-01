@@ -24,11 +24,11 @@ public class Parser {
             else if(lastToken != null && lastToken.getType() == Lexer.LexerTokenType.CONTEXT && token.getType() == Lexer.LexerTokenType.ID){
                 lastToken = token;
                 expressionTokens.add(new ArrayList<>());
-                expressionTokens.getLast().add(token);
+                expressionTokens.get(expressionTokens.size()-1).add(token);
                 continue;
             }
 
-            expressionTokens.getLast().add(token);
+            expressionTokens.get(expressionTokens.size()-1).add(token);
             lastToken = token;
         }
 
