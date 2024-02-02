@@ -1,7 +1,4 @@
-package AegisLang;
-
-import java.util.Arrays;
-import java.util.HashMap;
+package Dissimulo;
 
 public class InternalValue{
     public enum ValueType{
@@ -79,5 +76,9 @@ public class InternalValue{
     @Override
     public String toString() {
         return value;
+    }
+
+    public String fullString(){
+        return this.value + "(" + this.type + ")";
     }
 }

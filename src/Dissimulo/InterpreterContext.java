@@ -1,11 +1,11 @@
-package AegisLang;
+package Dissimulo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InterpreterContext {
-    private final HashMap<String, InterpreterFunction> functions = new HashMap<>();
-    private final HashMap<String, InternalValue> variables = new HashMap<>();
+    private HashMap<String, InterpreterFunction> functions = new HashMap<>();
+    private HashMap<String, InternalValue> variables = new HashMap<>();
 
     protected InterpreterContext parentContext;
 
@@ -90,6 +90,17 @@ public class InterpreterContext {
         return null;
     }
 
+    public void setFunction(String name, InterpreterFunction function){
+        for(InterpreterContext parent: getAllParents()){
+            if(parent.hasFunction(name)){
+                parent.functions.put(name, function);
+                return;
+            }
+        }
+
+        this.functions.put(name, function);
+    }
+
     protected ArrayList<InterpreterContext> getAllParents(){
         ArrayList<InterpreterContext> out = new ArrayList<>();
 
@@ -121,6 +132,29 @@ public class InterpreterContext {
 
     public InterpreterContext getParentContext() {
         return parentContext;
+    }
+
+    public InterpreterContext getModifiableParentContext(){
+        if(this.parentContext != null && this.parentContext.modifiable){
+            return this.parentContext;
+        }
+        return this;
+    }
+
+    public InterpreterContext(HashMap<String, InterpreterFunction> functions, HashMap<String, InternalValue> variables, InterpreterContext parentContext, boolean modifiable) {
+        this.functions = functions;
+        this.variables = variables;
+        this.parentContext = parentContext;
+        this.modifiable = modifiable;
+    }
+
+    public InterpreterContext getCopy(){
+        return new InterpreterContext(
+                (HashMap<String, InterpreterFunction>) this.functions.clone(),
+                (HashMap<String, InternalValue>) this.variables.clone(),
+                this.parentContext,
+                this.modifiable
+        );
     }
 
     @Override

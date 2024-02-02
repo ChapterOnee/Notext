@@ -1,4 +1,4 @@
-package AegisLang;
+package Dissimulo;
 
 public class LexerToken{
     private String content;

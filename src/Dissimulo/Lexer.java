@@ -1,11 +1,9 @@
-package AegisLang;
+package Dissimulo;
 
 import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,7 +66,7 @@ public class Lexer {
         Pattern pattern = Pattern.compile(String.join("|",operationsPattern.toString()), Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(data);
 
-        ArrayList<AegisLang.LexerToken> tokens = new ArrayList<>();
+        ArrayList<Dissimulo.LexerToken> tokens = new ArrayList<>();
 
         LexerTokenType operation = LexerTokenType.END_EXPRESSION;
 
@@ -84,6 +82,7 @@ public class Lexer {
 
                 int i = 0;
                 char firstOpener = ' ';
+                boolean ignoringString = false;
                 do{
                     if(i+matcher.start() >= data.length()){
                         Logger.printError("\t " + data.substring(matcher.start(), matcher.start()+5));
@@ -94,6 +93,13 @@ public class Lexer {
                     i++;
                     dataInContext.append(currentChar);
 
+                    if(currentChar == '"'){
+                        ignoringString = !ignoringString;
+                    }
+                    if(ignoringString){
+                        continue;
+                    }
+
                     if(currentChar == '(' || currentChar == '{' || currentChar == '['){
                         if(firstOpener == ' '){
                             firstOpener  = currentChar;
@@ -101,6 +107,7 @@ public class Lexer {
                         contextOpeners.add(currentChar);
                         continue;
                     }
+
 
                     if (
                             (contextOpeners.get(contextOpeners.size() - 1).equals('(') && currentChar == ')') ||
@@ -123,7 +130,7 @@ public class Lexer {
                 else{
                     contextType = LexerTokenType.IDENTIFIER_EXPRESSION;
                 }
-                tokens.add(new AegisLang.LexerToken(dataInContext.toString(), contextType));
+                tokens.add(new Dissimulo.LexerToken(dataInContext.toString(), contextType));
                 continue;
             }
             else {
@@ -138,11 +145,12 @@ public class Lexer {
             }
 
             if(matcher.group().equals("++") || matcher.group().equals("--")){
-                tokens.add(new AegisLang.LexerToken(matcher.group().equals("++") ? "+=" : "-=",LexerTokenType.OPERATION));
+                tokens.add(new Dissimulo.LexerToken(matcher.group().equals("++") ? "+=" : "-=",LexerTokenType.OPERATION));
                 tokens.add(new LexerToken("1",LexerTokenType.NUMBER));
                 continue;
             }
-            tokens.add(new AegisLang.LexerToken(matcher.group(), operation));
+
+            tokens.add(new Dissimulo.LexerToken(matcher.group(), operation));
         }
         /*for(LexerToken token: tokens){
             System.out.println(token);

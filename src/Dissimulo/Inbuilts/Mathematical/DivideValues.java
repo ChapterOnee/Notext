@@ -1,24 +1,24 @@
-package AegisLang.Inbuilts.Mathematical;
+package Dissimulo.Inbuilts.Mathematical;
 
-import AegisLang.InternalValue;
-import AegisLang.Interpreter;
-import AegisLang.InterpreterContext;
-import AegisLang.InterpreterFunction;
+import Dissimulo.InternalValue;
+import Dissimulo.Interpreter;
+import Dissimulo.InterpreterContext;
+import Dissimulo.InterpreterFunction;
 import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
 
-public class SubtractValues extends InterpreterFunction {
-    public SubtractValues(Interpreter interpreter) {
+public class DivideValues extends InterpreterFunction {
+    public DivideValues(Interpreter interpreter) {
         super(interpreter);
     }
 
     @Override
-    public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+    public InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
         values = replaceVariblesWithValues(values, context);
 
         if(values.size() == 0){
-            Logger.printWarning("Function subtract executed with no arguments.");
+            Logger.printWarning("Function divide executed with no arguments.");
             return new InternalValue(InternalValue.ValueType.NONE);
         }
         if(values.size() == 1){
@@ -28,16 +28,16 @@ public class SubtractValues extends InterpreterFunction {
         InternalValue out = values.get(0);
 
         for(int i = 1;i < values.size();i++){
-            out = subtractTwoValues(out, values.get(i));
+            out = divideTwoValues(out, values.get(i));
         }
 
         return out;
     }
 
-    private InternalValue subtractTwoValues(InternalValue value1, InternalValue value2){
+    private InternalValue divideTwoValues(InternalValue value1, InternalValue value2){
         if(value1.getType() == InternalValue.ValueType.INT && value2.getType() == InternalValue.ValueType.INT){
             return new InternalValue(InternalValue.ValueType.INT,
-                    Integer.parseInt(value1.getValue()) - Integer.parseInt(value2.getValue()) + "");
+                    Integer.parseInt(value1.getValue()) / Integer.parseInt(value2.getValue()) + "");
         }
 
         return new InternalValue(InternalValue.ValueType.NONE);

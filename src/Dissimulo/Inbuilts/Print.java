@@ -1,9 +1,9 @@
-package AegisLang.Inbuilts;
+package Dissimulo.Inbuilts;
 
-import AegisLang.InternalValue;
-import AegisLang.Interpreter;
-import AegisLang.InterpreterContext;
-import AegisLang.InterpreterFunction;
+import Dissimulo.InternalValue;
+import Dissimulo.Interpreter;
+import Dissimulo.InterpreterContext;
+import Dissimulo.InterpreterFunction;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,7 @@ public class Print extends InterpreterFunction {
     }
 
     @Override
-    public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+    public InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
         values = replaceVariblesWithValues(values, context);
         StringBuilder out = new StringBuilder();
 

@@ -1,9 +1,9 @@
 package App;
 
-import AegisLang.InternalValue;
-import AegisLang.Interpreter;
-import AegisLang.InterpreterContext;
-import AegisLang.InterpreterFunction;
+import Dissimulo.InternalValue;
+import Dissimulo.Interpreter;
+import Dissimulo.InterpreterContext;
+import Dissimulo.InterpreterFunction;
 import AmbrosiaUI.Prompts.*;
 import AmbrosiaUI.Widgets.*;
 import AmbrosiaUI.Widgets.Button;
@@ -26,13 +26,11 @@ import AmbrosiaUI.Widgets.TabbedFrame.TabbedFrame;
 import AmbrosiaUI.Widgets.TabbedFrame.TabbedFrameTab;
 import AmbrosiaUI.Widgets.Window;
 
-import javax.security.auth.login.LoginException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Root extends Window {
     private EditorLike editorInFocus;
@@ -379,14 +377,14 @@ public class Root extends Window {
     private void initializeInterpreter(){
         it.addFunction("addEditor", new InterpreterFunction(it) {
             @Override
-            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 addEditor();
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
         it.addFunction("setThemeColor", new InterpreterFunction(it){
             @Override
-            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 if(values.size() != 4){
                     return new InternalValue(InternalValue.ValueType.NONE);
                 }
@@ -404,7 +402,7 @@ public class Root extends Window {
         });
         it.addFunction("prompt", new InterpreterFunction(it){
             @Override
-            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 if(values.size() != 2 || values.get(0).getType() != InternalValue.ValueType.STRING || values.get(1).getType() != InternalValue.ValueType.ID){
                     Logger.printError("Invalid arguments for prompt.");
                     return new InternalValue(InternalValue.ValueType.NONE);
@@ -421,7 +419,7 @@ public class Root extends Window {
                         ArrayList<InternalValue> val = new ArrayList<>();
                         val.add(new InternalValue(InternalValue.ValueType.STRING,result.getContent()));
 
-                        context.getFunction(values.get(1).getValue()).execute(val, context);
+                        context.getFunction(values.get(1).getValue()).externalExecute(val, context);
                     }
                 };
                 p.ask();
@@ -431,13 +429,13 @@ public class Root extends Window {
         });
         it.addFunction("update", new InterpreterFunction(it){
             @Override
-            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 try {
                     Root.this.update();
                 }catch (Exception ignored){
 
                 }
-                return super.execute(values, context);
+                return super.externalExecute(values, context);
             }
         });
     }

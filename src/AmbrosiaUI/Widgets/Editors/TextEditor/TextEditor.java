@@ -524,7 +524,18 @@ public class TextEditor extends Frame implements EditorLike {
                         Tab
                     */
 
-            case 9 -> this.insertStringOnCursor("    ");
+            case 9 -> {
+                if(!this.activeSelections.isEmpty()){
+                    Selection inOrder = this.activeSelections.get(0).getReorganized();
+
+                    for(int i = inOrder.getFrom().getY(); i <= inOrder.getTo().getY();i++){
+                        text.getLineAt(i).addTextAt("    ",0);
+                    }
+                    break;
+                }
+
+                this.insertStringOnCursor("    ");
+            }
 
                     /*
                         Shift to select

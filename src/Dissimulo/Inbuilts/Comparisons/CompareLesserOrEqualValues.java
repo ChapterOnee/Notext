@@ -1,20 +1,20 @@
-package AegisLang.Inbuilts.Comparisons;
+package Dissimulo.Inbuilts.Comparisons;
 
-import AegisLang.InternalValue;
-import AegisLang.Interpreter;
-import AegisLang.InterpreterContext;
-import AegisLang.InterpreterFunction;
+import Dissimulo.InternalValue;
+import Dissimulo.Interpreter;
+import Dissimulo.InterpreterContext;
+import Dissimulo.InterpreterFunction;
 import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
 
-public class CompareGreaterOrEqualValues extends InterpreterFunction {
-    public CompareGreaterOrEqualValues(Interpreter interpreter) {
+public class CompareLesserOrEqualValues extends InterpreterFunction {
+    public CompareLesserOrEqualValues(Interpreter interpreter) {
         super(interpreter);
     }
 
     @Override
-    public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+    public InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
         values = replaceVariblesWithValues(values, context);
 
         if(values.size() == 0){
@@ -38,7 +38,7 @@ public class CompareGreaterOrEqualValues extends InterpreterFunction {
 
     private boolean compareTwoValues(InternalValue value1, InternalValue value2){
         if(value1.getType() == InternalValue.ValueType.INT && value2.getType() == InternalValue.ValueType.INT){
-            return Integer.parseInt(value1.getValue()) >= Integer.parseInt(value2.getValue());
+            return Integer.parseInt(value1.getValue()) <= Integer.parseInt(value2.getValue());
         }
 
         return false;

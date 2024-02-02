@@ -1,0 +1,14 @@
+function main(){
+    import("dissimuloLibs/arrays.ag");
+
+    Arrays.new("A", 10);
+    Arrays.new("B", 10);
+
+    A[3] = 5;
+    B[5] = 1;
+    
+    A.print();
+    B.print();
+}
+
+main();

@@ -1,15 +1,14 @@
-package AegisLang;
+package Dissimulo;
 
-import AegisLang.Inbuilts.*;
-import AegisLang.Inbuilts.Comparisons.*;
-import AegisLang.Inbuilts.Mathematical.AddValues;
-import AegisLang.Inbuilts.Mathematical.DivideValues;
-import AegisLang.Inbuilts.Mathematical.MultiplyValues;
-import AegisLang.Inbuilts.Mathematical.SubtractValues;
+import Dissimulo.Inbuilts.*;
+import Dissimulo.Inbuilts.Comparisons.*;
+import Dissimulo.Inbuilts.Mathematical.AddValues;
+import Dissimulo.Inbuilts.Mathematical.DivideValues;
+import Dissimulo.Inbuilts.Mathematical.MultiplyValues;
+import Dissimulo.Inbuilts.Mathematical.SubtractValues;
 import AmbrosiaUI.Utility.Logger;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,9 +67,12 @@ public class Interpreter {
 
         globalContext.addFunction("print", new Print(this));
         globalContext.addFunction("global", new MakeGlobal(this));
+        globalContext.addFunction("typeOf", new GetType(this));
+        globalContext.addFunction("elevate", new ElevateContext(this));
+
         globalContext.addFunction("wait", new InterpreterFunction(this) {
             @Override
-            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 if(values.size() != 1){
                     Logger.printError("Wait function missing time.");
                     return new InternalValue(InternalValue.ValueType.NONE);
@@ -88,7 +90,7 @@ public class Interpreter {
 
         globalContext.addFunction("import", new InterpreterFunction(this){
             @Override
-            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 if(values.size() != 1){
                     Logger.printError("Import function only takes in a path argument.");
                     return new InternalValue(InternalValue.ValueType.NONE);
@@ -161,12 +163,24 @@ public class Interpreter {
         else if(tree.getType() == Lexer.LexerTokenType.CONTEXT){
             return executeNodes(Parser.parseContext(tree), localContext);
         }
-        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.IDENTIFIER_EXPRESSION)){
+        else if(tree.getType() == Lexer.LexerTokenType.IDENTIFIER_EXPRESSION){
+            InternalValue value = parseIdentifierExpression(tree,context);
+
+            tree.setValue(value.getValue());
+            tree.setType(Lexer.LexerTokenType.ID);
+        }
+        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.IDENTIFIER_EXPRESSION) && !tree.getValue().equals("function")){
             InternalValue value = evaluateExpression(tree.getRightChildNode(),context);
             tree.setValue(tree.getValue() + value.getValue());
             tree.setRightChildNode(tree.getRightChildNode().getRightChildNode());
         }
-        else if(tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().equals("return")){
+        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.IDENTIFIER_EXPRESSION) && tree.getValue().equals("function")){
+            InternalValue value = parseIdentifierExpression(tree.getRightChildNode(),context);
+            tree.getRightChildNode().setValue(value.getValue());
+            tree.getRightChildNode().setType(Lexer.LexerTokenType.ID);
+        }
+
+        if(tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().equals("return")){
             if(tree.getRightChildNode() == null){
                 return new InternalValue(InternalValue.ValueType.NONE, true);
             }
@@ -185,7 +199,10 @@ public class Interpreter {
                     condition = getVariableValue(condition, context);
 
                     if(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
-                        executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        InternalValue value = executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        if(value.isReturned()){
+                            return value;
+                        }
                         lastStatement =  "if_success";
                     }
                     else{
@@ -199,7 +216,10 @@ public class Interpreter {
                     condition = getVariableValue(condition, context);
 
                     if(lastStatement.equals("if_fail") && condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
-                        executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        InternalValue value = executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        if(value.isReturned()){
+                            return value;
+                        }
                         lastStatement =  "if_success";
                     }
 
@@ -209,7 +229,11 @@ public class Interpreter {
                     InternalValue condition = evaluateExpression(tree.getRightChildNode(), context);
 
                     while(condition.getType() == InternalValue.ValueType.BOOL && condition.getValue().equals("true")){
-                        executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        InternalValue value = executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        if(value.isReturned()){
+                            return value;
+                        }
+
                         condition = evaluateExpression(tree.getRightChildNode(), context);
                     }
 
@@ -244,7 +268,12 @@ public class Interpreter {
 
                     InternalValue repeatConditionResult = evaluateExpression(Parser.parseAbstractSyntaxTrees(repeatCondition).get(0), localContext);
                     while(repeatConditionResult.getType() == InternalValue.ValueType.BOOL && repeatConditionResult.getValue().equals("true")){
-                        executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        InternalValue value = executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+
+                        if(value.isReturned()){
+                            return value;
+                        }
+
                         executeNodes(Parser.parseAbstractSyntaxTrees(repeatedStatement), localContext);
                         repeatConditionResult = evaluateExpression(Parser.parseAbstractSyntaxTrees(repeatCondition).get(0), localContext);
                     }
@@ -296,9 +325,9 @@ public class Interpreter {
 
             ASTreeNode core = tree.getRightChildNode().getRightChildNode().getRightChildNode();
 
-            context.addFunction(name, new InterpreterFunction(this){
+            context.addFunction(name, new InterpreterFunction(this, context){
                 @Override
-                public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+                protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                     InterpreterContext localFunctionContext = new InterpreterContext(context);
 
                     if(values.size() != arguments.size()){
@@ -324,7 +353,7 @@ public class Interpreter {
             }
         }
 
-
+        //Parser.displayTree(tree);
         if(!foundStatement && tree.getType() == Lexer.LexerTokenType.ID
                 && !context.hasVariable(tree.getValue())
                 && tree.getRightChildNode() != null && tree.getRightChildNode().getType() == Lexer.LexerTokenType.EXPRESSION
@@ -367,7 +396,7 @@ public class Interpreter {
                 arguments.add(value);
             }
 
-            return context.getFunction(tree.getValue()).execute(arguments, context);
+            return context.getFunction(tree.getValue()).externalExecute(arguments, context);
         }
 
         if(tree.getLeftChildNode() != null){
@@ -402,12 +431,7 @@ public class Interpreter {
                     return endValue;
                 }
                 case IDENTIFIER_EXPRESSION -> {
-                    ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
-
-                    endValue = evaluateExpression(nodes.get(0), context);
-                    endValue = getVariableValue(endValue, context);
-
-                    return new InternalValue(InternalValue.ValueType.ID,endValue.getValue());
+                    return  parseIdentifierExpression(tree,context);
                 }
             }
 
@@ -416,6 +440,15 @@ public class Interpreter {
         }
 
         return endValue;
+    }
+
+    public InternalValue parseIdentifierExpression(ASTreeNode tree, InterpreterContext context){
+        ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
+
+        InternalValue endValue = evaluateExpression(nodes.get(0), context);
+        endValue = getVariableValue(endValue, context);
+
+        return new InternalValue(InternalValue.ValueType.ID,endValue.getValue());
     }
 
     public InternalValue getVariableValue(InternalValue id, InterpreterContext context){
@@ -436,7 +469,7 @@ public class Interpreter {
 
     private InternalValue evaluateOperation(InternalValue value1, InternalValue value2, String operation, InterpreterContext context){
         if(assignedOperatorsToFunctions.containsKey(operation)){
-            return assignedOperatorsToFunctions.get(operation).execute(new ArrayList<>(List.of(value1,value2)), context);
+            return assignedOperatorsToFunctions.get(operation).externalExecute(new ArrayList<>(List.of(value1,value2)), context);
         }
 
         switch (operation){
@@ -457,7 +490,7 @@ public class Interpreter {
 
                 value2 = getVariableValue(value2, context);
 
-                context.setVariable(value1.getValue(), context.getFunction("add").execute(new ArrayList<>(List.of(value1,value2)), context));
+                context.setVariable(value1.getValue(), context.getFunction("add").externalExecute(new ArrayList<>(List.of(value1,value2)), context));
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
             }
             case "-=" -> {
@@ -468,7 +501,7 @@ public class Interpreter {
 
                 value2 = getVariableValue(value2, context);
 
-                context.setVariable(value1.getValue(), context.getFunction("subtract").execute(new ArrayList<>(List.of(value1,value2)), context));
+                context.setVariable(value1.getValue(), context.getFunction("subtract").externalExecute(new ArrayList<>(List.of(value1,value2)), context));
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
             }
             case "*=" -> {
@@ -479,7 +512,7 @@ public class Interpreter {
 
                 value2 = getVariableValue(value2, context);
 
-                context.setVariable(value1.getValue(), context.getFunction("multiply").execute(new ArrayList<>(List.of(value1,value2)), context));
+                context.setVariable(value1.getValue(), context.getFunction("multiply").externalExecute(new ArrayList<>(List.of(value1,value2)), context));
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
             }
             case "/=" -> {
@@ -490,7 +523,7 @@ public class Interpreter {
 
                 value2 = getVariableValue(value2, context);
 
-                context.setVariable(value1.getValue(), context.getFunction("divide").execute(new ArrayList<>(List.of(value1,value2)), context));
+                context.setVariable(value1.getValue(), context.getFunction("divide").externalExecute(new ArrayList<>(List.of(value1,value2)), context));
                 return new InternalValue(InternalValue.ValueType.BOOL, "true");
             }
             default -> {

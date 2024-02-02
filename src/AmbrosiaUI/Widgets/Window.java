@@ -99,7 +99,7 @@ public class Window {
 
         if(System.getProperty("os.name").startsWith("Windows")){
             customFrame = true;
-        };
+        }
 
         innerFrame = new Frame("primary", 0){
             @Override

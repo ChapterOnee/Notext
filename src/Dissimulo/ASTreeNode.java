@@ -1,6 +1,4 @@
-package AegisLang;
-
-import java.util.ArrayList;
+package Dissimulo;
 
 public class ASTreeNode implements Comparable<ASTreeNode>{
     private Lexer.LexerTokenType type;

@@ -1,9 +1,9 @@
-package AegisLang.Inbuilts.Comparisons;
+package Dissimulo.Inbuilts.Comparisons;
 
-import AegisLang.InternalValue;
-import AegisLang.Interpreter;
-import AegisLang.InterpreterContext;
-import AegisLang.InterpreterFunction;
+import Dissimulo.InternalValue;
+import Dissimulo.Interpreter;
+import Dissimulo.InterpreterContext;
+import Dissimulo.InterpreterFunction;
 import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class BinaryAndValues extends InterpreterFunction {
     }
 
     @Override
-    public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+    public InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
         values = replaceVariblesWithValues(values, context);
 
         if(values.size() == 0){

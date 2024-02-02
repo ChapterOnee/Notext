@@ -1,24 +1,25 @@
-package AegisLang.Inbuilts.Comparisons;
+package Dissimulo.Inbuilts.Comparisons;
 
-import AegisLang.InternalValue;
-import AegisLang.Interpreter;
-import AegisLang.InterpreterContext;
-import AegisLang.InterpreterFunction;
+import Dissimulo.InternalValue;
+import Dissimulo.Interpreter;
+import Dissimulo.InterpreterContext;
+import Dissimulo.InterpreterFunction;
 import AmbrosiaUI.Utility.Logger;
 
 import java.util.ArrayList;
 
-public class CompareLesserOrEqualValues extends InterpreterFunction {
-    public CompareLesserOrEqualValues(Interpreter interpreter) {
+public class CompareValues extends InterpreterFunction {
+
+    public CompareValues(Interpreter interpreter) {
         super(interpreter);
     }
 
     @Override
-    public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+    public InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
         values = replaceVariblesWithValues(values, context);
 
         if(values.size() == 0){
-            Logger.printWarning("Function compare greater executed with no arguments.");
+            Logger.printWarning("Function compare executed with no arguments.");
             return new InternalValue(InternalValue.ValueType.NONE);
         }
         if(values.size() == 1){
@@ -37,10 +38,7 @@ public class CompareLesserOrEqualValues extends InterpreterFunction {
     }
 
     private boolean compareTwoValues(InternalValue value1, InternalValue value2){
-        if(value1.getType() == InternalValue.ValueType.INT && value2.getType() == InternalValue.ValueType.INT){
-            return Integer.parseInt(value1.getValue()) <= Integer.parseInt(value2.getValue());
-        }
-
-        return false;
+        return value1.getType() == value2.getType() && value1.getValue().equals(value2.getValue());
     }
+
 }

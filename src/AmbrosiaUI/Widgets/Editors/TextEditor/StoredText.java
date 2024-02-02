@@ -18,7 +18,7 @@ public class StoredText {
 
     private boolean storingBlocked = false;
 
-    private class State{
+    private static class State{
         private final ArrayList<EditorLine> lines;
         private final Position cursorPosition;
 
@@ -67,10 +67,10 @@ public class StoredText {
         }
 
         if(currentFile == null){
-            pastText.add(new State(newlines, new Position(actingCursor.getX(),actingCursor.getY()),null));
+            pastText.add(new State(newlines, new Position(actingCursor.getX(), actingCursor.getY()), null));
         }
         else{
-            pastText.add(new State(newlines, new Position(actingCursor.getX(),actingCursor.getY()),new String(currentFile)));
+            pastText.add(new State(newlines, new Position(actingCursor.getX(), actingCursor.getY()), new String(currentFile)));
         }
     }
 
