@@ -8,6 +8,10 @@ import AegisLang.Inbuilts.Mathematical.MultiplyValues;
 import AegisLang.Inbuilts.Mathematical.SubtractValues;
 import AmbrosiaUI.Utility.Logger;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,11 +85,41 @@ public class Interpreter {
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
+
+        globalContext.addFunction("import", new InterpreterFunction(this){
+            @Override
+            public InternalValue execute(ArrayList<InternalValue> values, InterpreterContext context) {
+                if(values.size() != 1){
+                    Logger.printError("Import function only takes in a path argument.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                try(BufferedReader bf = new BufferedReader(new FileReader(values.get(0).getValue()))) {
+                    StringBuilder allData = new StringBuilder();
+
+                    while (bf.ready()){
+                        allData.append(bf.readLine());
+                    }
+
+                    Interpreter.this.execute(allData.toString(), context);
+                }
+                catch (IOException e) {
+                    Logger.printError("Failed to import file '"+values.get(0)+"' reason: " + e);
+                }
+
+
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
     }
 
     public InternalValue execute(String code){
+        return execute(code,  new InterpreterContext(globalContext));
+    }
+
+    public InternalValue execute(String code, InterpreterContext context){
         ArrayList<ASTreeNode> nodes = Parser.parseAbstractSyntaxTrees(Lexer.lexData(code));
-        return executeNodes(nodes,  new InterpreterContext(globalContext));
+        return executeNodes(nodes,  context);
     }
 
     public InternalValue executeNodes(ArrayList<ASTreeNode> nodes,  InterpreterContext context){
@@ -126,6 +160,11 @@ public class Interpreter {
         }
         else if(tree.getType() == Lexer.LexerTokenType.CONTEXT){
             return executeNodes(Parser.parseContext(tree), localContext);
+        }
+        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.IDENTIFIER_EXPRESSION)){
+            InternalValue value = evaluateExpression(tree.getRightChildNode(),context);
+            tree.setValue(tree.getValue() + value.getValue());
+            tree.setRightChildNode(tree.getRightChildNode().getRightChildNode());
         }
         else if(tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().equals("return")){
             if(tree.getRightChildNode() == null){
@@ -205,8 +244,8 @@ public class Interpreter {
 
                     InternalValue repeatConditionResult = evaluateExpression(Parser.parseAbstractSyntaxTrees(repeatCondition).get(0), localContext);
                     while(repeatConditionResult.getType() == InternalValue.ValueType.BOOL && repeatConditionResult.getValue().equals("true")){
-                        executeNodes(Parser.parseAbstractSyntaxTrees(repeatedStatement), localContext);
                         executeNodes(Parser.parseContext(tree.getRightChildNode().getRightChildNode()), localContext);
+                        executeNodes(Parser.parseAbstractSyntaxTrees(repeatedStatement), localContext);
                         repeatConditionResult = evaluateExpression(Parser.parseAbstractSyntaxTrees(repeatCondition).get(0), localContext);
                     }
 
@@ -367,6 +406,7 @@ public class Interpreter {
 
                     endValue = evaluateExpression(nodes.get(0), context);
                     endValue = getVariableValue(endValue, context);
+
                     return new InternalValue(InternalValue.ValueType.ID,endValue.getValue());
                 }
             }

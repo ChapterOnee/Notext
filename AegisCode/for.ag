@@ -1,6 +1,8 @@
 for(i = 0;i < 10;i++){
-    a = i;
-    global(a);
+    out[i] = 0;
+    global(out[i]);
 }
 
-print(a);
+out[4] = "adwadw";
+
+print(out[3], out[5]);
