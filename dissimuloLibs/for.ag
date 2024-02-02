@@ -5,4 +5,4 @@ for(i = 0;i < 10;i++){
 
 out[4] = "adwadw";
 
-print(out[3], out[5]);
+print(out[3], out[4]);

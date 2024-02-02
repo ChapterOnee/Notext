@@ -385,6 +385,7 @@ public class Root extends Window {
         it.addFunction("setThemeColor", new InterpreterFunction(it){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
+                values = replaceVariblesWithValues(values,context);
                 if(values.size() != 4){
                     return new InternalValue(InternalValue.ValueType.NONE);
                 }
@@ -435,7 +436,7 @@ public class Root extends Window {
                 }catch (Exception ignored){
 
                 }
-                return super.externalExecute(values, context);
+                return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
     }

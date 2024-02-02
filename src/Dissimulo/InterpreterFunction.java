@@ -17,15 +17,7 @@ public class InterpreterFunction {
 
     public InternalValue externalExecute(ArrayList<InternalValue> values, InterpreterContext context){
         if(this.boundContext != null){
-            InterpreterContext modifiedContext = context.getCopy();
-            for(String variableName: boundContext.getVariables().keySet()){
-                modifiedContext.setVariable(variableName, boundContext.getVariable(variableName));
-            }
-            for(String functionName: boundContext.getVariables().keySet()){
-                modifiedContext.setFunction(functionName, boundContext.getFunction(functionName));
-            }
-
-            return internalExecute(values, modifiedContext);
+            return internalExecute(values, boundContext);
         }
 
         return internalExecute(values,context);
