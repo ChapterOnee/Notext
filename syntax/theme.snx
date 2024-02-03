@@ -1,4 +1,4 @@
 for .thm
 name Theme
 
-group accent \b(?:if|while)\b
+group accent \b(?:color|font)\b

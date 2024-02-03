@@ -66,6 +66,7 @@ public class TextEditor extends Frame implements EditorLike {
         this.highlighter.loadFromDirectory("syntax");
 
         this.hinter = new Hinter(this, cursor);
+        this.hinter.loadFromDirectory("dictionaries");
 
         //this.highlighter.loadFromFile("syntax/default/theme.snx");
     }
@@ -253,15 +254,15 @@ public class TextEditor extends Frame implements EditorLike {
                 text_height
         );
 
+        //
+        //  Draw type hint
+        //
+        hinter.draw(g2, cursorX, cursorY+text_height+5);
+
         AffineTransform at2 = new AffineTransform();
         at2.translate(0 , 0);
 
         g2.setTransform(at2);
-
-        //
-        //  Draw type hint
-        //
-        hinter.draw(g2, cursorX+10, cursorY);
 
         //
         //  Draw all hints
@@ -486,6 +487,14 @@ public class TextEditor extends Frame implements EditorLike {
                     */
             case 10 -> {
                 EditorLine current_line = this.getLineUnderCursor();
+                if(!hinter.getCurrentHints().isEmpty()){
+                    String newWord =  hinter.getCurrentHints().get(0);
+                    current_line.replace(hinter.getCurrentWord(), newWord );
+
+                    cursor.setX(current_line.getText().indexOf(newWord) + newWord.length());
+                    return;
+                }
+
                 String text = current_line.getText();
 
                 current_line.setText(text.substring(this.cursor.getX()));
@@ -682,6 +691,8 @@ public class TextEditor extends Frame implements EditorLike {
     public void reload() {
         this.highlighter = new SyntaxHighlighter("default");
         this.highlighter.loadFromDirectory("syntax");
+        this.hinter = new Hinter(this, cursor);
+        this.hinter.loadFromDirectory("dictionaries");
         if(hasFile()) {
             openFile(this.getCurrentFile());
         }

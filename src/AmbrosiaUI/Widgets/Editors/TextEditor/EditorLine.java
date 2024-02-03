@@ -49,6 +49,10 @@ public class EditorLine{
         this.raw_content = buf.toString();
     }
 
+    public void replace(String from, String to){
+        this.raw_content = this.raw_content.replace(from,to);
+    }
+
     public int size(){
         return this.raw_content.length();
     }

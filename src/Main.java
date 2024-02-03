@@ -5,6 +5,7 @@ public class Main {
         Root root = new Root();
         root.show();
 
+
         //root.openFile("testFiles/test.txt");
 
         //PathImage img = new PathImage("icons/folder.pimg");
