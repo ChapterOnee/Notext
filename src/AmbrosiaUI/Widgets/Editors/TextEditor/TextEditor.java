@@ -257,7 +257,7 @@ public class TextEditor extends Frame implements EditorLike {
         //
         //  Draw type hint
         //
-        hinter.draw(g2, cursorX, cursorY+text_height+5);
+        hinter.draw(g2, cursorX, cursorY);
 
         AffineTransform at2 = new AffineTransform();
         at2.translate(0 , 0);
@@ -492,6 +492,7 @@ public class TextEditor extends Frame implements EditorLike {
                     current_line.replace(hinter.getCurrentWord(), newWord );
 
                     cursor.setX(current_line.getText().indexOf(newWord) + newWord.length());
+                    hinter.getCurrentHints().clear();
                     return;
                 }
 

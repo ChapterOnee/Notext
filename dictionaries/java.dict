@@ -5,9 +5,9 @@ word continue
 word for
 word new
 word switch
-word assert***
+word assert
 word default
-word goto*
+word goto
 word package
 word synchronized
 word boolean
@@ -26,7 +26,7 @@ word import
 word public
 word throws
 word case
-word enum****
+word enum
 word instanceof
 word return
 word transient
@@ -43,9 +43,9 @@ word void
 word class
 word finally
 word long
-word strictfp**
+word strictfp
 word volatile
-word const*
+word const
 word float
 word native
 word super

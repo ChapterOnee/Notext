@@ -21,6 +21,7 @@ public class Hinter {
     private TextEditor editor;
     private Cursor cursor;
 
+    private final int MAX_SUGGESTION_SHOWN = 10;
     private ArrayList<KeywordDictionary> dictionaries = new ArrayList<>();
 
     public Hinter(TextEditor editor, Cursor cursor) {
@@ -58,11 +59,32 @@ public class Hinter {
                 }
             }
         }
+
+        sortMostRelevantHint();
+    }
+
+    public void sortMostRelevantHint(){
+        if(currentHints.isEmpty()){
+            return;
+        }
+
+        int mostRelevantIndex = 0;
+        String mostRelevant = currentHints.get(0);
+        String currentWord = getCurrentWord();
+
+        for(String hint: currentHints){
+            if(hint.indexOf(currentWord) < mostRelevant.indexOf(currentWord)){
+                mostRelevantIndex = currentHints.indexOf(hint);
+                mostRelevant = hint;
+            }
+        }
+        currentHints.remove(mostRelevantIndex);
+        currentHints.add(0,mostRelevant);
     }
 
     public void applyDictionary(KeywordDictionary dictionary, String currentWord){
         for(String word: dictionary.getWords()){
-            if(word.contains(currentWord)){
+            if(word.contains(currentWord) && !currentHints.contains(word)){
                 currentHints.add(word);
             }
         }
@@ -85,37 +107,64 @@ public class Hinter {
         Shape lastClip = g2.getClip();
 
         int width = 200;
-        int lineheight = (editor.getLineHeight()+5);
-        int height = lineheight *Math.min(currentHints.size(),10);
+        int lineheight = (editor.getLineHeight()+10);
+        int height = lineheight *Math.min(currentHints.size(),MAX_SUGGESTION_SHOWN);
 
-        g2.setClip(x,y,width,height);
+        int realX = x;
+        int realY = y;
+
+        if(realY + height > editor.getContentHeight()){
+            realY -= height + 5;
+        }
+        else {
+            realY += lineheight + 5;
+        }
+
 
         if (currentHints.isEmpty()){
             g2.setClip(lastClip);
             return;
         }
         g2.setColor(theme.getColorByName("secondary"));
+        AdvancedGraphics.drawText(g2,
+                new Rectangle(x,y,100,g2.getFontMetrics().getAscent()),
+                currentHints.get(0).substring(getCurrentWord().length()),
+                AdvancedGraphics.Side.LEFT);
+
+        g2.setClip(realX,realY,width,height);
+        g2.setColor(theme.getColorByName("secondary"));
         AdvancedGraphics.borderedRect(g2,
-                x,
-                y,
+                realX,
+                realY,
                 width,
                 height,
                 1,
                 theme.getColorByName("secondary"),
-                theme.getColorByName("text1"),
+                theme.getColorByName("primary"),
                 AdvancedGraphics.BORDER_FULL
         );
 
         int yOffset = 0;
         g2.setColor(theme.getColorByName("text1"));
+
+        int i = 0;
         for(String hint: currentHints){
+            if(i == 0){
+                g2.setColor(theme.getColorByName("accent"));
+                g2.fillRect(realX, realY, 3, lineheight);
+                g2.setColor(theme.getColorByName("text1"));
+            }
             AdvancedGraphics.drawText(g2, new Rectangle(
-                    x,
-                    y+yOffset,
+                    realX+10,
+                    realY+yOffset,
                     width,
                     lineheight
-            ), hint, AdvancedGraphics.Side.CENTER);
+            ), hint, AdvancedGraphics.Side.LEFT);
             yOffset += lineheight;
+
+            if(i > MAX_SUGGESTION_SHOWN) break;
+
+            i++;
         }
 
         g2.setClip(lastClip);
