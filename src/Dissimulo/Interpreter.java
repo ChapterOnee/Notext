@@ -11,14 +11,17 @@ import AmbrosiaUI.Utility.Logger;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class Interpreter {
     private InterpreterContext globalContext = new InterpreterContext(false);
 
     private HashMap<String, InterpreterFunction> assignedOperatorsToFunctions = new HashMap<>();
+
+    private HashMap<String, Object> storedObjects = new HashMap<>();
 
     public Interpreter() {
         InterpreterFunction addFunction = new AddValues(this);
@@ -113,7 +116,28 @@ public class Interpreter {
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
+        globalContext.addFunction("createScanner",  new InterpreterFunction(this){
+            @Override
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
+                String id = "REF_"+generateID(16);
+                createReferencedObject(id, new Scanner(System.in));
+
+                return new InternalValue(InternalValue.ValueType.REFERENCE,  id);
+            }
+        });
     }
+
+    private static final Random rng = new Random();
+    private static final String idCharacters = "abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+    public static String generateID(int length) {
+        char[] text = new char[length];
+        for (int i = 0; i < length; i++)
+        {
+            text[i] = idCharacters.charAt(rng.nextInt(idCharacters.length()));
+        }
+        return new String(text);
+    }
+
 
     public InternalValue execute(String code){
         return execute(code,  new InterpreterContext(globalContext));
@@ -122,6 +146,17 @@ public class Interpreter {
     public InternalValue execute(String code, InterpreterContext context){
         ArrayList<ASTreeNode> nodes = Parser.parseAbstractSyntaxTrees(Lexer.lexData(code));
         return executeNodes(nodes,  context);
+    }
+
+    public InternalValue createReferencedObject(String referenceName, Object object){
+        storedObjects.put(referenceName,object);
+        return new InternalValue(InternalValue.ValueType.REFERENCE,referenceName);
+    }
+
+    public InternalValue generateReferenceForObject(Object object){
+        String referenceName = generateID(16);
+        storedObjects.put(referenceName,object);
+        return new InternalValue(InternalValue.ValueType.REFERENCE,referenceName);
     }
 
     public InternalValue executeNodes(ArrayList<ASTreeNode> nodes,  InterpreterContext context){
@@ -191,6 +226,52 @@ public class Interpreter {
             returnedValue.setReturned(true);
             lastStatement = "";
             return returnedValue;
+        }
+        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION) &&
+                tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().split("\\.").length > 1
+                && context.hasVariable(tree.getValue().split("\\.")[0]) &&
+                getVariableValue(new InternalValue(InternalValue.ValueType.ID,tree.getValue().split("\\.")[0]),context).getType() == InternalValue.ValueType.REFERENCE
+        ){
+            String[] args = tree.getValue().split("\\.");
+
+            InternalValue reference = getVariableValue(new InternalValue(InternalValue.ValueType.ID,tree.getValue().split("\\.")[0]),context);
+
+            String name = reference.getValue();
+            String methodName = args[1];
+            if(args.length > 2){
+                Logger.printError("Invalid method calling from a reference.");
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+            if (!storedObjects.containsKey(name)) {
+                Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+
+            Object obj = storedObjects.get(name);
+            Object result;
+            try {
+                Method method = obj.getClass().getMethod(methodName);
+                result = method.invoke(obj);
+            } catch (Exception e) {
+                Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+
+            if(result instanceof Integer){
+                return new InternalValue(InternalValue.ValueType.INT, ((int)result) + "");
+            }
+            else if(result instanceof Double){
+                return new InternalValue(InternalValue.ValueType.DOUBLE, ((double)result) + "");
+            }
+            else if(result instanceof String){
+                return new InternalValue(InternalValue.ValueType.STRING, ((String)result));
+            }
+            else if(result instanceof Boolean){
+                return new InternalValue(InternalValue.ValueType.BOOL, ((boolean)result) + "");
+            }
+            else{
+                return generateReferenceForObject(result);
+            }
         }
         else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION, Lexer.LexerTokenType.CONTEXT)){
             switch (tree.getValue()){

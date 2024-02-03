@@ -1,1 +1,2 @@
-import("dissimuloLibs/arrays.ag");
+header = getHeader();
+print(header.getWidth());

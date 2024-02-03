@@ -6,7 +6,6 @@ import java.util.HashMap;
 public class InterpreterContext {
     private HashMap<String, InterpreterFunction> functions = new HashMap<>();
     private HashMap<String, InternalValue> variables = new HashMap<>();
-
     protected InterpreterContext parentContext;
 
     private boolean modifiable = true;
@@ -140,23 +139,6 @@ public class InterpreterContext {
         }
         return this;
     }
-
-    public InterpreterContext(HashMap<String, InterpreterFunction> functions, HashMap<String, InternalValue> variables, InterpreterContext parentContext, boolean modifiable) {
-        this.functions = functions;
-        this.variables = variables;
-        this.parentContext = parentContext;
-        this.modifiable = modifiable;
-    }
-
-    public InterpreterContext getCopy(){
-        return new InterpreterContext(
-                (HashMap<String, InterpreterFunction>) this.functions.clone(),
-                (HashMap<String, InternalValue>) this.variables.clone(),
-                this.parentContext,
-                this.modifiable
-        );
-    }
-
     @Override
     public String toString() {
         return "InterpreterContext{" +

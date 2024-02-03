@@ -414,7 +414,7 @@ public class FolderView extends Frame {
         return temp;
     }
 
-    protected void updateFiles(){
+    public void updateFiles(){
         updatePath();
 
         ArrayList<File> allContents = getAllFilesInDirectory(path);

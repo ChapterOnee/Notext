@@ -1,7 +1,10 @@
 package AmbrosiaUI.Widgets.Editors.TextEditor;
 
+import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.GraphicsBorderModifier;
+import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.Editors.EditorLike;
+import AmbrosiaUI.Widgets.Editors.TextEditor.Hinter.Hinter;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.ScrollController;
 import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.HighlightGroup;
@@ -36,6 +39,7 @@ public class TextEditor extends Frame implements EditorLike {
     private final Cursor cursor;
 
     private SyntaxHighlighter highlighter;
+    private Hinter hinter;
 
     public TextEditor() {
         super("primary", 0);
@@ -60,6 +64,8 @@ public class TextEditor extends Frame implements EditorLike {
 
         this.highlighter = new SyntaxHighlighter("default");
         this.highlighter.loadFromDirectory("syntax");
+
+        this.hinter = new Hinter(this, cursor);
 
         //this.highlighter.loadFromFile("syntax/default/theme.snx");
     }
@@ -237,9 +243,12 @@ public class TextEditor extends Frame implements EditorLike {
         }*/
 
         g2.setColor(theme.getColorByName("text2"));
+
+        int cursorX = this.getX() + offset.x + pos.x - 1 + LINE_OFFSET_X;
+        int cursorY = this.getY() + offset.y + pos.y;
         g2.fillRect(
-                this.getX() + offset.x + pos.x - 1 + LINE_OFFSET_X,
-                this.getY() + offset.y + pos.y,
+                cursorX,
+                cursorY,
                 2,
                 text_height
         );
@@ -249,6 +258,10 @@ public class TextEditor extends Frame implements EditorLike {
 
         g2.setTransform(at2);
 
+        //
+        //  Draw type hint
+        //
+        hinter.draw(g2, cursorX+10, cursorY);
 
         //
         //  Draw all hints
@@ -526,11 +539,15 @@ public class TextEditor extends Frame implements EditorLike {
 
             case 9 -> {
                 if(!this.activeSelections.isEmpty()){
+                    text.storeState();
+                    text.blockStoring();
                     Selection inOrder = this.activeSelections.get(0).getReorganized();
 
                     for(int i = inOrder.getFrom().getY(); i <= inOrder.getTo().getY();i++){
                         text.getLineAt(i).addTextAt("    ",0);
                     }
+
+                    text.unblockStoring();
                     break;
                 }
 
@@ -566,6 +583,8 @@ public class TextEditor extends Frame implements EditorLike {
             }
 
         }
+
+        hinter.reloadHints();
     }
 
     @Override

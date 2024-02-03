@@ -9,7 +9,8 @@ public class InternalValue{
         DOUBLE,
         OBJECT,
         FUNCTION,
-        NONE
+        NONE,
+        REFERENCE
     }
 
     private ValueType type;

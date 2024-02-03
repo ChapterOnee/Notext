@@ -129,6 +129,7 @@ public class Root extends Window {
 
                         editorInFocus.setCurrentFile(result.getContent());
                         editorInFocus.saveToCurrentlyOpenFile();
+                        fw.updateFiles();
                         win.update();
                     }
                 };
@@ -227,6 +228,7 @@ public class Root extends Window {
                     @Override
                     public void onSubmited(PromptResult result) {
                         fw.setPath(result.getContent());
+                        fw.updateFiles();
                         Root.this.update();
                     }
                 };
@@ -247,6 +249,7 @@ public class Root extends Window {
                     public void onSubmited(PromptResult result) {
                         editorInFocus.setCurrentFile(result.getContent());
                         editorInFocus.saveToCurrentlyOpenFile();
+                        fw.updateFiles();
                     }
                 };
                 f.setPath(fw.getPath());
@@ -437,6 +440,12 @@ public class Root extends Window {
 
                 }
                 return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
+        it.addFunction("getHeader", new InterpreterFunction(it){
+            @Override
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
+                return it.generateReferenceForObject(coreHeader);
             }
         });
     }
