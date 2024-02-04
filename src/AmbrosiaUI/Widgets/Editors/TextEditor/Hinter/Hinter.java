@@ -131,7 +131,7 @@ public class Hinter {
         g2.setColor(theme.getColorByName("secondary"));
         AdvancedGraphics.drawText(g2,
                 new Rectangle(x,y,100,g2.getFontMetrics().getAscent()),
-                getCurrentHint().substring(getCurrentWord().length()),
+                getCurrentHint().substring(Math.min(getCurrentHint().length(),getCurrentWord().length())),
                 AdvancedGraphics.Side.LEFT);
 
         g2.setClip(realX,realY,width,height);

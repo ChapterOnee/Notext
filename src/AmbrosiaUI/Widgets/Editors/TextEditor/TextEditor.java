@@ -186,6 +186,16 @@ public class TextEditor extends Frame implements EditorLike {
             // Draw line number
             g2.setColor(theme.getColorByName("text1"));
             g2.drawString(line_text, x-fm.stringWidth(line_text), y+text_height-fm.getDescent());
+            //  Highlight line if cursor is on it
+
+            if(i == cursor.getY()){
+                g2.setColor(theme.getColorByName("secondary").darker());
+                g2.fillRect(x+5,y,this.getContentWidth(),text_height);
+                g2.setColor(theme.getColorByName("text1"));
+            }
+            else{
+                g2.setColor(theme.getColorByName("text2"));
+            }
 
             /*
                 Dont draw characters off screen.
@@ -199,7 +209,6 @@ public class TextEditor extends Frame implements EditorLike {
                 chrI++;
             }
 
-            g2.setColor(theme.getColorByName("text2"));
             // Draw line content
             text.getLines().get(i).draw(g2, x+ LINE_OFFSET_X,y-fm.getDescent(), text_height,0,chrI);
         }
@@ -474,7 +483,6 @@ public class TextEditor extends Frame implements EditorLike {
 
     @Override
     public void onKeyPressed(KeyEvent keyEvent) {
-        //System.out.println(keyEvent.getExtendedKeyCode());
 
         switch (keyEvent.getKeyCode()){
             case 38 -> {
@@ -516,6 +524,14 @@ public class TextEditor extends Frame implements EditorLike {
                 //System.out.println(this.text.getLines().size());
                 this.cursor.down();
                 this.cursor.toLineStart();
+            }
+
+            /*
+                Handle esc
+             */
+            case 27 -> {
+                hinter.getCurrentHints().clear();
+                return;
             }
                     /*
                         Backspace, handle removing characters.

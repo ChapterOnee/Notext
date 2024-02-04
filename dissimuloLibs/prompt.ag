@@ -3,4 +3,3 @@ function onPromptSubmited(text){
 }
 
 prompt("What is your name?", onPromptSubmited);
-

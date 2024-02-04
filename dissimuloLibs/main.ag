@@ -1,3 +1,5 @@
+import("dissimuloLibs/arrays.ag");
+
 header = getHeader();
 
 header.setBackgroundColor("secondary");
@@ -5,3 +7,5 @@ header.setHoverEffectDisabled(true);
 
 theme = header.getTheme();
 theme = theme.toString();
+
+print(theme);
