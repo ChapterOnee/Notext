@@ -1,0 +1,3 @@
+name "Find and Replace"
+description "A simple extension for finding and replacing text in the text editor."
+icon icon.pimg
