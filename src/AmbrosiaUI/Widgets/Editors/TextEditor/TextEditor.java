@@ -1,18 +1,16 @@
 package AmbrosiaUI.Widgets.Editors.TextEditor;
 
-import AmbrosiaUI.Utility.AdvancedGraphics;
-import AmbrosiaUI.Utility.GraphicsBorderModifier;
+import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.Editors.EditorLike;
 import AmbrosiaUI.Widgets.Editors.TextEditor.Hinter.Hinter;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Placements.ScrollController;
 import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.HighlightGroup;
-import AmbrosiaUI.Utility.EventStatus;
-import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.SyntaxHighlighter;
 import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Widgets.Widget;
+import App.Config;
 import App.Root;
 
 import java.awt.*;
@@ -63,10 +61,10 @@ public class TextEditor extends Frame implements EditorLike {
         highlighter.addQuery(new HighlightQuery("(#.*)|(//.*)", "primary", "secondary"));*/
 
         this.highlighter = new SyntaxHighlighter("default");
-        this.highlighter.loadFromDirectory("syntax");
+        this.highlighter.loadFromDirectory(Config.syntaxPath);
 
         this.hinter = new Hinter(this, cursor);
-        this.hinter.loadFromDirectory("dictionaries");
+        this.hinter.loadFromDirectory(Config.dictionariesPath);
 
         //this.highlighter.loadFromFile("syntax/default/theme.snx");
     }
@@ -719,9 +717,9 @@ public class TextEditor extends Frame implements EditorLike {
     @Override
     public void reload() {
         this.highlighter = new SyntaxHighlighter("default");
-        this.highlighter.loadFromDirectory("syntax");
+        this.highlighter.loadFromDirectory(Config.syntaxPath);
         this.hinter = new Hinter(this, cursor);
-        this.hinter.loadFromDirectory("dictionaries");
+        this.hinter.loadFromDirectory(Config.dictionariesPath);
         if(hasFile()) {
             openFile(this.getCurrentFile());
         }

@@ -7,6 +7,7 @@ import AmbrosiaUI.Widgets.Icons.Icon;
 import AmbrosiaUI.Widgets.Icons.PathImage;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
+import App.Config;
 import App.Root;
 
 import javax.swing.*;
@@ -66,15 +67,15 @@ public class Window {
     private final boolean DEBUG = false;
     private boolean customFrame = false;
 
-    private static final PathImage maximizeImage = new PathImage("icons/window/maximize.pimg");
-    private static final PathImage closeImage = new PathImage("icons/window/close.pimg");
-    private static final PathImage minimizeImage = new PathImage("icons/window/minimize.pimg");
+    private static final PathImage maximizeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/maximize.pimg"));
+    private static final PathImage closeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/close.pimg"));
+    private static final PathImage minimizeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/minimize.pimg"));
 
     private HorizontalPlacement innerHeaderControlsPlacement;
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
-        theme.loadFromFile("themes/Light.thm");
+        theme.loadFromFile(FileUtil.joinPath(Config.themesPath, "Light.thm"));
         initialize();
     }
 

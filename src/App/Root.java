@@ -30,6 +30,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.lang.reflect.Executable;
 import java.util.ArrayList;
 
 public class Root extends Window {
@@ -41,7 +42,8 @@ public class Root extends Window {
     private final Button save_file;
     private final Button run_file;
 
-    private Window settingsWindow;
+    private Settings settingsWindow;
+    private ExtensionsManager extensionsManager;
 
     private Interpreter it = new Interpreter();
 
@@ -267,6 +269,14 @@ public class Root extends Window {
         };
         settings.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
+        Button extensions = new Button("Extensions", "small", 0,0,4) {
+            @Override
+            public void onMouseClicked(MouseEvent e) {
+                extensionsManager.show();
+            }
+        };
+        extensions.setTextPlacement(AdvancedGraphics.Side.LEFT);
+
         DropdownMenu menu = new DropdownMenu("File", "small",0, 0, 4, new Size(200,30));
         menu.setzIndex(1);
 
@@ -336,6 +346,7 @@ public class Root extends Window {
         menu.addMenuItem(new DropdownMenuItem(save_file_as));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
         menu.addMenuItem(new DropdownMenuItem(settings));
+        menu.addMenuItem(new DropdownMenuItem(extensions));
 
         openMenu.addMenuItem(new DropdownMenuItem(open_file));
         openMenu.addMenuItem(new DropdownMenuItem(open_file_in_new_editor));
@@ -373,7 +384,7 @@ public class Root extends Window {
         panel.setFocusTraversalKeysEnabled(false); // Stop taking away my TAB ://
         this.bindEvents();
 
-        initializeSettings();
+        initializeSubwindows();
     }
 
 
@@ -556,62 +567,9 @@ public class Root extends Window {
         return editor;
     }
 
-    public void initializeSettings(){
-        settingsWindow = new Window(theme) {
-            @Override
-            public void close() {
-                settingsWindow.hide();
-            }
-        };
-
-        GridPlacement grid = new GridPlacement(theme);
-        grid.setColumnTemplateFromString("200px 100px auto");
-        grid.setRowTemplateFromString("40px 40px auto");
-
-        SelectBox selection = new SelectBox("normal", 0,2,4);
-        selection.setItemSize(new Size(200,40));
-
-        File folder = new File("themes");
-        File[] listOfFiles = folder.listFiles();
-
-        if(listOfFiles == null){
-            Logger.printWarning("No themes, folder is empty.");
-            return;
-        }
-
-        for (File listOfFile : listOfFiles) {
-            if (listOfFile.isFile() && listOfFile.getName().endsWith(".thm")) {
-                String nm = listOfFile.getName().split("\\.")[0];
-                int w = Widget.getStringWidth(nm, theme.getFontByName(selection.getFont()));
-
-                if(w > selection.getItemSize().width){
-                    selection.getItemSize().width = w;
-                }
-
-                selection.addOption(new SelectBoxOption(nm){
-                    @Override
-                    public void onSelected() {
-                        theme.loadFromFile(listOfFile.getAbsolutePath());
-                        Window.reloadAllWindows();
-                    }
-                });
-
-
-                selection.selectLast();
-            }
-        }
-
-
-        settingsWindow.getCoreFrame().setChildrenPlacement(grid);
-
-        Label themeLabel = new Label("Theme:", "normal", 0,0,4);
-        themeLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
-        themeLabel.setForegroundColor("text2");
-        themeLabel.setBackgroundColor("primary");
-        themeLabel.setHoverEffectDisabled(true);
-
-        grid.add(themeLabel,0,0,1,1);
-        grid.add(selection,0,1,1,1);
+    public void initializeSubwindows(){
+        settingsWindow = new Settings(theme,this);
+        extensionsManager = new ExtensionsManager(theme,this);
     }
 
     public void bindEvents(){
