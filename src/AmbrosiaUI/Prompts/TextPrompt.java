@@ -6,8 +6,6 @@ import AmbrosiaUI.Widgets.Placements.GridPlacement;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 
 public class TextPrompt extends Prompt{
     protected GridPlacement corePlacement;
@@ -24,7 +22,7 @@ public class TextPrompt extends Prompt{
 
         Label promptLabel = new Label(prompt, "normal",0,0,4);
         promptLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
-        promptLabel.setBackgroudColor("primary");
+        promptLabel.setBackgroundColor("primary");
         promptLabel.setForegroundColor("text2");
         promptLabel.setHoverEffectDisabled(true);
 

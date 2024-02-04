@@ -56,7 +56,7 @@ public class DropdownMenu extends Label {
         g2.setClip(null);
 
         if(mouseOver){
-            g2.setColor(theme.getColorByName(this.getBackgroudColor()));
+            g2.setColor(theme.getColorByName(this.getBackgroundColor()));
 
             AdvancedGraphics.borderedRect(g2,
                     getItemSpaceRectangle(),

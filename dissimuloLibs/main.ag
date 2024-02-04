@@ -1,5 +1,7 @@
 header = getHeader();
-print(header.getWidth());
 
+header.setBackgroundColor("secondary");
+header.setHoverEffectDisabled(true);
 
-
+theme = header.getTheme();
+theme = theme.toString();

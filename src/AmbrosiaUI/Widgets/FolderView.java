@@ -5,13 +5,10 @@ import AmbrosiaUI.ContextMenus.ContextMenuOption;
 import AmbrosiaUI.Prompts.PromptResult;
 import AmbrosiaUI.Prompts.TextPrompt;
 import AmbrosiaUI.Utility.*;
-import AmbrosiaUI.Widgets.Editors.TextEditor.TextEditor;
 import AmbrosiaUI.Widgets.Icons.Icon;
 import AmbrosiaUI.Widgets.Icons.PathImage;
 import AmbrosiaUI.Widgets.Placements.*;
-import org.w3c.dom.Text;
 
-import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -388,7 +385,7 @@ public class FolderView extends Frame {
         tempLabel.setContextMenu(menu);
 
         icon.setLockedToView(filesDisplayFrame);
-        tempLabel.setBackgroudColor("primary");
+        tempLabel.setBackgroundColor("primary");
         tempLabel.setForegroundColor("text2");
         tempLabel.setLockedToView(filesDisplayFrame);
         tempLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);

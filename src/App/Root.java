@@ -607,7 +607,7 @@ public class Root extends Window {
         Label themeLabel = new Label("Theme:", "normal", 0,0,4);
         themeLabel.setTextPlacement(AdvancedGraphics.Side.LEFT);
         themeLabel.setForegroundColor("text2");
-        themeLabel.setBackgroudColor("primary");
+        themeLabel.setBackgroundColor("primary");
         themeLabel.setHoverEffectDisabled(true);
 
         grid.add(themeLabel,0,0,1,1);

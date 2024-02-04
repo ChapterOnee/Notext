@@ -9,7 +9,7 @@ import AmbrosiaUI.Widgets.Placements.ScrollController;
 import java.awt.*;
 
 public class Frame extends Widget{
-    protected String backgroudColor;
+    protected String backgroundColor;
 
     protected String onHoverBackgroundColor;
 
@@ -23,23 +23,23 @@ public class Frame extends Widget{
 
     protected ScrollController scrollController = new ScrollController(0,0);
 
-    public Frame(String backgroudColor, int margin) {
-        this.backgroudColor = backgroudColor;
-        this.onHoverBackgroundColor = backgroudColor;
+    public Frame(String backgroundColor, int margin) {
+        this.backgroundColor = backgroundColor;
+        this.onHoverBackgroundColor = backgroundColor;
         this.margin = margin;
     }
 
     @Override
     public void drawSelf(Graphics2D g2) {
         setupDraw(g2);
-        g2.setColor(theme.getColorByName(backgroudColor));
+        g2.setColor(theme.getColorByName(backgroundColor));
 
         //if(mouseOver){
         //    g2.setColor(new Color(255,0,0));
         //}
         Rectangle bounding_rect = this.getBoundingRect();
 
-        String bg = backgroudColor;
+        String bg = backgroundColor;
         if(mouseOver && !disableHoverEffect){
             bg = onHoverBackgroundColor;
         }
@@ -70,12 +70,12 @@ public class Frame extends Widget{
         return super.getContentHeight() - ((borderModifier.isTop() ? 1 : 0) + (borderModifier.isBottom() ? 1 : 0)) * borderWidth;
     }
 
-    public String getBackgroudColor() {
-        return backgroudColor;
+    public String getBackgroundColor() {
+        return backgroundColor;
     }
 
-    public void setBackgroudColor(String backgroudColor) {
-        this.backgroudColor = backgroudColor;
+    public void setBackgroundColor(String backgroundColor) {
+        this.backgroundColor = backgroundColor;
     }
 
     public String getOnHoverBackgroundColor() {

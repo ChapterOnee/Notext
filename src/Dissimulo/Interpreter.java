@@ -227,7 +227,7 @@ public class Interpreter {
             lastStatement = "";
             return returnedValue;
         }
-        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION) &&
+        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION) && // Handle functions from references
                 tree.getType() == Lexer.LexerTokenType.ID && tree.getValue().split("\\.").length > 1
                 && context.hasVariable(tree.getValue().split("\\.")[0]) &&
                 getVariableValue(new InternalValue(InternalValue.ValueType.ID,tree.getValue().split("\\.")[0]),context).getType() == InternalValue.ValueType.REFERENCE
@@ -238,6 +238,7 @@ public class Interpreter {
 
             String name = reference.getValue();
             String methodName = args[1];
+            ArrayList<InternalValue> arguments = parseArgumentsFromContext(tree.getRightChildNode(),context);
             if(args.length > 2){
                 Logger.printError("Invalid method calling from a reference.");
                 return new InternalValue(InternalValue.ValueType.NONE);
@@ -250,28 +251,37 @@ public class Interpreter {
             Object obj = storedObjects.get(name);
             Object result;
             try {
-                Method method = obj.getClass().getMethod(methodName);
-                result = method.invoke(obj);
+                Class<?>[] classArguments = new Class<?>[arguments.size()];
+                Object[] classArgumentValues = new Object[arguments.size()];
+                for(int i = 0;i < arguments.size();i++){
+                    classArguments[i] = switch (arguments.get(i).getType()){
+                        case INT -> int.class;
+                        case DOUBLE -> double.class;
+                        case STRING -> String.class;
+                        case REFERENCE -> storedObjects.get(arguments.get(i).getValue()).getClass();
+                        case BOOL -> boolean.class;
+                        default -> null;
+                    };
+                    classArgumentValues[i] = switch (arguments.get(i).getType()){
+                        case INT -> Integer.parseInt(arguments.get(i).getValue());
+                        case DOUBLE -> Double.parseDouble(arguments.get(i).getValue());
+                        case STRING -> arguments.get(i).getValue();
+                        case BOOL -> Boolean.parseBoolean(arguments.get(i).getValue());
+                        case REFERENCE -> storedObjects.get(arguments.get(i).getValue());
+                        default -> null;
+                    };
+                }
+
+
+                Method method = obj.getClass().getMethod(methodName, classArguments);
+                result = method.invoke(obj,classArgumentValues);
             } catch (Exception e) {
                 Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
+                e.printStackTrace();
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
 
-            if(result instanceof Integer){
-                return new InternalValue(InternalValue.ValueType.INT, ((int)result) + "");
-            }
-            else if(result instanceof Double){
-                return new InternalValue(InternalValue.ValueType.DOUBLE, ((double)result) + "");
-            }
-            else if(result instanceof String){
-                return new InternalValue(InternalValue.ValueType.STRING, ((String)result));
-            }
-            else if(result instanceof Boolean){
-                return new InternalValue(InternalValue.ValueType.BOOL, ((boolean)result) + "");
-            }
-            else{
-                return generateReferenceForObject(result);
-            }
+            return objectToInternalValue(result);
         }
         else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION, Lexer.LexerTokenType.CONTEXT)){
             switch (tree.getValue()){
@@ -444,38 +454,7 @@ public class Interpreter {
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
 
-            ASTreeNode current = tree.getRightChildNode();
-            ArrayList<LexerToken> tokens = Lexer.lexData(current.getValue().substring(1,current.getValue().length()-1));
-
-            ArrayList<ArrayList<LexerToken>> individialArgumentTokens = new ArrayList<>();
-            individialArgumentTokens.add(new ArrayList<>());
-
-            for(LexerToken token: tokens){
-                if(token.getType() == Lexer.LexerTokenType.ARGUMENT_SPLITTER){
-                    individialArgumentTokens.add(new ArrayList<>());
-                    continue;
-                }
-
-                individialArgumentTokens.get(individialArgumentTokens.size()-1).add(token);
-            }
-
-            ArrayList<InternalValue> arguments = new ArrayList<>();
-            for (ArrayList<LexerToken> argumentTokens: individialArgumentTokens){
-                ArrayList<ASTreeNode> nodes = Parser.parseAbstractSyntaxTrees(argumentTokens);
-
-                if(nodes.size() == 0){
-                    continue;
-                }
-                else if(nodes.size() > 1){
-                    Logger.printError("Illegal context in function argument.");
-                    return new InternalValue(InternalValue.ValueType.NONE);
-                }
-
-                InternalValue value = evaluateExpression(nodes.get(0), context);
-                //value = getVariableValue(value, context);
-
-                arguments.add(value);
-            }
+            ArrayList<InternalValue> arguments = parseArgumentsFromContext(tree.getRightChildNode(), context);
 
             return context.getFunction(tree.getValue()).externalExecute(arguments, context);
         }
@@ -530,6 +509,60 @@ public class Interpreter {
         endValue = getVariableValue(endValue, context);
 
         return new InternalValue(InternalValue.ValueType.ID,endValue.getValue());
+    }
+
+    public InternalValue objectToInternalValue(Object result){
+        if(result instanceof Integer){
+            return new InternalValue(InternalValue.ValueType.INT, ((int)result) + "");
+        }
+        else if(result instanceof Double){
+            return new InternalValue(InternalValue.ValueType.DOUBLE, ((double)result) + "");
+        }
+        else if(result instanceof String){
+            return new InternalValue(InternalValue.ValueType.STRING, ((String)result));
+        }
+        else if(result instanceof Boolean){
+            return new InternalValue(InternalValue.ValueType.BOOL, ((boolean)result) + "");
+        }
+        else{
+            return generateReferenceForObject(result);
+        }
+    }
+
+    public ArrayList<InternalValue> parseArgumentsFromContext(ASTreeNode tree, InterpreterContext context){
+        ArrayList<LexerToken> tokens = Lexer.lexData(tree.getValue().substring(1, tree.getValue().length()-1));
+
+        ArrayList<ArrayList<LexerToken>> individialArgumentTokens = new ArrayList<>();
+        individialArgumentTokens.add(new ArrayList<>());
+
+        for(LexerToken token: tokens){
+            if(token.getType() == Lexer.LexerTokenType.ARGUMENT_SPLITTER){
+                individialArgumentTokens.add(new ArrayList<>());
+                continue;
+            }
+
+            individialArgumentTokens.get(individialArgumentTokens.size()-1).add(token);
+        }
+
+        ArrayList<InternalValue> arguments = new ArrayList<>();
+        for (ArrayList<LexerToken> argumentTokens: individialArgumentTokens){
+            ArrayList<ASTreeNode> nodes = Parser.parseAbstractSyntaxTrees(argumentTokens);
+
+            if(nodes.size() == 0){
+                continue;
+            }
+            else if(nodes.size() > 1){
+                Logger.printError("Illegal context in function argument.");
+                return new ArrayList<>();
+            }
+
+            InternalValue value = evaluateExpression(nodes.get(0), context);
+            //value = getVariableValue(value, context);
+
+            arguments.add(value);
+        }
+
+        return arguments;
     }
 
     public InternalValue getVariableValue(InternalValue id, InterpreterContext context){

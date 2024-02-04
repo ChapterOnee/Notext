@@ -4,7 +4,6 @@ import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.GraphicsBorderModifier;
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.Frame;
-import AmbrosiaUI.Widgets.Icons.PathOperations.PathDrawable;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.PlacementCell;
 import AmbrosiaUI.Widgets.Widget;
@@ -126,7 +125,7 @@ public class TabbedFrame extends Frame {
     }
 
     public TabbedFrameTab addTab(String name){
-        Frame frm = new Frame(backgroudColor,0);
+        Frame frm = new Frame(backgroundColor,0);
         corePlacement.add(frm,0,0,1,1);
         tabs.add(new TabbedFrameTab(frm, name));
 

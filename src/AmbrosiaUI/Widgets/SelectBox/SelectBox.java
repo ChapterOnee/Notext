@@ -33,11 +33,11 @@ public class SelectBox extends Label {
         if(mouseOver){
             setzIndex(9999);
             g2.setClip(null);
-            g2.setColor(theme.getColorByName(this.getBackgroudColor()));
+            g2.setColor(theme.getColorByName(this.getBackgroundColor()));
 
             AdvancedGraphics.borderedRect(g2,
                     this.getX(),this.getY()+this.getHeight(),Math.max(this.getWidth(), itemSize.width), itemSize.height*options.size(),
-                    0, theme.getColorByName(backgroudColor), theme.getColorByName(borderColor), AdvancedGraphics.BORDER_FULL
+                    0, theme.getColorByName(backgroundColor), theme.getColorByName(borderColor), AdvancedGraphics.BORDER_FULL
             );
 
             String option;
