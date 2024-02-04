@@ -2,4 +2,5 @@ function onPromptSubmited(text){
     print(text);
 }
 
-prompt("What is you name?", onPromptSubmited);
+prompt("What is your name?", onPromptSubmited);
+

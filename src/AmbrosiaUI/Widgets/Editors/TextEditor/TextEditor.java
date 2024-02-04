@@ -477,8 +477,20 @@ public class TextEditor extends Frame implements EditorLike {
         //System.out.println(keyEvent.getExtendedKeyCode());
 
         switch (keyEvent.getKeyCode()){
-            case 38 -> this.cursor.up();
-            case 40 -> this.cursor.down();
+            case 38 -> {
+                if(hinter.hasCurrentHint()) {
+                    hinter.selectPreviousHint();
+                    return;
+                }
+                this.cursor.up();
+            }
+            case 40 -> {
+                if(hinter.hasCurrentHint()) {
+                    hinter.selectNextHint();
+                    return;
+                }
+                this.cursor.down();
+            }
             case 37 -> this.cursor.left();
             case 39 -> this.cursor.right();
 
@@ -487,9 +499,9 @@ public class TextEditor extends Frame implements EditorLike {
                     */
             case 10 -> {
                 EditorLine current_line = this.getLineUnderCursor();
-                if(!hinter.getCurrentHints().isEmpty()){
-                    String newWord =  hinter.getCurrentHints().get(0);
-                    current_line.replace(hinter.getCurrentWord(), newWord );
+                if(hinter.hasCurrentHint()){
+                    String newWord =  hinter.getCurrentHint();
+                    current_line.replace(hinter.getCurrentWord(), newWord);
 
                     cursor.setX(current_line.getText().indexOf(newWord) + newWord.length());
                     hinter.getCurrentHints().clear();

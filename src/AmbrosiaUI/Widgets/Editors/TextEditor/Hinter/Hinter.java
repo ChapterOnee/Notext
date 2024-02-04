@@ -22,6 +22,7 @@ public class Hinter {
     private Cursor cursor;
 
     private final int MAX_SUGGESTION_SHOWN = 10;
+    private int selectedHint = -1;
     private ArrayList<KeywordDictionary> dictionaries = new ArrayList<>();
 
     public Hinter(TextEditor editor, Cursor cursor) {
@@ -59,6 +60,8 @@ public class Hinter {
                 }
             }
         }
+
+        selectedHint = 0;
 
         sortMostRelevantHint();
     }
@@ -121,14 +124,14 @@ public class Hinter {
         }
 
 
-        if (currentHints.isEmpty()){
+        if (!hasCurrentHint()){
             g2.setClip(lastClip);
             return;
         }
         g2.setColor(theme.getColorByName("secondary"));
         AdvancedGraphics.drawText(g2,
                 new Rectangle(x,y,100,g2.getFontMetrics().getAscent()),
-                currentHints.get(0).substring(getCurrentWord().length()),
+                getCurrentHint().substring(getCurrentWord().length()),
                 AdvancedGraphics.Side.LEFT);
 
         g2.setClip(realX,realY,width,height);
@@ -149,9 +152,9 @@ public class Hinter {
 
         int i = 0;
         for(String hint: currentHints){
-            if(i == 0){
+            if(i == selectedHint){
                 g2.setColor(theme.getColorByName("accent"));
-                g2.fillRect(realX, realY, 3, lineheight);
+                g2.fillRect(realX, realY+yOffset, 3, lineheight);
                 g2.setColor(theme.getColorByName("text1"));
             }
             AdvancedGraphics.drawText(g2, new Rectangle(
@@ -168,6 +171,26 @@ public class Hinter {
         }
 
         g2.setClip(lastClip);
+    }
+
+    public boolean hasCurrentHint(){
+        return !currentHints.isEmpty() && selectedHint != -1;
+    }
+
+    public String getCurrentHint(){
+        return currentHints.get(selectedHint);
+    }
+
+    public void selectNextHint(){
+        if(selectedHint < Math.min(MAX_SUGGESTION_SHOWN-1,currentHints.size()-1)){
+            selectedHint++;
+        }
+    }
+
+    public void selectPreviousHint(){
+        if(selectedHint > 0){
+            selectedHint--;
+        }
     }
 
     public void loadFromDirectory(String directory){
