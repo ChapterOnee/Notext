@@ -21,6 +21,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class PIconEditor extends Frame implements EditorLike {
 
@@ -35,12 +37,16 @@ public class PIconEditor extends Frame implements EditorLike {
 
     private Rectangle selectionRectangle;
 
+    private LinkedHashMap<String,String> colors = new LinkedHashMap<>();
+
     public PIconEditor(String backgroudColor, int margin) {
         super(backgroudColor, margin);
 
         setBorderColor("secondary");
         setBorderWidth(2);
         setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
+
+        reloadColors();
     }
 
     public PIconEditor() {
@@ -49,6 +55,8 @@ public class PIconEditor extends Frame implements EditorLike {
         setBorderColor("secondary");
         setBorderWidth(2);
         setBorderModifier(new GraphicsBorderModifier(false,false,false,true));
+
+        reloadColors();
     }
 
     @Override
@@ -79,19 +87,46 @@ public class PIconEditor extends Frame implements EditorLike {
         //
         //  Draw up right hint
         //
-
-
-        ArrayList<String> hintText = new ArrayList<>();
-        hintText.add("Real size:" + currentImage.getWidth() + " x " + currentImage.getHeight());
-
         int lineHeight = 20;
         int maxWidth = 0;
+        for (String text: theme.getColors().keySet()){
+            maxWidth = Math.max(maxWidth, getStringWidth(text, theme.getFontByName("normal"))+lineHeight+10);
+        }
+
+        int hintX = this.getContentX();
+        int hintY = this.getContentY()+2;
+
+        int y = 0;
+        for(String text: theme.getColors().keySet()){
+            g2.setColor(theme.getColorByName("text2"));
+            AdvancedGraphics.drawText(g2,
+                    new Rectangle(hintX+10+lineHeight,
+                            hintY+y,
+                            maxWidth-lineHeight,
+                            lineHeight),
+                    text,
+                    AdvancedGraphics.Side.LEFT
+            );
+            g2.setColor(theme.getColors().get(text));
+            g2.fillRect(hintX, hintY+y, lineHeight, lineHeight);
+            y += lineHeight;
+        }
+
+        //
+        //  Draw down right hint
+        //
+        ArrayList<String> hintText = new ArrayList<>();
+        hintText.add("Real size:" + currentImage.getWidth() + " x " + currentImage.getHeight());
+        hintText.add("E: add new line");
+        hintText.add("Delete, D: delete selected objects");
+
+        maxWidth = 0;
         for (String text: hintText){
             maxWidth = Math.max(maxWidth, getStringWidth(text, theme.getFontByName("normal"))+20);
         }
 
-        int hintX = this.getContentX();
-        int hintY = this.getContentY()+this.getContentHeight()-(hintText.size()*lineHeight+20);
+        hintX = this.getContentX();
+        hintY = this.getContentY()+this.getContentHeight()-(hintText.size()*lineHeight+20);
 
         g2.setColor(theme.getColorByName("secondary"));
         g2.fillRect(
@@ -102,7 +137,7 @@ public class PIconEditor extends Frame implements EditorLike {
         );
 
         g2.setColor(theme.getColorByName("text1"));
-        int y = 0;
+        y = 0;
         for(String text: hintText){
             AdvancedGraphics.drawText(g2,
                     new Rectangle(hintX+10,
@@ -257,6 +292,28 @@ public class PIconEditor extends Frame implements EditorLike {
         g2.fillArc(pos.x-5, pos.y-5, 10,10,0,360);
     }
 
+    public void reloadColors(){
+        if(theme == null){
+            return;
+        }
+        colors.clear();
+        String lastKey = "";
+        String firstColor = null;
+        for(String color: theme.getColors().keySet()){
+            if(firstColor == null){
+                firstColor = color;
+            }
+            colors.put(lastKey, color);
+            lastKey = color;
+        }
+        colors.put(lastKey,firstColor);
+        System.out.println(colors);
+    }
+
+    public String getNextColor(String color){
+        return colors.get(color);
+    }
+
     @Override
     public void onMousePressed(MouseEvent e) {
         if(currentImage == null){
@@ -316,6 +373,7 @@ public class PIconEditor extends Frame implements EditorLike {
                 }*/
             }
             case 3 -> {
+                shiftDown = false;
                 selected.clear();
             }
             default -> {}
@@ -331,10 +389,54 @@ public class PIconEditor extends Frame implements EditorLike {
         lastMouseDragged.y = mousePos.y;
     }
 
+
+    public Position getCursorPositionOnImage(){
+        return lastMousePosition.getOffset(getImagePosition().getMultiplied(-1)).getDivided(currentImage.getScale());
+    }
     @Override
     public void onKeyPressed(KeyEvent keyEvent) {
-        if(keyEvent.getKeyCode() == 16){
-            shiftDown = true;
+        System.out.println(keyEvent.getKeyCode());
+        Position cursorPositonOnImage = getCursorPositionOnImage();
+        switch (keyEvent.getKeyCode()){
+            case 16 -> shiftDown = true;
+            // Delete
+            case 127, 68 -> {
+                for(Position pos: selected){
+                    currentImage.getOparations().remove(getAssociatedOperation(pos));
+                }
+            }
+            // E
+            case 69 -> {
+                Position nextPos = cursorPositonOnImage;
+
+                currentImage.getOparations().add(new PathLine(
+                        cursorPositonOnImage.getOffset(0,0),
+                        nextPos,
+                        "secondary",
+                        1
+                ));
+
+                selected.clear();
+                selected.add(nextPos);
+                shiftDown = true;
+            }
+            // Q
+            case 81 -> {
+                if(colors.isEmpty()){
+                    reloadColors();
+                }
+
+                ArrayList<PathDrawable> alreadyChanged = new ArrayList<>();
+                for(Position pos: selected){
+                    PathDrawable current = getAssociatedOperation(pos);
+                    if(alreadyChanged.contains(current)){
+                        continue;
+                    }
+                    alreadyChanged.add(current);
+
+                    current.setColor(getNextColor(current.getColor()));
+                }
+            }
         }
     }
 

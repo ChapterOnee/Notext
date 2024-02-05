@@ -112,6 +112,18 @@ public class PathImage extends FileInterpreter {
             }
         });
 
+        this.addCommand(new InterpretedCommand("oval", new InterpretedCommand.ArgumentType[]{
+                InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, // p1
+                InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT, // p2
+                InterpretedCommand.ArgumentType.INT,
+                InterpretedCommand.ArgumentType.STRING // color
+        }) {
+            @Override
+            public void execute(ArrayList<String> arguments) {
+                PathImage.this.oparations.add(new PathOval(arguments));
+            }
+        });
+
         this.addCommand(new InterpretedCommand("size", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.INT, InterpretedCommand.ArgumentType.INT}) {
             @Override
             public void execute(ArrayList<String> arguments) {

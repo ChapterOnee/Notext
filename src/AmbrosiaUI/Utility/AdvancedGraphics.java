@@ -1,6 +1,11 @@
 package AmbrosiaUI.Utility;
 
+import AmbrosiaUI.Widgets.Theme;
+
 import java.awt.*;
+import java.util.ArrayList;
+
+import static AmbrosiaUI.Utility.StringUtil.getStringWidth;
 
 public class AdvancedGraphics {
 
@@ -25,6 +30,38 @@ public class AdvancedGraphics {
                 width - ((borderModifier.isLeft() ? 1 : 0) + (borderModifier.isRight() ? 1 : 0)) * borderWidth,
                 height - ((borderModifier.isTop() ? 1 : 0) + (borderModifier.isBottom() ? 1 : 0)) * borderWidth
         );
+    }
+    public static void drawHint(Graphics2D g2, Position pos, ArrayList<String> hints, Theme theme){
+        int lineHeight = 20;
+        int maxWidth = 0;
+        for (String text: hints){
+            maxWidth = Math.max(maxWidth, getStringWidth(text, theme.getFontByName("normal"))+20);
+        }
+
+        int hintX = pos.x;
+        int hintY = pos.y;
+
+        g2.setColor(theme.getColorByName("secondary"));
+        g2.fillRect(
+                hintX,
+                hintY,
+                maxWidth,
+                hints.size()*lineHeight+20
+        );
+
+        g2.setColor(theme.getColorByName("text1"));
+        int y = 0;
+        for(String text: hints){
+            AdvancedGraphics.drawText(g2,
+                    new Rectangle(hintX+10,
+                            hintY+y,
+                            maxWidth,
+                            lineHeight),
+                    text,
+                    AdvancedGraphics.Side.LEFT
+            );
+            y += lineHeight;
+        }
     }
     public static void borderedRect(Graphics2D g2, Rectangle rect, int borderWidth, Color fill, Color border, GraphicsBorderModifier borderModifier){
         AdvancedGraphics.borderedRect(g2,rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),borderWidth,fill,border, borderModifier);

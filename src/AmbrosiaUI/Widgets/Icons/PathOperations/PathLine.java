@@ -15,6 +15,13 @@ public class PathLine implements PathDrawable{
 
     private int width;
 
+    public PathLine(Position to, Position from, String color, int width) {
+        this.to = to;
+        this.from = from;
+        this.color = color;
+        this.width = width;
+    }
+
     public PathLine(ArrayList<String> arguments){
         fromArguments(arguments);
     }

@@ -106,6 +106,18 @@ public class Theme extends FileInterpreter {
         }
     }
 
+    public HashMap<String, Color> getColors() {
+        return colors;
+    }
+
+    public HashMap<String, Font> getFonts() {
+        return fonts;
+    }
+
+    public HashMap<String, Font> getCustom_fonts() {
+        return custom_fonts;
+    }
+
     public void setColor(String name, Color color){
         colors.put(name,color);
     }
