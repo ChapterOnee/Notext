@@ -1,5 +1,6 @@
 package App;
 
+import AmbrosiaUI.Widgets.Events.WidgetEventListener;
 import Dissimulo.InternalValue;
 import Dissimulo.Interpreter;
 import Dissimulo.InterpreterContext;
@@ -36,12 +37,13 @@ public class Root extends Window {
     private final Scrollbar scrollbar;
 
     private final Button save_file;
-    private final Button run_file;
 
     private Settings settingsWindow;
     private ExtensionsManager extensionsManager;
 
     private Interpreter interpreter = new Interpreter();
+
+    private ArrayList<EditorChangedListener> editorChangedListeners = new ArrayList<>();
 
     private HorizontalPlacement mainPlacement;
     public Root() {
@@ -301,28 +303,6 @@ public class Root extends Window {
         open_console.setBind(panel, KeyStroke.getKeyStroke(KeyEvent.VK_T,  KeyEvent.CTRL_DOWN_MASK));
         open_console.setTextPlacement(AdvancedGraphics.Side.LEFT);
 
-        run_file = new Button("Run file..", "small", 0,0,4){
-            @Override
-            public void onMouseClicked(MouseEvent e) {
-                if(editorInFocus.getCurrentFile().endsWith(".ag")){
-                    try(BufferedReader bf = new BufferedReader(new FileReader(editorInFocus.getCurrentFile()))){
-                        StringBuilder allData = new StringBuilder();
-
-                        while (bf.ready()){
-                            allData.append(bf.readLine());
-                        }
-
-                        Thread askThread = new Thread(() -> { interpreter.execute(allData.toString()); });
-                        askThread.start();  // Start the thread to show the window.
-                    } catch (IOException ignored) {
-
-                    }
-                }
-            }
-        };
-        run_file.setBind(panel, KeyStroke.getKeyStroke(KeyEvent.VK_R,  KeyEvent.CTRL_DOWN_MASK));
-        run_file.setTextPlacement(AdvancedGraphics.Side.LEFT);
-
         DropdownMenu openMenu = new DropdownMenu("Open..", "small", 0, 0, 4, new Size(200,30));
         openMenu.setzIndex(1);
         openMenu.setTextPlacement(AdvancedGraphics.Side.LEFT);
@@ -331,7 +311,6 @@ public class Root extends Window {
         header_placement.add(tools, new UnitValue(0, UnitValue.Unit.FIT));
 
         tools.addMenuItem(new DropdownMenuItem(open_console));
-        tools.addMenuItem(new DropdownMenuItem(run_file));
 
         menu.addMenuItem(new DropdownMenuItem(new_file));
         menu.addMenuItem(new DropdownMenuItem()); // Spacer
@@ -369,7 +348,7 @@ public class Root extends Window {
         mainPlacement.add(editorSpace,new UnitValue(0, UnitValue.Unit.AUTO));
         editorSpace.initialize();
 
-        editorInFocus = addEditor();
+        setCurrentEditor(addEditor());
         scrollbar.setController(editorInFocus.getScrollController());
 
         //editorSpacePlacement.add(secondaryEditor, new UnitValue(0, UnitValue.Unit.AUTO));
@@ -457,6 +436,121 @@ public class Root extends Window {
                 return Root.this.interpreter.generateReferenceForObject(coreHeader);
             }
         });
+        interpreter.addFunction("addMouseClickedListener", new InterpreterFunction(interpreter){
+            @Override
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
+                ArrayList<InternalValue> temp = replaceStringObjectsWithStrings(values, context);
+                ArrayList<InternalValue> internalValues = replaceVariablesWithValues(temp ,context);
+
+                if(internalValues.size() != 2 || internalValues.get(0).getType() != InternalValue.ValueType.REFERENCE || internalValues.get(1).getType() != InternalValue.ValueType.ID){
+                    Logger.printError("Invalid arguments for addMouseClickedListener.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                if(!context.hasFunction(internalValues.get(1).getValue())){
+                    Logger.printError("Function '" + internalValues.get(1).getValue() + "' doesnt exist in this context.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                Object obj = interpreter.getStoredObject(internalValues.get(0).getValue());
+
+                ((Widget) obj).addEventListener(new WidgetEventListener() {
+                    @Override
+                    public void onMouseDragged(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void onMouseMoved(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void onMouseClicked(MouseEvent e) {
+                        context.getFunction(internalValues.get(1).getValue()).externalExecute(new ArrayList<>(), context);
+                    }
+
+                    @Override
+                    public void onMousePressed(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void onMouseReleased(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void onKeyPressed(KeyEvent keyEvent) {
+
+                    }
+
+                    @Override
+                    public void onKeyReleased(KeyEvent keyEvent) {
+
+                    }
+
+                    @Override
+                    public void onPasted(String pastedData) {
+
+                    }
+
+                    @Override
+                    public void onMouseWheel(MouseWheelEvent event) {
+
+                    }
+                });
+
+
+
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
+        interpreter.addFunction("addEditorChangedListener", new InterpreterFunction(interpreter){
+            @Override
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
+                ArrayList<InternalValue> internalValues = replaceStringObjectsWithStrings(values, context);
+
+                if(internalValues.size() != 1 || internalValues.get(0).getType() != InternalValue.ValueType.ID){
+                    Logger.printError("Invalid arguments for addMouseClickedListener.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                if(!context.hasFunction(internalValues.get(0).getValue())){
+                    Logger.printError("Function '" + internalValues.get(1).getValue() + "' doesnt exist in this context.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                editorChangedListeners.add(new EditorChangedListener() {
+                    @Override
+                    public void onChanged(EditorLike editorLike) {
+                        ArrayList<InternalValue> val = new ArrayList<>();
+                        val.add(interpreter.generateReferenceForObject(editorLike));
+                        context.getFunction(internalValues.get(0).getValue()).externalExecute(val, context);
+                    }
+                });
+
+
+
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+        });
+        interpreter.addFunction("isCurrentEditorText", new InterpreterFunction(interpreter){
+            @Override
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
+                return new InternalValue(InternalValue.ValueType.BOOL, (editorInFocus instanceof TextEditor)+"");
+            }
+        });
+
+        interpreter.addFunction("getEditorContent", new InterpreterFunction(interpreter){
+            @Override
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
+                if(editorInFocus instanceof TextEditor){
+                    return interpreter.generateReferenceForObject(((TextEditor)editorInFocus).getFullContent());
+                }
+                return interpreter.generateReferenceForObject("");
+            }
+        });
     }
     public TextEditor addEditor(){
         TabbedFrameTab tab = editorSpace.addTab("unnamed *");
@@ -480,10 +574,6 @@ public class Root extends Window {
 
                 if(this.hasFile()) {
                     tab.setName(new File(getCurrentFile()).getName());
-                    run_file.setDisabled(!this.getCurrentFile().endsWith(".ag"));
-                }
-                else {
-                    run_file.setDisabled(true);
                 }
             }
         };
@@ -518,7 +608,6 @@ public class Root extends Window {
                     tab.setName(new File(getCurrentFile()).getName());
                 }
                 save_file.setDisabled(!this.hasFile());
-                run_file.setDisabled(true);
             }
         };
         editor.onCurrentFileChanged();
@@ -552,7 +641,6 @@ public class Root extends Window {
                     tab.setName(new File(getCurrentFile()).getName());
                 }
                 save_file.setDisabled(!this.hasFile());
-                run_file.setDisabled(true);
             }
         };
         editor.onCurrentFileChanged();
@@ -630,7 +718,14 @@ public class Root extends Window {
         }
 
         scrollbar.setController(editorInFocus.getScrollController());
+        onEditorChanged();
         update();
+    }
+
+    public void onEditorChanged(){
+        for(EditorChangedListener ls: editorChangedListeners){
+            ls.onChanged(this.editorInFocus);
+        }
     }
 
     @Override

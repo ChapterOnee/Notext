@@ -1,0 +1,4 @@
+name "Utility for the Dissimulo scripting language"
+description "A simple extension for the dissimulo programming language."
+icon icon.pimg
+script main.ag

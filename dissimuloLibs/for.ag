@@ -1,8 +1,0 @@
-for(i = 0;i < 10;i++){
-    out[i] = 0;
-    global(out[i]);
-}
-
-out[4] = "adwadw";
-
-print(out[3], out[4]);

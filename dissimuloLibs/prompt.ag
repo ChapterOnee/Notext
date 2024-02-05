@@ -1,5 +1,0 @@
-function onPromptSubmited(text){
-    print(text);
-}
-
-prompt("What is your name?", onPromptSubmited);

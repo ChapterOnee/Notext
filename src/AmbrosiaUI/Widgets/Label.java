@@ -14,7 +14,7 @@ public class Label extends Frame {
     protected String onHoverForegroundColor = "accentText";
     protected String font;
 
-    protected AdvancedGraphics.Side textPlacement = AdvancedGraphics.Side.CENTER;
+    protected AdvancedGraphics.Side textPlacement = AdvancedGraphics.Side.LEFT;
 
     protected int padding = 0;
 

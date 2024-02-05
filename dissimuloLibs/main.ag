@@ -1,6 +1,0 @@
-header = getHeader();
-
-bt = new AmbrosiaUI.Widgets.Button("Hello", "normal", 0,0,4);
-
-placement = cast(AmbrosiaUI.Widgets.Placements.HorizontalPlacement, header.getChildrenPlacement());
-placement.add(cast(AmbrosiaUI.Widgets.Widget,bt), new AmbrosiaUI.Utility.UnitValue(100,"pixels"));

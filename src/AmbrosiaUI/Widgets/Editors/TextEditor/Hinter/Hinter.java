@@ -124,7 +124,7 @@ public class Hinter {
         }
 
 
-        if (!hasCurrentHint()){
+        if (!hasCurrentHint() || getCurrentWord() == null){
             g2.setClip(lastClip);
             return;
         }

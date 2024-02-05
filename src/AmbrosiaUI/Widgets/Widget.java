@@ -3,8 +3,7 @@ package AmbrosiaUI.Widgets;
 import AmbrosiaUI.ContextMenus.ContextMenu;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
-import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
-import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
+import AmbrosiaUI.Widgets.Events.WidgetEventListener;
 import AmbrosiaUI.Widgets.Placements.Placement;
 import AmbrosiaUI.Widgets.Placements.PlacementCell;
 
@@ -45,6 +44,12 @@ public abstract class Widget implements Comparable<Widget>{
     protected ContextMenu contextMenu;
 
     protected static final Canvas fontsizecanvas = new Canvas();
+
+    protected ArrayList<WidgetEventListener> boundEvents = new ArrayList<>();
+
+    public void addEventListener(WidgetEventListener listener){
+        boundEvents.add(listener);
+    }
 
     public void draw(Graphics2D g2) {
         ArrayList<Widget> toBeDrawn = this.getAllChildren();
@@ -377,11 +382,15 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public void onMouseDragged(MouseEvent e){
-
+        for(WidgetEventListener event: boundEvents){
+            event.onMouseDragged(e);
+        }
     }
 
     public void onMouseMoved(MouseEvent e){
-
+        for(WidgetEventListener event: boundEvents){
+            event.onMouseMoved(e);
+        }
     }
 
     public void onMouseClickedPre(MouseEvent e){
@@ -403,30 +412,44 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
     public void onMouseClicked(MouseEvent e){
-
+        for(WidgetEventListener event: boundEvents){
+            event.onMouseClicked(e);
+        }
     }
 
     public void onMousePressed(MouseEvent e){
-
+        for(WidgetEventListener event: boundEvents){
+            event.onMousePressed(e);
+        }
     }
 
     public void onMouseReleased(MouseEvent e){
-
+        for(WidgetEventListener event: boundEvents){
+            event.onMouseReleased(e);
+        }
     }
 
     public void onKeyPressed(KeyEvent keyEvent){
-
+        for(WidgetEventListener event: boundEvents){
+            event.onKeyPressed(keyEvent);
+        }
     }
 
     public void onKeyReleased(KeyEvent keyEvent){
-
+        for(WidgetEventListener event: boundEvents){
+            event.onKeyReleased(keyEvent);
+        }
     }
 
     public void onPasted(String pastedData){
-
+        for(WidgetEventListener event: boundEvents){
+            event.onPasted(pastedData);
+        }
     }
 
-    public void onMouseWheel(MouseWheelEvent event){
-
+    public void onMouseWheel(MouseWheelEvent e){
+        for(WidgetEventListener event: boundEvents){
+            event.onMouseWheel(e);
+        }
     }
 }

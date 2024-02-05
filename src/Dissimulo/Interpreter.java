@@ -120,13 +120,21 @@ public class Interpreter {
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
-        globalContext.addFunction("createScanner",  new InterpreterFunction(this){
+
+        globalContext.addFunction("execute", new InterpreterFunction(this) {
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
-                String id = "REF_"+generateID(16);
-                createReferencedObject(id, new Scanner(System.in));
+                values = replaceStringObjectsWithStrings(values,context);
 
-                return new InternalValue(InternalValue.ValueType.REFERENCE,  id);
+                if(values.size() < 1){
+                    Logger.printError("Invalid arguments for execute");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+                if(values.get(0).getType() != InternalValue.ValueType.STRING){
+                    Logger.printError("Execute argument must be string");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+                return execute(values.get(0).getValue());
             }
         });
     }
@@ -664,9 +672,9 @@ public class Interpreter {
 
     public InternalValue getVariableValue(InternalValue id, InterpreterContext context){
         if(!context.hasVariable(id.getValue())){
-            if(id.getType() == InternalValue.ValueType.ID){
+            /*if(id.getType() == InternalValue.ValueType.ID){
                 return new InternalValue(InternalValue.ValueType.NONE);
-            }
+            }*/
 
             return id;
         }

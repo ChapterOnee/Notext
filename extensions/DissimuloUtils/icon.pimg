@@ -1,0 +1,10 @@
+size 60 60
+line 13 22 32 22 accent 2
+line 32 47 13 47 accent 2
+line 46 38 32 47 accent 2
+line 32 22 46 15 accent 2
+line 13 22 13 47 accent 2
+line 32 22 32 47 accent 2
+line 46 15 46 38 accent 2
+line 29 15 13 22 accent 2
+line 29 15 46 15 accent 2
