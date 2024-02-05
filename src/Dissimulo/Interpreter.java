@@ -24,7 +24,7 @@ public class Interpreter {
 
     private HashMap<String, InterpreterFunction> assignedOperatorsToFunctions = new HashMap<>();
 
-    private HashMap<String, Object> storedObjects = new HashMap<>();
+    private HashMap<String, StoredObject> storedObjects = new HashMap<>();
 
     public Interpreter() {
         InterpreterFunction addFunction = new AddValues(this);
@@ -72,6 +72,7 @@ public class Interpreter {
         assignedOperatorsToFunctions.put("<=",  lesserFunctionOrEqual);
 
         globalContext.addFunction("print", new Print(this));
+        globalContext.addFunction("cast", new CastIntoOtherObject(this));
         globalContext.addFunction("global", new MakeGlobal(this));
         globalContext.addFunction("typeOf", new GetType(this));
         globalContext.addFunction("elevate", new ElevateContext(this));
@@ -152,14 +153,18 @@ public class Interpreter {
     }
 
     public InternalValue createReferencedObject(String referenceName, Object object){
-        storedObjects.put(referenceName,object);
+        storedObjects.put(referenceName,new StoredObject(object,object.getClass()));
+        return new InternalValue(InternalValue.ValueType.REFERENCE,referenceName);
+    }
+
+    public InternalValue generateReferenceForObject(Object object, Class<?> clazz){
+        String referenceName = generateID(16);
+        storedObjects.put(referenceName,new StoredObject(object,clazz));
         return new InternalValue(InternalValue.ValueType.REFERENCE,referenceName);
     }
 
     public InternalValue generateReferenceForObject(Object object){
-        String referenceName = generateID(16);
-        storedObjects.put(referenceName,object);
-        return new InternalValue(InternalValue.ValueType.REFERENCE,referenceName);
+        return generateReferenceForObject(object, object.getClass());
     }
 
     public InternalValue executeNodes(ArrayList<ASTreeNode> nodes,  InterpreterContext context){
@@ -508,25 +513,21 @@ public class Interpreter {
     }
 
     public InternalValue objectToInternalValue(Object result){
-        if(result instanceof Integer){
-            return new InternalValue(InternalValue.ValueType.INT, ((int)result) + "");
-        }
-        else if(result instanceof Double){
-            return new InternalValue(InternalValue.ValueType.DOUBLE, ((double)result) + "");
-        }
-        else if(result instanceof String){
-            return generateReferenceForObject((String)result);
-        }
-        else if(result instanceof Boolean){
-            return new InternalValue(InternalValue.ValueType.BOOL, ((boolean)result) + "");
-        }
-        else{
-            return generateReferenceForObject(result);
-        }
+        return switch (result) {
+            case Integer i -> new InternalValue(InternalValue.ValueType.INT, ((int) result) + "");
+            case Double v -> new InternalValue(InternalValue.ValueType.DOUBLE, ((double) result) + "");
+            case String s -> generateReferenceForObject(s);
+            case Boolean b -> new InternalValue(InternalValue.ValueType.BOOL, ((boolean) result) + "");
+            case null -> new InternalValue(InternalValue.ValueType.NONE);
+            default -> generateReferenceForObject(result);
+        };
     }
 
     public Object getStoredObject(String reference){
-        return storedObjects.get(reference);
+        return storedObjects.get(reference).getObject();
+    }
+    public void setStoredObject(String refrerence, Object obj, Class<?> clazz){
+        storedObjects.put(refrerence, new StoredObject(obj,clazz));
     }
 
     public ArrayList<InternalValue> parseArgumentsFromContext(ASTreeNode tree, InterpreterContext context){
@@ -575,32 +576,33 @@ public class Interpreter {
             return new InternalValue(InternalValue.ValueType.NONE);
         }
         if (!storedObjects.containsKey(name)) {
-            Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
+            Logger.printError("Invalid reference.");
             return new InternalValue(InternalValue.ValueType.NONE);
         }
 
-        Object obj = storedObjects.get(name);
+        Class<?> objClass = storedObjects.get(name).getaClass();
+        Object obj = storedObjects.get(name).getObject();
         Object result;
+        Class<?>[] classArguments = generateArgumentClassesForInternalValues(arguments,context);
+        Object[] classArgumentValues = generateRealArgumentsFromInternalValues(arguments, context);
         try {
-            Class<?>[] classArguments = generateArgumentClassesForInternalValues(arguments,context);
-            Object[] classArgumentValues = generateRealArgumentsFromInternalValues(arguments, context);
-
-            Method method = obj.getClass().getMethod(methodName, classArguments);
-            result = method.invoke(obj,classArgumentValues);
+            Method method = objClass.getMethod(methodName, classArguments);
+            result = method.invoke(objClass.cast(obj),classArgumentValues);
         } catch (NoSuchMethodException e) {
-            Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
-            for(Method m: obj.getClass().getMethods()){
+            Logger.printError(""+e);
+            Logger.printError("No method '"+methodName+"("+Arrays.toString(classArguments)+")'' found under referenced object '"+name+"'.");
+            for(Method m: objClass.getMethods()){
                 if(m.getName().contains(name)){
-                    Logger.print("Perhaps you meant to use the method: '" + m.getName() + "(" + Arrays.toString(m.getAnnotatedParameterTypes()) + ")' ?\n");
+                    Logger.printError("Perhaps you meant to use the method: '" + m.getName() + "(" + Arrays.toString(m.getAnnotatedParameterTypes()) + ")' ?");
                     break;
                 }
             }
-            Logger.print("Available methods:\n");
+            Logger.printError("Available methods:");
             int i = 0;
-            for(Method m: obj.getClass().getMethods()){
-                Logger.print(m.getName() + "(" + Arrays.toString(m.getAnnotatedParameterTypes()) + ")\n");
+            for(Method m: objClass.getMethods()){
+                Logger.printError(m.getName() + "(" + Arrays.toString(m.getAnnotatedParameterTypes()) + ")");
                 if(i > 10){
-                    Logger.print("... " + (obj.getClass().getMethods().length-11) + " more\n");
+                    Logger.printError("... " + (objClass.getMethods().length-11) + " more");
                     break;
                 }
                 i++;
@@ -633,7 +635,7 @@ public class Interpreter {
                 case DOUBLE -> Double.parseDouble(arguments.get(i).getValue());
                 case STRING -> arguments.get(i).getValue();
                 case BOOL -> Boolean.parseBoolean(arguments.get(i).getValue());
-                case REFERENCE -> storedObjects.get(arguments.get(i).getValue());
+                case REFERENCE -> storedObjects.get(arguments.get(i).getValue()).getObject();
                 default -> null;
             };
         }
@@ -647,12 +649,11 @@ public class Interpreter {
 
         Class<?>[] classArguments = new Class<?>[arguments.size()];
         for(int i = 0;i < arguments.size();i++){
-            System.out.println(arguments.get(i).getType() + " " + arguments.get(i));
             classArguments[i] = switch (arguments.get(i).getType()){
                 case INT -> int.class;
                 case DOUBLE -> double.class;
                 case STRING -> String.class;
-                case REFERENCE -> storedObjects.get(arguments.get(i).getValue()).getClass();
+                case REFERENCE -> storedObjects.get(arguments.get(i).getValue()).getaClass();
                 case BOOL -> boolean.class;
                 default -> null;
             };

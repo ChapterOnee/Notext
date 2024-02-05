@@ -71,7 +71,7 @@ public class Window {
     private static final PathImage closeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/close.pimg"));
     private static final PathImage minimizeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/minimize.pimg"));
 
-    private HorizontalPlacement innerHeaderControlsPlacement;
+    private HorizontalPlacement innerHeaderPlacement;
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
@@ -132,7 +132,7 @@ public class Window {
         Frame innerHeader = new Frame("secondary", 0);
         hiddenCorePlacement.add(innerHeader, new UnitValue(30, UnitValue.Unit.PIXELS));
 
-        HorizontalPlacement innerHeaderPlacement = new HorizontalPlacement(theme);
+        innerHeaderPlacement = new HorizontalPlacement(theme);
         innerHeader.setChildrenPlacement(innerHeaderPlacement);
 
         coreFrame = new Frame("primary", 0);
@@ -145,12 +145,6 @@ public class Window {
 
         coreHeader = new Frame("secondary", 0);
         innerHeaderPlacement.add(coreHeader, new UnitValue(0, UnitValue.Unit.AUTO));
-
-        Frame innerHeaderControlls = new Frame("secondary", 0);
-        innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(150, UnitValue.Unit.PIXELS));
-
-        innerHeaderControlsPlacement = new HorizontalPlacement(theme);
-        innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
 
         panel = new JPanel(){
             @Override
@@ -563,6 +557,11 @@ public class Window {
             }
         });
 
+        Frame innerHeaderControlls = new Frame("secondary", 0);
+        innerHeaderPlacement.add(innerHeaderControlls, new UnitValue(150, UnitValue.Unit.PIXELS));
+
+        HorizontalPlacement innerHeaderControlsPlacement = new HorizontalPlacement(theme);
+        innerHeaderControlls.setChildrenPlacement(innerHeaderControlsPlacement);
         Icon maximize = new Icon("secondary", "accent", maximizeImage) {
             @Override
             public void onMouseClicked(MouseEvent e) {

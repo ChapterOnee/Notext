@@ -8,6 +8,9 @@ import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.Highlighter;
 import AmbrosiaUI.Widgets.Icons.PathImage;
 import AmbrosiaUI.Widgets.Theme;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Extension extends FileInterpreter {
@@ -17,7 +20,9 @@ public class Extension extends FileInterpreter {
 
     private PathImage icon;
 
-    public Extension(String directory, Theme theme) {
+    private Root root;
+
+    public Extension(String directory, Theme theme, Root root) {
         this.directory = directory;
 
         this.addCommand(new InterpretedCommand("name", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.STRING}){
@@ -37,6 +42,24 @@ public class Extension extends FileInterpreter {
             public void execute(ArrayList<String> arguments) {
                 icon = new PathImage(FileUtil.joinPath(directory, arguments.get(0)));
                 icon.setTheme(theme);
+            }
+        });
+
+        this.addCommand(new InterpretedCommand("script", new InterpretedCommand.ArgumentType[]{InterpretedCommand.ArgumentType.STRING}){
+            @Override
+            public void execute(ArrayList<String> arguments) {
+                try(BufferedReader bf = new BufferedReader(new FileReader(FileUtil.joinPath(directory, arguments.get(0))))){
+                    StringBuilder allData = new StringBuilder();
+
+                    while (bf.ready()){
+                        allData.append(bf.readLine());
+                    }
+
+                    Thread askThread = new Thread(() -> { root.getInterpreter().execute(allData.toString()); });
+                    askThread.start();  // Start the thread to show the window.
+                } catch (IOException ignored) {
+
+                }
             }
         });
     }

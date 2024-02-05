@@ -1,10 +1,6 @@
 header = getHeader();
 
-header.setBackgroundColor("primary");
-header.setHoverEffectDisabled(true);
-
 bt = new AmbrosiaUI.Widgets.Button("Hello", "normal", 0,0,4);
-print(bt.toString());
 
-placement = new AmbrosiaUI.Widgets.Placements.HorizontalPlacement(header.getTheme());
-header.setChildrenPlacement(placement);
+placement = cast(AmbrosiaUI.Widgets.Placements.HorizontalPlacement, header.getChildrenPlacement());
+placement.add(cast(AmbrosiaUI.Widgets.Widget,bt), new AmbrosiaUI.Utility.UnitValue(100,"pixels"));

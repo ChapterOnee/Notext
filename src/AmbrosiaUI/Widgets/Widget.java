@@ -176,10 +176,6 @@ public abstract class Widget implements Comparable<Widget>{
         this.childrenPlacement.setWindow(window);
     }
 
-    public void setChildrenPlacement(HorizontalPlacement placement){
-        setChildrenPlacement((Placement) placement);
-    }
-
     public Window getWindow() {
         return window;
     }

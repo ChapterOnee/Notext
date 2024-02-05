@@ -41,7 +41,7 @@ public class Root extends Window {
     private Settings settingsWindow;
     private ExtensionsManager extensionsManager;
 
-    private Interpreter it = new Interpreter();
+    private Interpreter interpreter = new Interpreter();
 
     private HorizontalPlacement mainPlacement;
     public Root() {
@@ -312,7 +312,7 @@ public class Root extends Window {
                             allData.append(bf.readLine());
                         }
 
-                        Thread askThread = new Thread(() -> { it.execute(allData.toString()); });
+                        Thread askThread = new Thread(() -> { interpreter.execute(allData.toString()); });
                         askThread.start();  // Start the thread to show the window.
                     } catch (IOException ignored) {
 
@@ -385,14 +385,14 @@ public class Root extends Window {
 
 
     private void initializeInterpreter(){
-        it.addFunction("addEditor", new InterpreterFunction(it) {
+        interpreter.addFunction("addEditor", new InterpreterFunction(interpreter) {
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 addEditor();
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
-        it.addFunction("setThemeColor", new InterpreterFunction(it){
+        interpreter.addFunction("setThemeColor", new InterpreterFunction(interpreter){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 values = replaceVariablesWithValues(values,context);
@@ -411,7 +411,7 @@ public class Root extends Window {
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
-        it.addFunction("prompt", new InterpreterFunction(it){
+        interpreter.addFunction("prompt", new InterpreterFunction(interpreter){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 ArrayList<InternalValue> internalValues = replaceStringObjectsWithStrings(values, context);
@@ -440,7 +440,7 @@ public class Root extends Window {
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
-        it.addFunction("update", new InterpreterFunction(it){
+        interpreter.addFunction("update", new InterpreterFunction(interpreter){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 try {
@@ -451,10 +451,10 @@ public class Root extends Window {
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
-        it.addFunction("getHeader", new InterpreterFunction(it){
+        interpreter.addFunction("getHeader", new InterpreterFunction(interpreter){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
-                return it.generateReferenceForObject(coreHeader);
+                return Root.this.interpreter.generateReferenceForObject(coreHeader);
             }
         });
     }
@@ -637,6 +637,10 @@ public class Root extends Window {
     public void close() {
         destroy();
         settingsWindow.destroy();
+    }
+
+    public Interpreter getInterpreter() {
+        return interpreter;
     }
 
     public void openFile(String filename){

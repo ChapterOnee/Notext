@@ -24,6 +24,29 @@ public class UnitValue {
         this.value = value;
         this.unit = unit;
     }
+    public UnitValue(int value, String unit) {
+        this.value = value;
+        this.unit = unitFromString(unit);
+    }
+
+    public UnitValue(Unit unit) {
+        this.value = 0;
+        this.unit = unit;
+    }
+
+    public UnitValue(String unit) {
+        this.value = 0;
+        this.unit = unitFromString(unit);
+    }
+
+    public Unit unitFromString(String unit){
+        return switch (unit){
+            case "fit" -> Unit.FIT;
+            case "fraction" -> Unit.FRACTION;
+            case "auto" -> Unit.AUTO;
+            default -> Unit.PIXELS;
+        };
+    }
 
     public int toPixels(Size parent_size, Widget widget, Direction direction){
         return switch (this.unit){

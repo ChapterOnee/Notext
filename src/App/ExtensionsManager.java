@@ -40,7 +40,6 @@ public class ExtensionsManager extends Window {
         extensionDisplayPlacement = new VerticalPlacement(theme);
         extensionSpace.setChildrenPlacement(extensionDisplayPlacement);
 
-
         loadExtensionsFromPath(Config.extensionsPath);
         reloadExtensionsDisplay();
         update();
@@ -97,7 +96,7 @@ public class ExtensionsManager extends Window {
 
                 if(manifest.exists()){
                     //System.out.println("File " + listOfFile.getName());
-                    Extension nw = new Extension(file.getAbsolutePath(), theme);
+                    Extension nw = new Extension(file.getAbsolutePath(), theme, root);
                     nw.loadFromFile(manifest.getAbsolutePath());
 
                     loadedExtensions.add(nw);
