@@ -1,5 +1,6 @@
 package Dissimulo;
 
+import AmbrosiaUI.Widgets.Icons.Icon;
 import Dissimulo.Inbuilts.*;
 import Dissimulo.Inbuilts.Comparisons.*;
 import Dissimulo.Inbuilts.Mathematical.AddValues;
@@ -11,6 +12,8 @@ import AmbrosiaUI.Utility.Logger;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -232,56 +235,9 @@ public class Interpreter {
                 && context.hasVariable(tree.getValue().split("\\.")[0]) &&
                 getVariableValue(new InternalValue(InternalValue.ValueType.ID,tree.getValue().split("\\.")[0]),context).getType() == InternalValue.ValueType.REFERENCE
         ){
-            String[] args = tree.getValue().split("\\.");
+            String reference = getVariableValue(new InternalValue(InternalValue.ValueType.ID,tree.getValue().split("\\.")[0]),context).getValue();
 
-            InternalValue reference = getVariableValue(new InternalValue(InternalValue.ValueType.ID,tree.getValue().split("\\.")[0]),context);
-
-            String name = reference.getValue();
-            String methodName = args[1];
-            ArrayList<InternalValue> arguments = parseArgumentsFromContext(tree.getRightChildNode(),context);
-            if(args.length > 2){
-                Logger.printError("Invalid method calling from a reference.");
-                return new InternalValue(InternalValue.ValueType.NONE);
-            }
-            if (!storedObjects.containsKey(name)) {
-                Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
-                return new InternalValue(InternalValue.ValueType.NONE);
-            }
-
-            Object obj = storedObjects.get(name);
-            Object result;
-            try {
-                Class<?>[] classArguments = new Class<?>[arguments.size()];
-                Object[] classArgumentValues = new Object[arguments.size()];
-                for(int i = 0;i < arguments.size();i++){
-                    classArguments[i] = switch (arguments.get(i).getType()){
-                        case INT -> int.class;
-                        case DOUBLE -> double.class;
-                        case STRING -> String.class;
-                        case REFERENCE -> storedObjects.get(arguments.get(i).getValue()).getClass();
-                        case BOOL -> boolean.class;
-                        default -> null;
-                    };
-                    classArgumentValues[i] = switch (arguments.get(i).getType()){
-                        case INT -> Integer.parseInt(arguments.get(i).getValue());
-                        case DOUBLE -> Double.parseDouble(arguments.get(i).getValue());
-                        case STRING -> arguments.get(i).getValue();
-                        case BOOL -> Boolean.parseBoolean(arguments.get(i).getValue());
-                        case REFERENCE -> storedObjects.get(arguments.get(i).getValue());
-                        default -> null;
-                    };
-                }
-
-
-                Method method = obj.getClass().getMethod(methodName, classArguments);
-                result = method.invoke(obj,classArgumentValues);
-            } catch (Exception e) {
-                Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
-                e.printStackTrace();
-                return new InternalValue(InternalValue.ValueType.NONE);
-            }
-
-            return objectToInternalValue(result);
+            return executeMethod(tree,context,reference);
         }
         else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION, Lexer.LexerTokenType.CONTEXT)){
             switch (tree.getValue()){
@@ -434,6 +390,44 @@ public class Interpreter {
                 }
             });
         }
+        else if(matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION)){
+            if(!tree.getValue().equals("new")){
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+
+            ASTreeNode current = tree.getRightChildNode().getRightChildNode();
+            ArrayList<LexerToken> tokens = Lexer.lexData(current.getValue().substring(1,current.getValue().length()-1));
+
+            ArrayList<ArrayList<LexerToken>> individialArgumentTokens = new ArrayList<>();
+            individialArgumentTokens.add(new ArrayList<>());
+
+            for(LexerToken token: tokens){
+                if(token.getType() == Lexer.LexerTokenType.ARGUMENT_SPLITTER){
+                    individialArgumentTokens.add(new ArrayList<>());
+                    continue;
+                }
+
+                individialArgumentTokens.get(individialArgumentTokens.size()-1).add(token);
+            }
+
+            ArrayList<InternalValue> arguments = parseArgumentsFromContext(tree.getRightChildNode().getRightChildNode(), context);
+
+            String name = tree.getRightChildNode().getValue();
+
+            Object object;
+            try {
+                Class<?> clazz = Class.forName(name);
+                Constructor<?> ctor = clazz.getConstructor(generateArgumentClassesForInternalValues(arguments,context));
+                object = ctor.newInstance(generateRealArgumentsFromInternalValues(arguments, context));
+
+            } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
+                     InstantiationException | IllegalAccessException e) {
+                Logger.printError(""+e);
+                return new InternalValue(InternalValue.ValueType.NONE);
+            }
+
+            return generateReferenceForObject(object);
+        }
         else if (matchesTreeSignature(tree, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.CONTEXT)  && tree.getValue().equals("else")) {
             if(lastStatement.equals("")){
                 Logger.printError("Else statement missing if before it.");
@@ -478,8 +472,10 @@ public class Interpreter {
                 case ID -> type = InternalValue.ValueType.ID;
                 case NUMBER -> type = InternalValue.ValueType.INT;
                 case STRING -> {
-                    type = InternalValue.ValueType.STRING;
-                    value = value.substring(1,value.length()-1);
+                    InternalValue temp = generateReferenceForObject(value.substring(1,value.length()-1));
+
+                    type = temp.getType();
+                    value = temp.getValue();
                 }
                 case BOOL -> {
                     type = InternalValue.ValueType.BOOL;
@@ -519,7 +515,7 @@ public class Interpreter {
             return new InternalValue(InternalValue.ValueType.DOUBLE, ((double)result) + "");
         }
         else if(result instanceof String){
-            return new InternalValue(InternalValue.ValueType.STRING, ((String)result));
+            return generateReferenceForObject((String)result);
         }
         else if(result instanceof Boolean){
             return new InternalValue(InternalValue.ValueType.BOOL, ((boolean)result) + "");
@@ -527,6 +523,10 @@ public class Interpreter {
         else{
             return generateReferenceForObject(result);
         }
+    }
+
+    public Object getStoredObject(String reference){
+        return storedObjects.get(reference);
     }
 
     public ArrayList<InternalValue> parseArgumentsFromContext(ASTreeNode tree, InterpreterContext context){
@@ -563,6 +563,102 @@ public class Interpreter {
         }
 
         return arguments;
+    }
+
+    public InternalValue executeMethod(ASTreeNode tree, InterpreterContext context, String reference){
+        String[] args = tree.getValue().split("\\.");
+        String name = reference;
+        String methodName = args[1];
+        ArrayList<InternalValue> arguments = parseArgumentsFromContext(tree.getRightChildNode(),context);
+        if(args.length > 2){
+            Logger.printError("Invalid method calling from a reference.");
+            return new InternalValue(InternalValue.ValueType.NONE);
+        }
+        if (!storedObjects.containsKey(name)) {
+            Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
+            return new InternalValue(InternalValue.ValueType.NONE);
+        }
+
+        Object obj = storedObjects.get(name);
+        Object result;
+        try {
+            Class<?>[] classArguments = generateArgumentClassesForInternalValues(arguments,context);
+            Object[] classArgumentValues = generateRealArgumentsFromInternalValues(arguments, context);
+
+            Method method = obj.getClass().getMethod(methodName, classArguments);
+            result = method.invoke(obj,classArgumentValues);
+        } catch (NoSuchMethodException e) {
+            Logger.printError("No method '"+methodName+"' found under referenced object '"+name+"'.");
+            for(Method m: obj.getClass().getMethods()){
+                if(m.getName().contains(name)){
+                    Logger.print("Perhaps you meant to use the method: '" + m.getName() + "(" + Arrays.toString(m.getAnnotatedParameterTypes()) + ")' ?\n");
+                    break;
+                }
+            }
+            Logger.print("Available methods:\n");
+            int i = 0;
+            for(Method m: obj.getClass().getMethods()){
+                Logger.print(m.getName() + "(" + Arrays.toString(m.getAnnotatedParameterTypes()) + ")\n");
+                if(i > 10){
+                    Logger.print("... " + (obj.getClass().getMethods().length-11) + " more\n");
+                    break;
+                }
+                i++;
+            }
+            return new InternalValue(InternalValue.ValueType.NONE);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            Logger.printError(""+e);
+            e.printStackTrace();
+            return new InternalValue(InternalValue.ValueType.NONE);
+        }
+
+        if(matchesTreeSignature(tree.getRightChildNode(), Lexer.LexerTokenType.EXPRESSION, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION)
+            && tree.getRightChildNode().getRightChildNode().getValue().startsWith(".")){
+            return executeMethod(tree.getRightChildNode().getRightChildNode(), context, objectToInternalValue(result).getValue());
+        }
+
+        return objectToInternalValue(result);
+    }
+
+    public Object[] generateRealArgumentsFromInternalValues(ArrayList<InternalValue> args, InterpreterContext context){
+        ArrayList<InternalValue> arguments = new ArrayList<>();
+        for(InternalValue value: args){
+            arguments.add(getVariableValue(value,context));
+        }
+
+        Object[] classArgumentValues = new Object[arguments.size()];
+        for(int i = 0;i < arguments.size();i++){
+            classArgumentValues[i] = switch (arguments.get(i).getType()){
+                case INT -> Integer.parseInt(arguments.get(i).getValue());
+                case DOUBLE -> Double.parseDouble(arguments.get(i).getValue());
+                case STRING -> arguments.get(i).getValue();
+                case BOOL -> Boolean.parseBoolean(arguments.get(i).getValue());
+                case REFERENCE -> storedObjects.get(arguments.get(i).getValue());
+                default -> null;
+            };
+        }
+        return classArgumentValues;
+    }
+    public Class<?>[] generateArgumentClassesForInternalValues(ArrayList<InternalValue> args, InterpreterContext context){
+        ArrayList<InternalValue> arguments = new ArrayList<>();
+        for(InternalValue value: args){
+            arguments.add(getVariableValue(value,context));
+        }
+
+        Class<?>[] classArguments = new Class<?>[arguments.size()];
+        for(int i = 0;i < arguments.size();i++){
+            System.out.println(arguments.get(i).getType() + " " + arguments.get(i));
+            classArguments[i] = switch (arguments.get(i).getType()){
+                case INT -> int.class;
+                case DOUBLE -> double.class;
+                case STRING -> String.class;
+                case REFERENCE -> storedObjects.get(arguments.get(i).getValue()).getClass();
+                case BOOL -> boolean.class;
+                default -> null;
+            };
+        }
+
+        return classArguments;
     }
 
     public InternalValue getVariableValue(InternalValue id, InterpreterContext context){

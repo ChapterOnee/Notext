@@ -15,7 +15,8 @@ public class AddValues extends InterpreterFunction {
 
     @Override
     public InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
-        values = replaceVariblesWithValues(values, context);
+        values = replaceVariablesWithValues(values, context);
+        values = replaceStringObjectsWithStrings(values, context);
 
         if(values.size() == 0){
             Logger.printWarning("Function add executed with no arguments.");

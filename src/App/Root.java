@@ -13,12 +13,9 @@ import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Icons.PathImage;
 import AmbrosiaUI.Widgets.Label;
 import AmbrosiaUI.Widgets.Scrollbar;
-import AmbrosiaUI.Widgets.SelectBox.SelectBox;
-import AmbrosiaUI.Widgets.SelectBox.SelectBoxOption;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenuItem;
-import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Editors.EditorLike;
 import AmbrosiaUI.Widgets.Editors.TextEditor.TextEditor;
@@ -30,7 +27,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.lang.reflect.Executable;
 import java.util.ArrayList;
 
 public class Root extends Window {
@@ -399,7 +395,7 @@ public class Root extends Window {
         it.addFunction("setThemeColor", new InterpreterFunction(it){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
-                values = replaceVariblesWithValues(values,context);
+                values = replaceVariablesWithValues(values,context);
                 if(values.size() != 4){
                     return new InternalValue(InternalValue.ValueType.NONE);
                 }
@@ -418,23 +414,25 @@ public class Root extends Window {
         it.addFunction("prompt", new InterpreterFunction(it){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
-                if(values.size() != 2 || values.get(0).getType() != InternalValue.ValueType.STRING || values.get(1).getType() != InternalValue.ValueType.ID){
+                ArrayList<InternalValue> internalValues = replaceStringObjectsWithStrings(values, context);
+
+                if(internalValues.size() != 2 || internalValues.get(0).getType() != InternalValue.ValueType.STRING || internalValues.get(1).getType() != InternalValue.ValueType.ID){
                     Logger.printError("Invalid arguments for prompt.");
                     return new InternalValue(InternalValue.ValueType.NONE);
                 }
 
-                if(!context.hasFunction(values.get(1).getValue())){
-                    Logger.printError("Function '" + values.get(1).getValue() + "' doesnt exist in this context.");
+                if(!context.hasFunction(internalValues.get(1).getValue())){
+                    Logger.printError("Function '" + internalValues.get(1).getValue() + "' doesnt exist in this context.");
                     return new InternalValue(InternalValue.ValueType.NONE);
                 }
 
-                TextPrompt p = new TextPrompt(theme,values.get(0).getValue()){
+                TextPrompt p = new TextPrompt(theme,internalValues.get(0).getValue()){
                     @Override
                     public void onSubmited(PromptResult result) {
                         ArrayList<InternalValue> val = new ArrayList<>();
                         val.add(new InternalValue(InternalValue.ValueType.STRING,result.getContent()));
 
-                        context.getFunction(values.get(1).getValue()).externalExecute(val, context);
+                        context.getFunction(internalValues.get(1).getValue()).externalExecute(val, context);
                     }
                 };
                 p.ask();

@@ -186,7 +186,7 @@ public class TextEditor extends Frame implements EditorLike {
             g2.drawString(line_text, x-fm.stringWidth(line_text), y+text_height-fm.getDescent());
             //  Highlight line if cursor is on it
 
-            if(i == cursor.getY()){
+            if(i == cursor.getY() && activeSelections.isEmpty()){
                 g2.setColor(theme.getColorByName("secondary").darker());
                 g2.fillRect(x+5,y,this.getContentWidth(),text_height);
                 g2.setColor(theme.getColorByName("text1"));

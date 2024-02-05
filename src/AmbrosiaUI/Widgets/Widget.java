@@ -4,6 +4,7 @@ import AmbrosiaUI.ContextMenus.ContextMenu;
 import AmbrosiaUI.Utility.*;
 import AmbrosiaUI.Utility.Rectangle;
 import AmbrosiaUI.Widgets.DropdownMenu.DropdownMenu;
+import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import AmbrosiaUI.Widgets.Placements.Placement;
 import AmbrosiaUI.Widgets.Placements.PlacementCell;
 
@@ -173,6 +174,10 @@ public abstract class Widget implements Comparable<Widget>{
         this.childrenPlacement = childrenPlacement;
         this.childrenPlacement.setParent(this);
         this.childrenPlacement.setWindow(window);
+    }
+
+    public void setChildrenPlacement(HorizontalPlacement placement){
+        setChildrenPlacement((Placement) placement);
     }
 
     public Window getWindow() {

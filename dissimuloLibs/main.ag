@@ -1,11 +1,10 @@
-import("dissimuloLibs/arrays.ag");
-
 header = getHeader();
 
-header.setBackgroundColor("secondary");
+header.setBackgroundColor("primary");
 header.setHoverEffectDisabled(true);
 
-theme = header.getTheme();
-theme = theme.toString();
+bt = new AmbrosiaUI.Widgets.Button("Hello", "normal", 0,0,4);
+print(bt.toString());
 
-print(theme);
+placement = new AmbrosiaUI.Widgets.Placements.HorizontalPlacement(header.getTheme());
+header.setChildrenPlacement(placement);

@@ -27,13 +27,32 @@ public class InterpreterFunction {
         return new InternalValue(InternalValue.ValueType.NONE);
     }
 
-    protected ArrayList<InternalValue> replaceVariblesWithValues(ArrayList<InternalValue> values, InterpreterContext context){
+    protected ArrayList<InternalValue> replaceVariablesWithValues(ArrayList<InternalValue> values, InterpreterContext context){
         ArrayList<InternalValue> valuesOut = new ArrayList<>();
 
         for (InternalValue value: values){
             valuesOut.add(interpreter.getVariableValue(value, context));
         }
         
+        return valuesOut;
+    }
+
+    protected ArrayList<InternalValue> replaceStringObjectsWithStrings(ArrayList<InternalValue> values, InterpreterContext context){
+        ArrayList<InternalValue> valuesOut = new ArrayList<>();
+
+        for (InternalValue value: values){
+            if(value.getType() != InternalValue.ValueType.REFERENCE){
+                valuesOut.add(value);
+                continue;
+            }
+            Object obj = interpreter.getStoredObject(value.getValue());
+            if(!(obj instanceof String)){
+                continue;
+            }
+
+            valuesOut.add(new InternalValue(InternalValue.ValueType.STRING, obj.toString()));
+        }
+
         return valuesOut;
     }
 }
