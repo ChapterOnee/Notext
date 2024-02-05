@@ -35,9 +35,6 @@ public class TabbedFrame extends Frame {
         setupDraw(g2);
         g2.setClip(this.getX(),this.getY(),this.getWidth(),this.getHeight());
 
-        g2.setColor(theme.getColorByName("secondary"));
-        g2.fillRect(this.getX(),this.getContentY()-2,this.getWidth(),2);
-
         String tabBg;
         String tabFg;
 
@@ -45,12 +42,12 @@ public class TabbedFrame extends Frame {
         for (Rectangle rect: getTabRectangles()){
             TabbedFrameTab tab = tabs.get(i);
             if(i == selectedTab){
-                tabBg = "primary";
-                tabFg = "text2";
-            }
-            else {
                 tabBg = "secondary";
                 tabFg = "text1";
+            }
+            else {
+                tabBg = "primary";
+                tabFg = "text2";
             }
 
 
@@ -59,12 +56,20 @@ public class TabbedFrame extends Frame {
                 tabFg = "accentText";
             }
 
-            AdvancedGraphics.borderedRect(g2, rect, 1, theme.getColorByName(tabBg), theme.getColorByName("secondary"), new GraphicsBorderModifier(true, true, false, true));
+            //AdvancedGraphics.borderedRect(g2, rect, 1, theme.getColorByName(tabBg), theme.getColorByName("secondary"), new GraphicsBorderModifier(true, true, false, true));
+
+            int curve = 5;
+            g2.setColor(theme.getColorByName(tabBg));
+            g2.fillRoundRect(rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(), curve,curve);
+            g2.fillRect(rect.getX(),rect.getY()+curve ,rect.getWidth(),rect.getHeight()-curve);
             g2.setColor(theme.getColorByName(tabFg));
             AdvancedGraphics.drawText(g2,rect,tab.getName(), AdvancedGraphics.Side.CENTER);
 
             i++;
         }
+
+        g2.setColor(theme.getColorByName("secondary"));
+        g2.fillRect(this.getX(),this.getContentY()-2,this.getWidth(),2);
     }
 
     @Override

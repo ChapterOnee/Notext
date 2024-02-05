@@ -20,7 +20,7 @@ public class Button extends Label {
         super.drawSelf(g2);
         /*
             On hover
-         */
+        */
 
         if(bind != null) {
             String bindName = bind.getKeybinds().toString();

@@ -57,6 +57,15 @@ public class Root extends Window {
         coreHeader.setChildrenPlacement(header_placement);
 
         FolderView fw = new FolderView(theme){
+            @Override
+            public void initialize() {
+                super.initialize();
+                FontMetrics fm = fontsizecanvas.getFontMetrics(theme.getFontByName("small"));
+                corePlacement.setRowTemplateFromString("5px auto " + (fm.getAscent()+fm.getDescent()+5) + "px");
+
+                pathDisplayFrame.setMargin(0);
+                corePlacement.add(pathDisplayFrame, 2, 0, 1,1);
+            }
 
             @Override
             protected void fileSelected(String file) {
