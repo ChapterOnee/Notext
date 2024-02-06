@@ -119,14 +119,16 @@ public class PIconEditor extends Frame implements EditorLike {
         hintText.add("Real size:" + currentImage.getWidth() + " x " + currentImage.getHeight());
         hintText.add("E: add new line");
         hintText.add("Delete, D: delete selected objects");
+        hintText.add("Q: cycle colors on selected objects");
+        hintText.add("W: add a fillPoly4");
 
         maxWidth = 0;
         for (String text: hintText){
             maxWidth = Math.max(maxWidth, getStringWidth(text, theme.getFontByName("normal"))+20);
         }
 
-        hintX = this.getContentX();
-        hintY = this.getContentY()+this.getContentHeight()-(hintText.size()*lineHeight+20);
+        hintX = this.getContentX()+this.getContentWidth()-maxWidth;
+        hintY = this.getContentY();
 
         g2.setColor(theme.getColorByName("secondary"));
         g2.fillRect(
@@ -152,52 +154,26 @@ public class PIconEditor extends Frame implements EditorLike {
 
         currentImage.draw(g2, getImagePosition());
 
-
-        int offsetY = 0;
-        int textWidth = 150;
-        int previewWidth = currentImage.getWidth() + textWidth;
-        for(PathDrawable op: currentImage.getOparations()){
-            Position preview_pos = this.getContentPosition().getOffset(this.getContentWidth()-previewWidth,offsetY-componentsScroll.getScrollY());
-
-            g2.setColor(theme.getColorByName("secondary"));
-            g2.fillRect(preview_pos.x, preview_pos.y, previewWidth, currentImage.getHeight());
-
-            if(op.getPositions().size() > 0) {
-                g2.setColor(theme.getColorByName("accent"));
-                int segment = textWidth / op.getPositions().size();
-                int i = 0;
-                for (Position pos : op.getPositions()) {
-                    if (selected.contains(pos)) {
-                        g2.fillRect(preview_pos.x + segment * i, preview_pos.y, segment, currentImage.getHeight() / 10);
-                    }
-                    i++;
-                }
-            }
-
-            g2.setColor(theme.getColorByName("text1"));
-            AdvancedGraphics.drawText(g2,new Rectangle(preview_pos.x+10, preview_pos.y, previewWidth, currentImage.getHeight()),
-                    op.getName() + "[" + currentImage.getOparations().indexOf(op) + "]", AdvancedGraphics.Side.LEFT);
-
-            g2.setColor(theme.getColorByName("selection"));
-            g2.fillRect(preview_pos.x+textWidth, preview_pos.y, currentImage.getWidth(), currentImage.getHeight());
-
-            op.draw(g2,preview_pos.getOffset(textWidth,0),theme);
-
-            offsetY += currentImage.getHeight()+5;
-        }
+        ArrayList<String> hoverHints = new ArrayList<>();
 
         HashMap<String, ArrayList<Position>> grabbable = getGrabbablePositions();
         for(String key: grabbable.keySet()){
             ArrayList<Position> positions = grabbable.get(key);
 
             if(positions.size() == 1){
-                drawGrabPoint(g2,getRealPosition(positions.get(0)), getAssociatedOperation(positions.get(0)).getColor());
+                PathDrawable op = getAssociatedOperation(positions.get(0));
+                Position realPos = getRealPosition(positions.get(0));
 
-                if(getRealPosition(positions.get(0)).getDistanceTo(lastMousePosition) < 10){
-                    drawSelection(g2, getRealPosition(positions.get(0)), getAssociatedOperation(positions.get(0)).getColor());
+                drawGrabPoint(g2,realPos, op.getColor());
+
+                if(realPos.getDistanceTo(lastMousePosition) < 10){
+                    hoverHints.add(op.getName() + "->" + op.getColor());
+                    currentImage.drawOperation(g2, getImagePosition(), op, theme.getColorByName("selection"));
+
+                    drawSelection(g2, realPos,op.getColor());
                 }
                 else if(selected.contains(positions.get(0))){
-                    drawSelection(g2, getRealPosition(positions.get(0)), getAssociatedOperation(positions.get(0)).getColor());
+                    drawSelection(g2, realPos, op.getColor());
                 }
 
                 continue;
@@ -205,7 +181,7 @@ public class PIconEditor extends Frame implements EditorLike {
 
             double segment = (Math.PI*2) / (double)positions.size();
             int grabOffsetX, grabOffsetY;
-            int radius = 10;
+            int radius = 12;
             int i = 0;
             Position finalPositon;
 
@@ -214,21 +190,26 @@ public class PIconEditor extends Frame implements EditorLike {
                 grabOffsetY = (int) (Math.sin(segment*i) * radius);
 
                 finalPositon = getRealPosition(pos).getOffset(grabOffsetX,grabOffsetY);
+                PathDrawable op = getAssociatedOperation(pos);
 
-
-                drawGrabPoint(g2,finalPositon, getAssociatedOperation(pos).getColor());
+                drawGrabPoint(g2,finalPositon, op.getColor());
                 if(finalPositon.getDistanceTo(lastMousePosition) < 10){
-                    drawSelection(g2, finalPositon, getAssociatedOperation(pos).getColor());
+                    hoverHints.add(op.getName() + "->" + op.getColor());
+                    currentImage.drawOperation(g2, getImagePosition(), op, theme.getColorByName("selection"));
+
+                    drawSelection(g2, finalPositon, op.getColor());
                 }
                 else if(selected.contains(pos)){
-                    drawSelection(g2, finalPositon, getAssociatedOperation(pos).getColor());
+                    drawSelection(g2, finalPositon,op.getColor());
                 }
 
                 i += 1;
             }
         }
 
-        componentsScroll.setMaxScrollY(offsetY);
+        AdvancedGraphics.drawHint(g2, lastMousePosition.getOffset(10,10), hoverHints, theme);
+
+        componentsScroll.setMaxScrollY(0);
 
         if(selectionRectangle != null){
             Color c = new Color(
@@ -307,7 +288,6 @@ public class PIconEditor extends Frame implements EditorLike {
             lastKey = color;
         }
         colors.put(lastKey,firstColor);
-        System.out.println(colors);
     }
 
     public String getNextColor(String color){
@@ -338,7 +318,7 @@ public class PIconEditor extends Frame implements EditorLike {
 
                     double segment = (Math.PI*2) / (double)positions.size();
                     int grabOffsetX, grabOffsetY;
-                    int radius = 10;
+                    int radius = 12;
                     int i = 0;
                     Position finalPositon;
 
@@ -415,10 +395,17 @@ public class PIconEditor extends Frame implements EditorLike {
                         "secondary",
                         1
                 ));
+            }
+            // W
+            case 87 -> {
 
-                selected.clear();
-                selected.add(nextPos);
-                shiftDown = true;
+                currentImage.getOparations().add(new PathFillPoly(
+                        cursorPositonOnImage.getOffset(0,0),
+                        cursorPositonOnImage.getOffset(10,0),
+                        cursorPositonOnImage.getOffset(10,10),
+                        cursorPositonOnImage.getOffset(0,10),
+                        "secondary"
+                ));
             }
             // Q
             case 81 -> {

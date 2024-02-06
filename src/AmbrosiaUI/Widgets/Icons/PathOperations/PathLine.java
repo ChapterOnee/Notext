@@ -34,6 +34,13 @@ public class PathLine implements PathDrawable{
     }
 
     @Override
+    public void draw(Graphics2D g2, Position currentPosition, Color color) {
+        g2.setColor(color);
+        g2.setStroke(new BasicStroke(width));
+        g2.drawLine(from.x + currentPosition.x, from.y  + currentPosition.y, (currentPosition.x + to.x), (currentPosition.y + to.y));
+    }
+
+    @Override
     public void fromArguments(ArrayList<String> arguments) {
         from = new Position(
                 Integer.parseInt(arguments.get(0)),

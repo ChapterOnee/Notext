@@ -46,7 +46,7 @@ public class AdvancedGraphics {
                 hintX,
                 hintY,
                 maxWidth,
-                hints.size()*lineHeight+20
+                hints.size()*lineHeight
         );
 
         g2.setColor(theme.getColorByName("text1"));

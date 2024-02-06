@@ -193,12 +193,31 @@ public class PathImage extends FileInterpreter {
         g2.setTransform(at);
     }
 
+    public void drawOperation(Graphics2D g2, Position startPosition, PathDrawable operation, Color color){
+        AffineTransform at = new AffineTransform();
+        at.translate(startPosition.x, startPosition.y);
+        at.scale(scale, scale);
+        g2.setTransform(at);
+
+        //g2.setColor(new Color(255,0,0));
+        //g2.fillRect(0,0,20,20);
+
+        Position position = new Position(0, 0);
+
+        operation.draw(g2, position, color);
+
+        at = new AffineTransform();
+        //at.translate(-scrollController.getScrollX(), -scrollController.getScrollY());
+
+        g2.setTransform(at);
+    }
+
     public PathImage getScaled(double scale){
         return new PathImage(oparations,size,this.getTheme(),scale);
     }
 
     public void setScale(double scale) {
-        this.scale = scale;
+        this.scale = Math.max(0.1,scale);
         //this.size.width = (int) (this.size.width * scale);
         //this.size.height = (int) (this.size.height * scale);
     }

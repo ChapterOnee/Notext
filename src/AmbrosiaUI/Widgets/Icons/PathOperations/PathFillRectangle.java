@@ -32,6 +32,14 @@ public class PathFillRectangle implements PathDrawable {
     }
 
     @Override
+    public void draw(Graphics2D g2, Position currentPosition, Color color) {
+        g2.setColor(color);
+        g2.fillRect(
+                (int) (rect.getX()) + currentPosition.x,
+                (int) (rect.getY()) + currentPosition.y, (int) (rect.getWidth()), (int) (rect.getHeight()));
+    }
+
+    @Override
     public void fromArguments(ArrayList<String> arguments) {
         color = arguments.get(4);
         rect = new Rectangle(

@@ -29,6 +29,13 @@ public class PathOval implements PathDrawable {
     }
 
     @Override
+    public void draw(Graphics2D g2, Position currentPosition, Color color) {
+        g2.setColor(color);
+        g2.setStroke(new BasicStroke(lineWidth));
+        g2.drawOval(this.start.x,this.start.y,this.end.x-this.start.x, this.end.y-this.start.y);
+    }
+
+    @Override
     public void fromArguments(ArrayList<String> arguments) {
         start = new Position(Integer.parseInt(arguments.get(0)),Integer.parseInt(arguments.get(1)));
         end = new Position(Integer.parseInt(arguments.get(2)),Integer.parseInt(arguments.get(3)));

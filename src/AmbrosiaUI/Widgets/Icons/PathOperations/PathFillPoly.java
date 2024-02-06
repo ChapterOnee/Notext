@@ -50,6 +50,26 @@ public class PathFillPoly implements PathDrawable{
     }
 
     @Override
+    public void draw(Graphics2D g2, Position currentPosition, Color color) {
+        g2.setColor(color);
+
+        Polygon p = new Polygon(new int[]{
+                pos1.x  + currentPosition.x,
+                pos2.x  + currentPosition.x,
+                pos3.x  + currentPosition.x,
+                pos4.x  + currentPosition.x
+        },
+                new int[]{
+                        pos1.y  + currentPosition.y,
+                        pos2.y  + currentPosition.y,
+                        pos3.y  + currentPosition.y,
+                        pos4.y  + currentPosition.y
+                }, 4);
+
+        g2.fillPolygon(p);
+    }
+
+    @Override
     public void fromArguments(ArrayList<String> arguments) {
         pos1 = new Position(Integer.parseInt(arguments.get(0)),Integer.parseInt(arguments.get(1)));
         pos2 = new Position(Integer.parseInt(arguments.get(2)),Integer.parseInt(arguments.get(3)));

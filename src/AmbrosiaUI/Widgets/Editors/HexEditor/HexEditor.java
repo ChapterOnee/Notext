@@ -23,7 +23,7 @@ public class HexEditor extends Frame implements EditorLike {
     private int byteOffeetX = 30;
     private String currentFile;
 
-    private int bytesPerRow = 32;
+    private int bytesPerRow = 16;
 
     public HexEditor() {
         super("primary",0);
@@ -38,8 +38,6 @@ public class HexEditor extends Frame implements EditorLike {
         super.drawSelf(g2);
         setupDraw(g2);
 
-        bytesPerRow = ((this.getContentWidth()/2)/byteOffeetX);
-
         // Calculations
         FontMetrics fm = g2.getFontMetrics(theme.getFontByName("normal"));
         //int single_char_width = fm.stringWidth(" " + cursor.getCurrrentCharsUnderCursor().charAt(0));
@@ -53,7 +51,10 @@ public class HexEditor extends Frame implements EditorLike {
 
 
         int byteBackgroundPadding = 10;
-        offset.x = fm.stringWidth(Math.floor((double)contents.length/(double)bytesPerRow)+"") + byteBackgroundPadding;
+        //offset.x = fm.stringWidth(Math.floor((double)contents.length/(double)bytesPerRow)+"") + byteBackgroundPadding;
+
+
+        offset.x = getContentWidth()/2-((bytesPerRow * byteOffeetX)+byteBackgroundPadding)/2;
 
         this.scrollController.setMaxScrollY(Math.max(0,contentHeight+byteBackgroundPadding*2+offset.y));
 
@@ -164,7 +165,7 @@ public class HexEditor extends Frame implements EditorLike {
 
     @Override
     public boolean hasFile() {
-        return contents.length == 0;
+        return currentFile != null && contents.length != 0;
     }
 
     @Override

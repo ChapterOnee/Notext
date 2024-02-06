@@ -14,6 +14,16 @@ public class Position {
         this.y += y;
     }
 
+    public double getAngleTo(Position target) {
+        double angle = (double) Math.toDegrees(Math.atan2(target.y - y, target.x - x));
+
+        if(angle < 0){
+            angle += 360;
+        }
+
+        return angle;
+    }
+
     public double getDistanceTo(Position pos){
         double ac = Math.abs(pos.y - y);
         double cb = Math.abs(pos.x - x);

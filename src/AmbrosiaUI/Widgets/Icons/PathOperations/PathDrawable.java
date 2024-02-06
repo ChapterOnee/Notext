@@ -10,6 +10,8 @@ import java.util.ArrayList;
 public interface PathDrawable {
     void draw(Graphics2D g2, Position currentPosition, Theme Theme);
 
+    void draw(Graphics2D g2, Position currentPosition, Color color);
+
     void fromArguments(ArrayList<String> arguments);
     ArrayList<String> toArguments();
 
