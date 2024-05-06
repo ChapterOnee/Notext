@@ -2,4 +2,10 @@ print("HelloWorld!");
 
 header = getHeader();
 
-button = new AmbrosiaUI.Widgets.Button();
+button = new AmbrosiaUI.Widgets.Button("Dissimulo", "small", 0,0,5);
+
+layout = cast(AmbrosiaUI.Widgets.Placements.HorizontalPlacement,header);
+layout.add(
+    cast(AmbrosiaUI.Widgets.Widget,button),
+    new AmbrosiaUI.Utility.UnitValue(100, "pixels");
+);

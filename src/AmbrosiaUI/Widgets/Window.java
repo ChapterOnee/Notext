@@ -71,7 +71,7 @@ public class Window {
     private static final PathImage closeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/close.pimg"));
     private static final PathImage minimizeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/minimize.pimg"));
 
-    private HorizontalPlacement innerHeaderPlacement;
+    protected HorizontalPlacement innerHeaderPlacement;
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();

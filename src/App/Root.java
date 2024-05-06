@@ -442,7 +442,7 @@ public class Root extends Window {
         interpreter.addFunction("getHeader", new InterpreterFunction(interpreter){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
-                return Root.this.interpreter.generateReferenceForObject(coreHeader);
+                return Root.this.interpreter.generateReferenceForObject(innerHeaderPlacement);
             }
         });
         interpreter.addFunction("addMouseClickedListener", new InterpreterFunction(interpreter){
