@@ -521,14 +521,23 @@ public class Interpreter {
     }
 
     public InternalValue objectToInternalValue(Object result){
-        return switch (result) {
-            case Integer i -> new InternalValue(InternalValue.ValueType.INT, ((int) result) + "");
-            case Double v -> new InternalValue(InternalValue.ValueType.DOUBLE, ((double) result) + "");
-            case String s -> generateReferenceForObject(s);
-            case Boolean b -> new InternalValue(InternalValue.ValueType.BOOL, ((boolean) result) + "");
-            case null -> new InternalValue(InternalValue.ValueType.NONE);
-            default -> generateReferenceForObject(result);
-        };
+        if(result instanceof  Integer) {
+            return new InternalValue(InternalValue.ValueType.INT, ((int) result) + "");
+        }
+        else if(result instanceof Double) {
+            return new InternalValue(InternalValue.ValueType.DOUBLE, ((double) result) + "");
+        }
+        else if(result instanceof String) {
+            return generateReferenceForObject((String) result);
+        }
+        else if(result instanceof Boolean) {
+            return new InternalValue(InternalValue.ValueType.BOOL, ((boolean) result) + "");
+        }
+        else if(result == null) {
+            return new InternalValue(InternalValue.ValueType.NONE);
+        }
+
+        return generateReferenceForObject(result);
     }
 
     public Object getStoredObject(String reference){

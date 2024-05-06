@@ -1,0 +1,5 @@
+print("HelloWorld!");
+
+header = getHeader();
+
+button = new AmbrosiaUI.Widgets.Button();
