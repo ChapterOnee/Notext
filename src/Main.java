@@ -1,4 +1,7 @@
+import AmbrosiaUI.Widgets.Window;
 import App.Root;
+
+import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,7 +14,11 @@ public class Main {
         //img.saveToFile("test.pimg");
 
         //Window w = new Window();
-        //w.open();
+        //w.show();
+
+        //FileDialog fd = new FileDialog(w.getFrame());
+        //fd.setDirectory("C:\\");
+        //fd.setVisible(true);
 
         
     }

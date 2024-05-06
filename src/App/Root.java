@@ -45,6 +45,7 @@ public class Root extends Window {
 
     private ArrayList<EditorChangedListener> editorChangedListeners = new ArrayList<>();
 
+    private HorizontalPlacement header_placement;
     private HorizontalPlacement mainPlacement;
     public Root() {
         super();
@@ -53,7 +54,7 @@ public class Root extends Window {
 
         coreFrame.setChildrenPlacement(mainPlacement);
 
-        HorizontalPlacement header_placement = new HorizontalPlacement(theme);
+        header_placement = new HorizontalPlacement(theme);
         coreHeader.setChildrenPlacement(header_placement);
 
         FolderView fw = new FolderView(theme){
@@ -295,16 +296,17 @@ public class Root extends Window {
             public void onMouseClicked(MouseEvent e) {
                 if(System.getProperty("os.name").startsWith("Windows")){
                     try {
-                        Runtime.getRuntime().exec("cmd /c cmd.exe");
-                    } catch (IOException ignored) {
-
+                        Runtime rt = Runtime.getRuntime();
+                        rt.exec("cmd.exe /k start", null, new File(fw.getPath()));
+                    } catch (IOException i) {
+                        i.printStackTrace();
                     }
                 }
                 else if(System.getProperty("os.name").startsWith("Linux")){
                     try {
                         Runtime.getRuntime().exec("gnome-terminal --working-directory=" + fw.getPath());
-                    } catch (IOException ignored) {
-                        System.out.println(ignored);
+                    } catch (IOException i) {
+                        i.printStackTrace();
                     }
                 }
             }
@@ -442,7 +444,7 @@ public class Root extends Window {
         interpreter.addFunction("getHeader", new InterpreterFunction(interpreter){
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
-                return Root.this.interpreter.generateReferenceForObject(innerHeaderPlacement);
+                return Root.this.interpreter.generateReferenceForObject(header_placement);
             }
         });
         interpreter.addFunction("addMouseClickedListener", new InterpreterFunction(interpreter){

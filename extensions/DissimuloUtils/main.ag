@@ -1,11 +1,16 @@
-print("HelloWorld!");
-
 header = getHeader();
 
-button = new AmbrosiaUI.Widgets.Button("Dissimulo", "small", 0,0,5);
+placement = cast(AmbrosiaUI.Widgets.Placements.HorizontalPlacement,header);
 
-layout = cast(AmbrosiaUI.Widgets.Placements.HorizontalPlacement,header);
-layout.add(
-    cast(AmbrosiaUI.Widgets.Widget,button),
-    new AmbrosiaUI.Utility.UnitValue(100, "pixels");
+button = new AmbrosiaUI.Widgets.Button("Dissimulo", "small", 0, 0, 4);
+
+placement.add(
+    cast(AmbrosiaUI.Widgets.Widget, button),
+    new AmbrosiaUI.Utility.UnitValue(0,"fit")
 );
+
+function buttonPressed(){
+    prompt("HelloWorld?", buttonPressed);
+}
+
+addMouseClickedListener(button, buttonPressed);
