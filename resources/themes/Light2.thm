@@ -1,0 +1,27 @@
+color primary 255 255 255 
+color secondary 240 240 240
+
+color accent 180 120 120
+color accentText 255 255 255
+color accent2 120 80 120
+
+color text2 100 100 100
+color text1 100 100 100
+color text1_disabled 210 210 210
+
+color selection 200 200 255
+
+color keywords 200 200 100
+color strings 100 100 100
+color comment 50 50 50
+color numbers 150 150 200
+
+load_font "resources/fonts/JetBrainsMono[wght].ttf" roboto
+
+font normal Monospaced 14
+font small Monospaced 12
+font big Monospaced 24
+
+font normal roboto 14
+font small roboto 12
+font big roboto 24
