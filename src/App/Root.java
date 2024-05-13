@@ -398,6 +398,12 @@ public class Root extends Window {
 
                 theme.setColor(values.get(0).getValue(), clr);
 
+                try {
+                    Root.this.update();
+                }catch (Exception ignored){
+
+                }
+
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
         });
@@ -445,6 +451,12 @@ public class Root extends Window {
             @Override
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 return Root.this.interpreter.generateReferenceForObject(header_placement);
+            }
+        });
+        interpreter.addFunction("getCoreHeader", new InterpreterFunction(interpreter){
+            @Override
+            protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
+                return Root.this.interpreter.generateReferenceForObject(coreHeader);
             }
         });
         interpreter.addFunction("addMouseClickedListener", new InterpreterFunction(interpreter){

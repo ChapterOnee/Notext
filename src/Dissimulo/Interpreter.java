@@ -15,9 +15,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 public class Interpreter {
     private InterpreterContext globalContext = new InterpreterContext(false);
@@ -25,6 +28,8 @@ public class Interpreter {
     private HashMap<String, InterpreterFunction> assignedOperatorsToFunctions = new HashMap<>();
 
     private HashMap<String, StoredObject> storedObjects = new HashMap<>();
+
+    private ArrayList<String> imports = new ArrayList<>();
 
     public Interpreter() {
         InterpreterFunction addFunction = new AddValues(this);
@@ -100,6 +105,14 @@ public class Interpreter {
             protected InternalValue internalExecute(ArrayList<InternalValue> values, InterpreterContext context) {
                 if(values.size() != 1){
                     Logger.printError("Import function only takes in a path argument.");
+                    return new InternalValue(InternalValue.ValueType.NONE);
+                }
+
+                if(values.get(0).getType() == InternalValue.ValueType.ID){
+                    String val = values.get(0).getValue();
+                    for(Package pkg: Package.getPackages()){
+                        if(pkg.getName().startsWith(val)) imports.add(pkg.getName());
+                    }
                     return new InternalValue(InternalValue.ValueType.NONE);
                 }
 
@@ -429,12 +442,14 @@ public class Interpreter {
 
             Object object;
             try {
-                Class<?> clazz = Class.forName(name);
+                Class<?> clazz = getClassForName(name);
+
                 Constructor<?> ctor = clazz.getConstructor(generateArgumentClassesForInternalValues(arguments,context));
                 object = ctor.newInstance(generateRealArgumentsFromInternalValues(arguments, context));
 
-            } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
+            } catch (InvocationTargetException | NoSuchMethodException |
                      InstantiationException | IllegalAccessException e) {
+
                 Logger.printError(""+e);
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
@@ -599,41 +614,70 @@ public class Interpreter {
 
         Class<?> objClass = storedObjects.get(name).getaClass();
         Object obj = storedObjects.get(name).getObject();
-        Object result;
         Class<?>[] classArguments = generateArgumentClassesForInternalValues(arguments,context);
         Object[] classArgumentValues = generateRealArgumentsFromInternalValues(arguments, context);
+
+        return runClassMethod(methodName, name, objClass, obj, classArguments, classArgumentValues);
+
+        /*if(matchesTreeSignature(tree.getRightChildNode(), Lexer.LexerTokenType.EXPRESSION, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION)
+            && tree.getRightChildNode().getRightChildNode().getValue().startsWith(".")){
+            return executeMethod(tree.getRightChildNode().getRightChildNode(), context, objectToInternalValue(result).getValue());
+        }*/
+    }
+
+    public Class<?> getClassForName(String name){
+        try {
+            return Class.forName(name);
+        }catch (ClassNotFoundException ignored){
+
+        }
+
+        for(String imp: imports){
+            Class<?> clazz;
+
+            try {
+                clazz = Class.forName(imp + "." + name);
+                return clazz;
+            }catch (ClassNotFoundException ignored){
+            }
+        }
+        return null;
+    }
+
+    public InternalValue runClassMethod(String methodName, String name, Class<?> objClass, Object obj, Class<?>[] classArguments, Object[] classArgumentValues){
+        Object result;
+
         try {
             Method method = objClass.getMethod(methodName, classArguments);
             result = method.invoke(objClass.cast(obj),classArgumentValues);
         } catch (NoSuchMethodException e) {
-            Logger.printError(""+e);
-            Logger.printError("No method '"+methodName+"("+Arrays.toString(classArguments)+")'' found under referenced object '"+name+"'.");
             for(Method m: objClass.getMethods()){
-                if(m.getName().contains(name)){
+                if(m.getName().equals(methodName) && classArguments.length == m.getParameterCount()){
+                    for(int i = 0;i < classArguments.length;i++){
+                        Parameter p = m.getParameters()[i];
+                        try {
+                            classArguments[i] = p.getType();
+                            classArgumentValues[i] = classArguments[i].cast(classArgumentValues[i]);
+
+                        } catch (ClassCastException ex){
+                            ex.printStackTrace();
+                            return new InternalValue(InternalValue.ValueType.NONE);
+                        }
+                        return runClassMethod(methodName, name, objClass, obj,classArguments,classArgumentValues);
+                    }
+                }
+                if(m.getName().contains(methodName)){
                     Logger.printError("Perhaps you meant to use the method: '" + m.getName() + "(" + Arrays.toString(m.getAnnotatedParameterTypes()) + ")' ?");
                     break;
                 }
             }
-            Logger.printError("Available methods:");
-            int i = 0;
-            for(Method m: objClass.getMethods()){
-                Logger.printError(m.getName() + "(" + Arrays.toString(m.getAnnotatedParameterTypes()) + ")");
-                if(i > 10){
-                    Logger.printError("... " + (objClass.getMethods().length-11) + " more");
-                    break;
-                }
-                i++;
-            }
+            Logger.printError(""+e);
+            Logger.printError("No method '"+methodName+"("+Arrays.toString(classArguments)+")'' found under referenced object '"+name+"'.");
             return new InternalValue(InternalValue.ValueType.NONE);
         } catch (InvocationTargetException | IllegalAccessException e) {
             Logger.printError(""+e);
             e.printStackTrace();
             return new InternalValue(InternalValue.ValueType.NONE);
-        }
-
-        if(matchesTreeSignature(tree.getRightChildNode(), Lexer.LexerTokenType.EXPRESSION, Lexer.LexerTokenType.ID, Lexer.LexerTokenType.EXPRESSION)
-            && tree.getRightChildNode().getRightChildNode().getValue().startsWith(".")){
-            return executeMethod(tree.getRightChildNode().getRightChildNode(), context, objectToInternalValue(result).getValue());
         }
 
         return objectToInternalValue(result);

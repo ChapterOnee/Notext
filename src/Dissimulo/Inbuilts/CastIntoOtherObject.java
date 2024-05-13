@@ -25,15 +25,16 @@ public class CastIntoOtherObject extends InterpreterFunction {
             String className = values.get(0).getValue();
 
             Object nw;
-            try {
-                Object obj = interpreter.getStoredObject(reference);
-                Class<?> clazz = Class.forName(className);
-                nw = clazz.cast(obj);
-                return interpreter.generateReferenceForObject(nw, clazz);
-            } catch (ClassNotFoundException e) {
-                Logger.printError("Error when casting values: " + e);
+            Object obj = interpreter.getStoredObject(reference);
+            Class<?> clazz = interpreter.getClassForName(className);
+            if(clazz == null){
+                Logger.printError("Error when casting values.");
                 return new InternalValue(InternalValue.ValueType.NONE);
             }
+
+            nw = clazz.cast(obj);
+            return interpreter.generateReferenceForObject(nw, clazz);
+
         }
         else{
             Logger.printError("Invalid arguments for casting");
