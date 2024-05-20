@@ -7,6 +7,9 @@ import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+/**
+ * Prompt for text
+ */
 public class TextPrompt extends Prompt{
     protected GridPlacement corePlacement;
 

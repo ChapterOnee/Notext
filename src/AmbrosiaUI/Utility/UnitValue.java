@@ -6,6 +6,14 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A value used in layouts that can have several different units,
+ *
+ * PIXELS -> pixels
+ * FRACTION -> percentage of parent
+ * AUTO -> automatically fill untaken space
+ * FIT -> adjusts itself to minimal size set by a widget
+ */
 public class UnitValue {
     private int value;
     private Unit unit;

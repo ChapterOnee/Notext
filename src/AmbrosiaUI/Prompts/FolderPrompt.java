@@ -9,6 +9,9 @@ import AmbrosiaUI.Widgets.Placements.HorizontalPlacement;
 import java.awt.event.MouseEvent;
 import java.nio.file.Paths;
 
+/**
+ * Prompt for getting folders
+ */
 public class FolderPrompt extends FilePrompt{
     protected Label pathDisplayLabelSecondary;
     protected Frame bottomFrame;

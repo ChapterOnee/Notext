@@ -1,5 +1,8 @@
 package AmbrosiaUI.Utility;
 
+/**
+ * A class for work with rectangles, no I won't use the java one
+ */
 public class Rectangle {
     private int x;
     private int y;

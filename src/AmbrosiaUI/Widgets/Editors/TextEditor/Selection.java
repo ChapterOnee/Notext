@@ -4,6 +4,9 @@ import AmbrosiaUI.Utility.Position;
 
 import java.util.ArrayList;
 
+/**
+ * A selection for an area, prepared for multiple ones but never implemented
+ */
 public class Selection {
     private Cursor from;
     private Cursor to;

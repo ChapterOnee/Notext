@@ -1,5 +1,8 @@
 package AmbrosiaUI.Utility;
 
+/**
+ * Universally used for positions
+ */
 public class Position {
     public int x;
     public int y;
@@ -7,21 +10,6 @@ public class Position {
     public Position(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-
-    public void move(int x, int y){
-        this.x += x;
-        this.y += y;
-    }
-
-    public double getAngleTo(Position target) {
-        double angle = (double) Math.toDegrees(Math.atan2(target.y - y, target.x - x));
-
-        if(angle < 0){
-            angle += 360;
-        }
-
-        return angle;
     }
 
     public double getDistanceTo(Position pos){

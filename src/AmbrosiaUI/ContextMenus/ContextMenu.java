@@ -10,6 +10,9 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+/**
+ * A class for a simple context menu
+ */
 public class ContextMenu {
     private ArrayList<ContextMenuOption> options = new ArrayList<>();
 

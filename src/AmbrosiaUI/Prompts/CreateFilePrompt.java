@@ -11,6 +11,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ *  Prompt for creating files
+ */
 public class CreateFilePrompt extends FilePrompt{
 
     protected Label pathDisplayLabelSecondary;

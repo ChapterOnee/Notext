@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 import static AmbrosiaUI.Utility.StringUtil.getStringWidth;
 
+/**
+ *  A supporting class with some static macros for common graphical operations
+ *
+ */
 public class AdvancedGraphics {
 
     public enum Side{

@@ -19,6 +19,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Prompt for getting files
+ */
 public class FilePrompt extends Prompt{
     protected GridPlacement corePlacement;
 

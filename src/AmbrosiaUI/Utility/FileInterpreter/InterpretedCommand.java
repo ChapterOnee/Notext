@@ -2,6 +2,9 @@ package AmbrosiaUI.Utility.FileInterpreter;
 
 import java.util.ArrayList;
 
+/**
+ * A segment of a configuration file for detection
+ */
 public class InterpretedCommand {
 
     private String name;

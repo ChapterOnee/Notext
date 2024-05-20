@@ -1,5 +1,8 @@
 package AmbrosiaUI.Utility;
 
+/**
+ * Border settings
+ */
 public class GraphicsBorderModifier {
     private boolean top;
     private boolean right;

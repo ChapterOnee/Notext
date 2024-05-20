@@ -2,6 +2,9 @@ package AmbrosiaUI.Utility;
 
 import java.awt.*;
 
+/**
+ * This is used just to get the width of strings in pixels
+ */
 public class StringUtil {
     protected static final Canvas fontsizecanvas = new Canvas();
 

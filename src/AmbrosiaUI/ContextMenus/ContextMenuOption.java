@@ -8,6 +8,9 @@ import AmbrosiaUI.Widgets.Theme;
 
 import java.awt.*;
 
+/**
+ * An option in the context menu
+ */
 public class ContextMenuOption {
     private String text;
     private Rectangle boundingRectangle;

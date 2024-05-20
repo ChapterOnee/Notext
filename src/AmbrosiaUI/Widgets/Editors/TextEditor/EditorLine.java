@@ -2,6 +2,9 @@ package AmbrosiaUI.Widgets.Editors.TextEditor;
 
 import java.awt.*;
 
+/**
+ * A single line in the editor, has functions for easy editing
+ */
 public class EditorLine{
     private String raw_content;
 

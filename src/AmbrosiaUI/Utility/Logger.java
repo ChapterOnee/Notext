@@ -1,5 +1,8 @@
 package AmbrosiaUI.Utility;
 
+/**
+ * A unified class with static macros for printing problems and errors
+ */
 public class Logger {
 
     private static final String resetCode = "\033[0m";

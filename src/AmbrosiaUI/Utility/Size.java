@@ -2,6 +2,9 @@ package AmbrosiaUI.Utility;
 
 import java.awt.*;
 
+/**
+ * A class for handling sizes
+ */
 public class Size {
     public int width;
     public int height;

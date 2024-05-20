@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A really simple auto suggesting system
+ */
 public class Hinter {
     private ArrayList<String> currentHints = new ArrayList<>();
     private TextEditor editor;

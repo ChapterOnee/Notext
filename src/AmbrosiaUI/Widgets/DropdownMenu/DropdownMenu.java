@@ -11,6 +11,9 @@ import AmbrosiaUI.Widgets.Widget;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * A dropdown menu widget
+ */
 public class DropdownMenu extends Label {
 
     private final ArrayList<DropdownMenuItem> items;

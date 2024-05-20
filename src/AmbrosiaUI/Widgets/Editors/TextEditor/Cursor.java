@@ -5,6 +5,9 @@ import AmbrosiaUI.Utility.Position;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * A cursor in the text editor that saves its own position, there can possibly be multiple in a single editor, never tried that tho
+ */
 public class Cursor {
     private Position position;
     private ArrayList<EditorLine> currentLines;

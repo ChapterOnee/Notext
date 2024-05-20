@@ -5,6 +5,9 @@ import AmbrosiaUI.Utility.Logger;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * A grouping of Highlighters that the text editor can pick from
+ */
 public class SyntaxHighlighter {
     private String name;
     private Highlighter currentHighlighter;

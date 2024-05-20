@@ -1,5 +1,6 @@
 package AmbrosiaUI.Prompts;
 
+
 public class PromptResult {
     private String content;
 

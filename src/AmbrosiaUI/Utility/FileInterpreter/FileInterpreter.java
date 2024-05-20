@@ -13,6 +13,10 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The code decoder for configuration files, theme files, syntax files and others, this is the core, its extensions only build on its functinality
+ *
+ */
 public class FileInterpreter {
 
     private final HashMap<String, InterpretedCommand> commands = new HashMap<>();

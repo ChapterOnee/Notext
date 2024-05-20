@@ -3,6 +3,9 @@ package AmbrosiaUI.Prompts;
 import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Widgets.Window;
 
+/**
+ * Prompt for selecting folders
+ */
 public abstract class Prompt {
 
     protected PromptResult result;

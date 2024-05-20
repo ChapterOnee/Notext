@@ -7,6 +7,9 @@ import AmbrosiaUI.Utility.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A highlighter for the text editor, stores all groups for a certain filetype
+ */
 public class Highlighter extends FileInterpreter {
     private ArrayList<HighlightQuery> queries = new ArrayList<>();
     private ArrayList<String> applies_to = new ArrayList<>();

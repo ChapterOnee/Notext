@@ -11,6 +11,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * A class that manages all readable text, has useful functions for editing the contents, loading from files and others.
+ * Also stores its own state for reverting changes.
+ */
 public class StoredText {
     private final ArrayList<EditorLine> lines;
 

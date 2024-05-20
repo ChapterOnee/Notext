@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ *  A class containing static macros for unification of file operations
+ */
 public class FileUtil {
     public static File createFolder(String... path){
         File nw = new File(joinPath(path));

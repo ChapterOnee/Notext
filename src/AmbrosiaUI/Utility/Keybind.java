@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
+/**
+ * Its a keybind
+ */
 public class Keybind {
 
     static ArrayList<String> names_in_use = new ArrayList<>();

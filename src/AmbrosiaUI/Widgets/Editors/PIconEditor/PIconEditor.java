@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * An Icon editor for a completely custom format of icons reserved for this editor
+ */
 public class PIconEditor extends Frame implements EditorLike {
 
     private PathImage currentImage;

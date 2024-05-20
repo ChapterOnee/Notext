@@ -22,6 +22,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * The complete widget for a text editor, puts together all the essential functionality
+ */
 public class TextEditor extends Frame implements EditorLike {
 
     private final StoredText text;
