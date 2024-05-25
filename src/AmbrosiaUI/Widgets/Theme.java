@@ -12,6 +12,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * A theme that gets loaded from a file and sets all the colors
+ */
 public class Theme extends FileInterpreter {
     /*
     private Color primaryColor = new Color(20,20,20);

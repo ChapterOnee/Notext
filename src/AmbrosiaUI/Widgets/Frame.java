@@ -8,6 +8,9 @@ import AmbrosiaUI.Widgets.Placements.ScrollController;
 
 import java.awt.*;
 
+/**
+ * A frame widget
+ */
 public class Frame extends Widget{
     protected String backgroundColor;
 

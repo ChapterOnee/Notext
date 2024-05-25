@@ -4,6 +4,9 @@ import AmbrosiaUI.Utility.Size;
 import AmbrosiaUI.Utility.Position;
 import AmbrosiaUI.Widgets.Widget;
 
+/**
+ * A placements that gives its children absolute x and y positions
+ */
 public class AbsolutePlacement extends Placement {
     public static class AbsolutePlacementCell extends PlacementCell {
         private final Position position;

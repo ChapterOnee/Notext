@@ -1,5 +1,8 @@
 package Dissimulo;
 
+/**
+ * A value with a type
+ */
 public class InternalValue{
     public enum ValueType{
         INT,

@@ -1,5 +1,8 @@
 package Dissimulo;
 
+/**
+ * A stored object with a unknown class
+ */
 public class StoredObject {
     private Object object;
     private Class<?> aClass;

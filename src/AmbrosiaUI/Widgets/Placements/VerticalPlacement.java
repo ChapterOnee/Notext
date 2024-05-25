@@ -9,6 +9,9 @@ import AmbrosiaUI.Widgets.Theme;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * A placement that snaps its widgets to fully cover it in the x axis but calculates their sizes on the y axis with values defined in units
+ */
 public class VerticalPlacement extends Placement{
     public static class VerticalPlacementCell extends PlacementCell{
         UnitValue height;

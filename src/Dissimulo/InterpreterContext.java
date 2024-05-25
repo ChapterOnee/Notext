@@ -3,6 +3,9 @@ package Dissimulo;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * A context that saves variable and objects under set names
+ */
 public class InterpreterContext {
     private HashMap<String, InterpreterFunction> functions = new HashMap<>();
     private HashMap<String, InternalValue> variables = new HashMap<>();

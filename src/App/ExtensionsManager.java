@@ -18,6 +18,9 @@ import java.io.File;
 import java.lang.reflect.Executable;
 import java.util.ArrayList;
 
+/**
+ * Manager for extensions
+ */
 public class ExtensionsManager extends Window {
     private Root root;
 

@@ -23,6 +23,19 @@ public class AdvancedGraphics {
 
 
     public static final GraphicsBorderModifier BORDER_FULL = new GraphicsBorderModifier(true,true,true,true);
+
+    /**
+     * Draw rectangle with a border
+     * @param g2 Graphical context
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param borderWidth
+     * @param fill Fill color
+     * @param border
+     * @param borderModifier
+     */
     public static void borderedRect(Graphics2D g2, int x, int y, int width, int height, int borderWidth, Color fill, Color border, GraphicsBorderModifier borderModifier){
         g2.setColor(border);
         g2.fillRect(x,y,width,height);
@@ -35,6 +48,14 @@ public class AdvancedGraphics {
                 height - ((borderModifier.isTop() ? 1 : 0) + (borderModifier.isBottom() ? 1 : 0)) * borderWidth
         );
     }
+
+    /**
+     * A special function for drawing hints for the hinter
+     * @param g2 Graphical context
+     * @param pos Position
+     * @param hints An arraylist of string hits
+     * @param theme
+     */
     public static void drawHint(Graphics2D g2, Position pos, ArrayList<String> hints, Theme theme){
         int lineHeight = 20;
         int maxWidth = 0;
@@ -71,6 +92,13 @@ public class AdvancedGraphics {
         AdvancedGraphics.borderedRect(g2,rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),borderWidth,fill,border, borderModifier);
     }
 
+    /**
+     * A function to draw text, draws in bounds
+     * @param g2 Graphical context
+     * @param bounding_rect Rectangle bounds where the text should be drawn
+     * @param text
+     * @param placementSide Side where the text should be placed inside the bounds
+     */
     public static void drawText(Graphics2D g2, Rectangle bounding_rect, String text, Side placementSide){
         FontMetrics fm = g2.getFontMetrics(g2.getFont());
 

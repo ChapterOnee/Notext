@@ -8,6 +8,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Operation that draws and oval
+ */
 public class PathOval implements PathDrawable {
 
     private Position start;

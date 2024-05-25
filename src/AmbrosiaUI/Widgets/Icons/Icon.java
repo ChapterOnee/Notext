@@ -7,6 +7,9 @@ import AmbrosiaUI.Widgets.Theme;
 
 import java.awt.*;
 
+/**
+ * A widget that holds and displays a path image
+ */
 public class Icon extends Frame {
 
     private PathImage image;

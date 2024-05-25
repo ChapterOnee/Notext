@@ -359,6 +359,11 @@ public class TextEditor extends Frame implements EditorLike {
         return fontsizecanvas.getFontMetrics(theme.getFontByName("normal")).getAscent() + LINE_VERTICAL_MARGIN + fontsizecanvas.getFontMetrics(theme.getFontByName("normal")).getDescent();
     }
 
+    /**
+     * Get a cursor position for a position in pixels
+     * @param pos Position in pixels
+     * @return
+     */
     public Position realToCursorPosition(Position pos){
         FontMetrics fm = fontsizecanvas.getFontMetrics(theme.getFontByName("normal"));
 

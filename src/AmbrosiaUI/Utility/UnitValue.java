@@ -47,6 +47,11 @@ public class UnitValue {
         this.unit = unitFromString(unit);
     }
 
+    /**
+     * Returns a unit by its string name
+     * @param unit The name
+     * @return A Unit
+     */
     public Unit unitFromString(String unit){
         return switch (unit){
             case "fit" -> Unit.FIT;
@@ -56,6 +61,13 @@ public class UnitValue {
         };
     }
 
+    /**
+     * Converts a unit into pixels
+     * @param parent_size Size of parent widget
+     * @param widget The widget
+     * @param direction A direction
+     * @return The number of pixels relative to the given environment
+     */
     public int toPixels(Size parent_size, Widget widget, Direction direction){
         return switch (this.unit){
             case PIXELS -> this.value;

@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A definition of regex detected highlighted content
+ */
 public class HighlightQuery {
     private String pattern;
     private String backgroundColor;

@@ -26,6 +26,11 @@ public class EditorLine{
         this.raw_content = raw_content;
     }
 
+    /**
+     * Inserts text on an index
+     * @param text
+     * @param index
+     */
     public void addTextAt(String text, int index){
         this.raw_content = this.raw_content.substring(0,index) + text + this.raw_content.substring(index);
     }
@@ -33,10 +38,19 @@ public class EditorLine{
     public void pushText(String text){
         this.raw_content = text + raw_content;
     }
+
+    /**
+     * Adds text to the end of the line
+     * @param text
+     */
     public void appendText(String text){
         this.raw_content = raw_content + text;
     }
 
+    /**
+     * Removes character at given index
+     * @param index
+     */
     public void removeTextAt(int index){
         StringBuilder sb = new StringBuilder(this.raw_content);
         sb.deleteCharAt(index);
@@ -44,6 +58,11 @@ public class EditorLine{
         //this.raw_content = this.raw_content.substring(0,index-1) + this.raw_content.substring(index);
     }
 
+    /**
+     * Removes text between two indexes
+     * @param start
+     * @param end
+     */
     public void removeAllBetween(int start, int end){
         StringBuilder buf = new StringBuilder(this.raw_content);
 
@@ -52,6 +71,11 @@ public class EditorLine{
         this.raw_content = buf.toString();
     }
 
+    /**
+     * Replace all instances of 'from' by 'to'
+     * @param from
+     * @param to
+     */
     public void replace(String from, String to){
         this.raw_content = this.raw_content.replace(from,to);
     }

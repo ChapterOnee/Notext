@@ -7,6 +7,9 @@ import AmbrosiaUI.Widgets.Theme;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Operation that draws a line
+ */
 public class PathLine implements PathDrawable{
 
     private Position to;

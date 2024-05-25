@@ -14,6 +14,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * An image defined by operations, similar to and svg
+ */
 public class PathImage extends FileInterpreter {
     private ArrayList<PathDrawable> oparations = new ArrayList<>();
 

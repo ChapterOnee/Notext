@@ -3,7 +3,7 @@ package AmbrosiaUI.Utility.FileInterpreter;
 import java.util.ArrayList;
 
 /**
- * A segment of a configuration file for detection
+ * A segment of a configuration file for detection, predefines name and arguments of a single command
  */
 public class InterpretedCommand {
 

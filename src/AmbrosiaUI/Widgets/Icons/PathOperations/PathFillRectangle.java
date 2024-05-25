@@ -9,6 +9,9 @@ import AmbrosiaUI.Widgets.Theme;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Operation that fills a rectangle
+ */
 public class PathFillRectangle implements PathDrawable {
     private String color;
 

@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+/**
+ * A frame widgets which has tabs
+ */
 public class TabbedFrame extends Frame {
     private ArrayList<TabbedFrameTab> tabs = new ArrayList<>();
     private int selectedTab = -1;

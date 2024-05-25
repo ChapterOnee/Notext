@@ -14,6 +14,9 @@ import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * The default widget structure
+ */
 public abstract class Widget implements Comparable<Widget>{
     protected Placement placement;
 
@@ -51,6 +54,10 @@ public abstract class Widget implements Comparable<Widget>{
         boundEvents.add(listener);
     }
 
+    /**
+     * A method that draws the widget and its children in the correct order
+     * @param g2
+     */
     public void draw(Graphics2D g2) {
         ArrayList<Widget> toBeDrawn = this.getAllChildren();
 
@@ -60,6 +67,11 @@ public abstract class Widget implements Comparable<Widget>{
             w.drawSelf(g2);
         }
     }
+
+    /**
+     * A method that defines how the widget itself is drawn
+     * @param g2
+     */
     public void drawSelf(Graphics2D g2){
         if(DEBUG){
             if(this.childrenPlacement != null){
@@ -89,6 +101,11 @@ public abstract class Widget implements Comparable<Widget>{
             g2.drawString(text, text_x,text_y+fm.getAscent());
         }
     }
+
+    /**
+     * A function the presets the graphical context to some set defaults
+     * @param g2
+     */
     public void setupDraw(Graphics2D g2){
         g2.setStroke(new BasicStroke(1));
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -170,6 +187,10 @@ public abstract class Widget implements Comparable<Widget>{
         return childrenPlacement;
     }
 
+    /**
+     * Set a placement for the children of this widget
+     * @param childrenPlacement
+     */
     public void setChildrenPlacement(Placement childrenPlacement) {
         if(window == null){
             Logger.printError("Place this element: " + getClass().getName() + ", before adding a children placement to it.");
@@ -197,6 +218,10 @@ public abstract class Widget implements Comparable<Widget>{
         this.theme = Theme;
     }
 
+    /**
+     * Get all direct children of the widget
+     * @return An arraylist of children widgets
+     */
     public ArrayList<Widget> getChildren(){
         ArrayList<Widget> output = new ArrayList<>();
 
@@ -209,6 +234,10 @@ public abstract class Widget implements Comparable<Widget>{
         return output;
     }
 
+    /**
+     * Gets all children of the widget
+     * @return An arraylist of children widgets
+     */
     public ArrayList<Widget> getAllChildren(){
         ArrayList<Widget> output = new ArrayList<>();
 
@@ -222,6 +251,10 @@ public abstract class Widget implements Comparable<Widget>{
         return output;
     }
 
+    /**
+     * Update events for the widget
+     * @param eventStatus
+     */
     public void fullUpdate(EventStatus eventStatus){
         for(Widget w: this.getAllChildren()) {
             if(w.getMouseHoverRectangles().size() > 1){
@@ -256,6 +289,11 @@ public abstract class Widget implements Comparable<Widget>{
         }
     }
 
+    /**
+     * Get a child of the widget that is under the mouse, if there is no child return self
+     * @param eventStatus
+     * @return
+     */
     public Widget getChildUnderMouse(EventStatus eventStatus){
         Widget output = this;
 
@@ -287,11 +325,18 @@ public abstract class Widget implements Comparable<Widget>{
     }
 
 
-
+    /**
+     * Get a rectangle that defines the bound of this widget
+     * @return
+     */
     public Rectangle getBoundingRect(){
         return new Rectangle(this.getPosition(),this.getWidth(),this.getHeight());
     }
 
+    /**
+     * Get all rectangles within which when the mouse is in them its consider as if its on top of the widget
+     * @return
+     */
     public ArrayList<Rectangle> getMouseHoverRectangles(){
         ArrayList<Rectangle> rects = new ArrayList<>();
         rects.add(this.getBoundingRect());

@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Resolves raw code into tokens
+ */
 public class Lexer {
 
     private static LinkedHashMap<String, LexerTokenType> tokenTypes = new LinkedHashMap<>();

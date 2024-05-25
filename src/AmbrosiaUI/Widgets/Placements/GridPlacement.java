@@ -9,6 +9,9 @@ import AmbrosiaUI.Widgets.Widget;
 
 import java.util.ArrayList;
 
+/**
+ * A placement that gives its children positions in rows and columns that can be defined in units that automatically resize
+ */
 public class GridPlacement extends Placement{
     private ArrayList<UnitValue> rowTemplate = new ArrayList<>();
     private ArrayList<UnitValue> columnTemplate = new ArrayList<>();

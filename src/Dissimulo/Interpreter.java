@@ -22,6 +22,9 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * The interpreter that runs dissimulo code
+ */
 public class Interpreter {
     private InterpreterContext globalContext = new InterpreterContext(false);
 
@@ -154,6 +157,12 @@ public class Interpreter {
 
     private static final Random rng = new Random();
     private static final String idCharacters = "abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+
+    /**
+     * Generates a random ID of characters
+     * @param length
+     * @return  A string ID of set length
+     */
     public static String generateID(int length) {
         char[] text = new char[length];
         for (int i = 0; i < length; i++)
@@ -163,7 +172,11 @@ public class Interpreter {
         return new String(text);
     }
 
-
+    /**
+     * Runs dissimulo code
+     * @param code
+     * @return
+     */
     public InternalValue execute(String code){
         return execute(code,  new InterpreterContext(globalContext));
     }
@@ -178,6 +191,12 @@ public class Interpreter {
         return new InternalValue(InternalValue.ValueType.REFERENCE,referenceName);
     }
 
+    /**
+     * Creates a new object and returns a value reference for it
+     * @param object
+     * @param clazz
+     * @return
+     */
     public InternalValue generateReferenceForObject(Object object, Class<?> clazz){
         String referenceName = generateID(16);
         storedObjects.put(referenceName,new StoredObject(object,clazz));
@@ -188,6 +207,12 @@ public class Interpreter {
         return generateReferenceForObject(object, object.getClass());
     }
 
+    /**
+     * Executes nodes
+     * @param nodes
+     * @param context
+     * @return
+     */
     public InternalValue executeNodes(ArrayList<ASTreeNode> nodes,  InterpreterContext context){
         InternalValue returnValue = new InternalValue(InternalValue.ValueType.NONE);
 
@@ -206,6 +231,13 @@ public class Interpreter {
     }
 
     private String lastStatement = "";
+
+    /**
+     * Resulves an expression from a tree
+     * @param tree
+     * @param context
+     * @return
+     */
     private InternalValue evaluateExpression(ASTreeNode tree, InterpreterContext context){
         InternalValue leftValue = null;
         InternalValue rightValue = null;
@@ -526,6 +558,12 @@ public class Interpreter {
         return endValue;
     }
 
+    /**
+     * Parse and expression and get is result
+     * @param tree
+     * @param context
+     * @return
+     */
     public InternalValue parseIdentifierExpression(ASTreeNode tree, InterpreterContext context){
         ArrayList<ASTreeNode> nodes = Parser.parseContext(tree);
 
@@ -535,6 +573,11 @@ public class Interpreter {
         return new InternalValue(InternalValue.ValueType.ID,endValue.getValue());
     }
 
+    /**
+     * Convert an object to an internal value
+     * @param result
+     * @return
+     */
     public InternalValue objectToInternalValue(Object result){
         if(result instanceof  Integer) {
             return new InternalValue(InternalValue.ValueType.INT, ((int) result) + "");
@@ -562,6 +605,12 @@ public class Interpreter {
         storedObjects.put(refrerence, new StoredObject(obj,clazz));
     }
 
+    /**
+     * Parse context arguments
+     * @param tree
+     * @param context
+     * @return
+     */
     public ArrayList<InternalValue> parseArgumentsFromContext(ASTreeNode tree, InterpreterContext context){
         ArrayList<LexerToken> tokens = Lexer.lexData(tree.getValue().substring(1, tree.getValue().length()-1));
 

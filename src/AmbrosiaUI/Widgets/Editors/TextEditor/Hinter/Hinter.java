@@ -33,6 +33,9 @@ public class Hinter {
         this.cursor = cursor;
     }
 
+    /**
+     * Regenerates hints based on file contents
+     */
     public void reloadHints(){
         currentHints.clear();
 
@@ -69,6 +72,9 @@ public class Hinter {
         sortMostRelevantHint();
     }
 
+    /**
+     * Tries to find the most similar word and puts it to the top
+     */
     public void sortMostRelevantHint(){
         if(currentHints.isEmpty()){
             return;
@@ -88,6 +94,11 @@ public class Hinter {
         currentHints.add(0,mostRelevant);
     }
 
+    /**
+     * Searches through a dictionary of words and if similar adds it as a hint
+     * @param dictionary
+     * @param currentWord
+     */
     public void applyDictionary(KeywordDictionary dictionary, String currentWord){
         for(String word: dictionary.getWords()){
             if(word.contains(currentWord) && !currentHints.contains(word)){
@@ -196,6 +207,10 @@ public class Hinter {
         }
     }
 
+    /**
+     * Loads dictionaries from a directory
+     * @param directory The directory
+     */
     public void loadFromDirectory(String directory){
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();

@@ -6,6 +6,9 @@ import AmbrosiaUI.Utility.UnitValue;
 import AmbrosiaUI.Widgets.Widget;
 import AmbrosiaUI.Widgets.Theme;
 
+/**
+ * A placement that snaps its widgets to fully cover it in the y axis but calculates their sizes on the x axis with values defined in units
+ */
 public class HorizontalPlacement extends Placement{
     public static class HorizontalPlacementCell extends PlacementCell{
         UnitValue width;

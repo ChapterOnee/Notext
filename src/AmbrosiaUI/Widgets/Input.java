@@ -11,6 +11,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+/**
+ * A widget for single line text input
+ */
 public class Input extends Label{
     private final StoredText storedText;
     private final Cursor cursor;

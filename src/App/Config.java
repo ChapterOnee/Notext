@@ -1,5 +1,8 @@
 package App;
 
+/**
+ * A configuration of paths
+ */
 public class Config {
     public static final String themesPath = "resources/themes";
     public static final String iconsPath = "resources/icons";

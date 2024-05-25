@@ -13,6 +13,9 @@ import AmbrosiaUI.Widgets.Window;
 
 import java.io.File;
 
+/**
+ * Settings, currently can only set themes
+ */
 public class Settings extends Window {
 
     private Root root;

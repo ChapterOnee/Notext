@@ -30,6 +30,9 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * The full ap put together using ambrosiaUI
+ */
 public class Root extends Window {
     private EditorLike editorInFocus;
 

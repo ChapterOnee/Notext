@@ -9,6 +9,9 @@ import AmbrosiaUI.Widgets.Placements.ScrollController;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
+/**
+ * A widget for a scrollbar
+ */
 public class Scrollbar extends Frame {
     private ScrollController controller;
     private UnitValue.Direction direction;

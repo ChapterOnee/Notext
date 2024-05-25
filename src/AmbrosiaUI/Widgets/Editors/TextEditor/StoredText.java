@@ -96,6 +96,11 @@ public class StoredText {
         actingCursor.setY(0);
     }
 
+    /**
+     * Loads from a file with a limit of 50_000 lines
+     * @param filename
+     * @return success
+     */
     public boolean fromFile(String filename){
         try {
             File myObj = new File(filename);
@@ -133,6 +138,9 @@ public class StoredText {
         }
     }
 
+    /**
+     * Reverts to previous saved state
+     */
     public void revert(){
         if(this.pastText.size() < 1){
             return;
@@ -206,6 +214,10 @@ public class StoredText {
         this.lines.remove(line);
     }
 
+    /**
+     * Removes the contents of a selection
+     * @param selection
+     */
     public void removeSelection(Selection selection){
         selection = selection.getReorganized();
         if(!selection.valid()){

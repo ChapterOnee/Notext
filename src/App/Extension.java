@@ -13,6 +13,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * An extension
+ */
 public class Extension extends FileInterpreter {
     private String directory;
     private String name;

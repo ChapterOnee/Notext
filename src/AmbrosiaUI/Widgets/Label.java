@@ -7,6 +7,9 @@ import AmbrosiaUI.Utility.StringUtil;
 
 import java.awt.*;
 
+/**
+ * A widget for single line text
+ */
 public class Label extends Frame {
     protected String text;
     protected String foregroundColor = "text1";

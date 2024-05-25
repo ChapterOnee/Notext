@@ -3,6 +3,9 @@ package AmbrosiaUI.Widgets.DropdownMenu;
 import AmbrosiaUI.Widgets.Frame;
 import AmbrosiaUI.Widgets.Widget;
 
+/**
+ * An item for a dropdown menu, can be only a spacer
+ */
 public class DropdownMenuItem {
     private Widget boundWidget;
 

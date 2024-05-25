@@ -1,5 +1,8 @@
 package Dissimulo;
 
+/**
+ * A resolved AS tree node
+ */
 public class ASTreeNode implements Comparable<ASTreeNode>{
     private Lexer.LexerTokenType type;
     private String value;

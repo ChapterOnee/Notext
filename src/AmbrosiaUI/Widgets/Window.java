@@ -20,6 +20,9 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * A custom window build on top of JFrame
+ */
 public class Window {
     private static ArrayList<Window> allOpenWindows = new ArrayList<>();
 
@@ -84,10 +87,16 @@ public class Window {
         initialize();
     }
 
+    /**
+     * Sets window as invisible
+     */
     public void hide(){
         frame.setVisible(false);
     }
 
+    /**
+     * Creates the window if it doesn't exist, if it does just shows it
+     */
     public void show(){
         if(frame == null){
             this.open();
@@ -406,6 +415,9 @@ public class Window {
 
     private ResizingDirection grabbedResize = ResizingDirection.NONE;
 
+    /**
+     * Enables override for the default windows window frame
+     */
     private void enableCustomFrame(){
         panel.addMouseListener(new MouseListener() {
             @Override

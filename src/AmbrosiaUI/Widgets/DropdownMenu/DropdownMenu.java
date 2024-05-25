@@ -104,6 +104,10 @@ public class DropdownMenu extends Label {
                 getFullItemHeight());
     }
 
+    /**
+     * Add an item into the menu
+     * @param item The item
+     */
     public void addMenuItem(DropdownMenuItem item){
         this.items.add(item);
         int height = itemSize.height;

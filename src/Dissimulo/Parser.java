@@ -3,6 +3,9 @@ package Dissimulo;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Parses tokens into action trees
+ */
 public class Parser {
 
     public static ArrayList<ASTreeNode> parseContext(ASTreeNode context){

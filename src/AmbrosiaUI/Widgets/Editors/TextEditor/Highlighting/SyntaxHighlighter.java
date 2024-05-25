@@ -19,6 +19,10 @@ public class SyntaxHighlighter {
         this.highlighters.add(new Highlighter("PlainText"));
     }
 
+    /**
+     * Loads all syntax files from a set directory
+     * @param directory The directory path
+     */
     public void loadFromDirectory(String directory){
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();

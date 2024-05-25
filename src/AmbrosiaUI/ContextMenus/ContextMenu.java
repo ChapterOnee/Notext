@@ -40,6 +40,9 @@ public class ContextMenu {
         }
     }
 
+    /**
+     * @return Rectangle of the outer bounds of the menu
+     */
     public Rectangle getBoundingRect(){
         int width = 0;
 

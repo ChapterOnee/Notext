@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
- * An editor that can display bytes, and browse trough them
+ * An editor that can display bytes, and browse trough them, cannot edit bytes
  */
 public class HexEditor extends Frame implements EditorLike {
     private byte[] contents = new byte[0];

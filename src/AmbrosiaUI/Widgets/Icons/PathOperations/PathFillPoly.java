@@ -9,6 +9,9 @@ import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/**
+ * Operation that fills a polygon
+ */
 public class PathFillPoly implements PathDrawable{
     private Position pos1;
     private Position pos2;

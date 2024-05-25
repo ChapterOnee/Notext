@@ -15,6 +15,10 @@ public class Selection {
         this.from = from;
         this.to = to;
     }
+
+    /**
+     * Puts the higher cursor as the from of the selection so that it doesn't have to be handled backwards
+     */
     public void reorganize(){
         int temp = 0;
         if(from.getY() > to.getY()){
@@ -71,6 +75,11 @@ public class Selection {
         return String.join("\n",this.getSelectedContent());
     }
 
+    /**
+     * Get selected content without checking if it still exists and the indexes are valid
+     * @return  Selected content split by lines
+     * @throws IndexOutOfBoundsException
+     */
     public ArrayList<String> getSelectedContentUnsafe() throws IndexOutOfBoundsException{
         ArrayList<EditorLine> lines = from.getCurrentLines();
         ArrayList<String> output = new ArrayList<>();

@@ -4,6 +4,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+/**
+ * All the events a widget can handle
+ */
 public interface WidgetEventListener {
     void onMouseDragged(MouseEvent e);
     void onMouseMoved(MouseEvent e);

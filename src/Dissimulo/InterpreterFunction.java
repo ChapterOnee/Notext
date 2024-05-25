@@ -2,6 +2,9 @@ package Dissimulo;
 
 import java.util.ArrayList;
 
+/**
+ * A predefined function usable in the dissimulo code
+ */
 public class InterpreterFunction {
 
     protected Interpreter interpreter;

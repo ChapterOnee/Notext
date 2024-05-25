@@ -8,6 +8,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+/**
+ * A button widget
+ */
 public class Button extends Label {
     private Keybind bind;
 

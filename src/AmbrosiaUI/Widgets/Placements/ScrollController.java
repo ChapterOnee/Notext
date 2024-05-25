@@ -2,6 +2,9 @@ package AmbrosiaUI.Widgets.Placements;
 
 import AmbrosiaUI.Utility.Position;
 
+/**
+ * A class that holds scroll and has adjustable limits
+ */
 public class ScrollController {
     private final Position currentScroll = new Position(0,0);
     private int maxScrollX = 0;

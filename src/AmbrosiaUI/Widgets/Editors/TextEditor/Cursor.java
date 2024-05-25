@@ -49,6 +49,12 @@ public class Cursor {
         return position.y + offset_y >= 0 && position.y + offset_y < currentLines.size();
     }
 
+    /**
+     * Get cursor position in pixels
+     * @param fm Font metrics for the current font
+     * @param lineHeight
+     * @return
+     */
     public Position getRealCursorPosition(FontMetrics fm, int lineHeight){
         if(!this.canMove(new Position(0,0))){
             return new Position(0,0);

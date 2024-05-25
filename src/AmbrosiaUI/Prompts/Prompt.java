@@ -4,7 +4,7 @@ import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Widgets.Window;
 
 /**
- * Prompt for selecting folders
+ * Default prompt
  */
 public abstract class Prompt {
 

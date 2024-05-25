@@ -17,6 +17,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * A widget that shows files it contains, can be set to have folders expandable automatically opens in the home directory
+ */
 public class FolderView extends Frame {
     protected String path = System.getProperty("user.home");
 

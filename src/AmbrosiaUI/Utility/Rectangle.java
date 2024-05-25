@@ -67,6 +67,12 @@ public class Rectangle {
     public Size getSize(){
         return new Size(width,height);
     }
+
+    /**
+     * Reduces the size of the rectangle by a given amount
+     * @param margin The given amount
+     * @return this
+     */
     public Rectangle applyMargin(int margin){
         this.x += margin;
         this.y += margin;

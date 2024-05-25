@@ -18,8 +18,12 @@ import java.util.regex.Pattern;
  *
  */
 public class FileInterpreter {
-
     private final HashMap<String, InterpretedCommand> commands = new HashMap<>();
+
+    /**
+     * Loads from a file considering the presets
+     * @param filename A filename or the full path for loading
+     */
     public void loadFromFile(String filename){
         try {
             File myObj = new File(filename);
@@ -88,6 +92,10 @@ public class FileInterpreter {
         return st;
     }
 
+    /**
+     * Add a processed command
+     * @param command the command
+     */
     public void addCommand(InterpretedCommand command){
         this.commands.put(command.getName(), command);
     }

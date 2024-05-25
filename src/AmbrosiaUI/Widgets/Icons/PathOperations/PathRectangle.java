@@ -7,6 +7,9 @@ import AmbrosiaUI.Widgets.Theme;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * An operation that draws a rectangle
+ */
 public class PathRectangle implements PathDrawable{
     private String color;
 

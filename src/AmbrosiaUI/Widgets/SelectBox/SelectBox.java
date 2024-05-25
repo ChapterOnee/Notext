@@ -10,6 +10,9 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+/**
+ * A widget with that can contain a selection of items
+ */
 public class SelectBox extends Label {
     private ArrayList<SelectBoxOption> options = new ArrayList<>();
     private Size itemSize = new Size(100,40);
