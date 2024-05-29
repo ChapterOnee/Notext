@@ -14,8 +14,12 @@ import AmbrosiaUI.Widgets.Placements.VerticalPlacement;
 import AmbrosiaUI.Widgets.Theme;
 import AmbrosiaUI.Widgets.Window;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Executable;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -84,16 +88,32 @@ public class ExtensionsManager extends Window {
         }
     }
 
-    public void loadExtensionsFromPath(String directory){
-        File folder = new File(directory);
-        File[] listOfFiles = folder.listFiles();
+    public void loadExtensionsFromPath(String dir){
+        //File folder = new File(dir);
+        //File[] listOfFiles = folder.listFiles();
 
-        if(listOfFiles == null){
+        /*if(listOfFiles == null){
             Logger.printWarning("No syntax highlighters loaded, folder is empty.");
             return;
+        }*/
+        String path = "/"+dir;
+        URL url = getClass().getResource(path);
+        if (url != null) {
+            File directory = new File(url.getPath());
+            if (directory.isDirectory()) {
+                for (File file : directory.listFiles()) {
+                    if(file.isDirectory()) {
+                        //System.out.println("File " + listOfFile.getName());
+                        Extension nw = new Extension(dir + "/" + file.getName(), theme, root);
+                        nw.loadFromFile(dir + "/" + file.getName() + "/manifest.txt");
+
+                        loadedExtensions.add(nw);
+                    }
+                }
+            }
         }
 
-        for (File file : listOfFiles) {
+        /*for (File file : listOfFiles) {
             if(file.isDirectory()){
                 File manifest = new File(FileUtil.joinPath(file.getAbsolutePath(), "manifest.txt"));
 
@@ -105,6 +125,6 @@ public class ExtensionsManager extends Window {
                     loadedExtensions.add(nw);
                 }
             }
-        }
+        }*/
     }
 }

@@ -70,15 +70,15 @@ public class Window {
     private final boolean DEBUG = false;
     private boolean customFrame = false;
 
-    private static final PathImage maximizeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/maximize.pimg"));
-    private static final PathImage closeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/close.pimg"));
-    private static final PathImage minimizeImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "window/minimize.pimg"));
+    private static final PathImage maximizeImage = new PathImage(Config.iconsPath + "/window/maximize.pimg");
+    private static final PathImage closeImage = new PathImage(Config.iconsPath + "/window/close.pimg");
+    private static final PathImage minimizeImage = new PathImage(Config.iconsPath + "/window/minimize.pimg");
 
     protected HorizontalPlacement innerHeaderPlacement;
     private final EventStatus eventStatus = new EventStatus();
     public Window() {
         theme = new Theme();
-        theme.loadFromFile(FileUtil.joinPath(Config.themesPath, "Light.thm"));
+        theme.loadFromFile(Config.themesPath + "/Light.thm");
         initialize();
     }
 

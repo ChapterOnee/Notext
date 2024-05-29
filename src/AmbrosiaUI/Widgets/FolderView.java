@@ -51,19 +51,19 @@ public class FolderView extends Frame {
         this.itemHeight = itemHeight;
     }
 
-    protected static final PathImage dirImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "folder.pimg"));
-    protected static final PathImage fileImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "file.pimg"));
+    protected static final PathImage dirImage = new PathImage(Config.iconsPath + "/folder.pimg");
+    protected static final PathImage fileImage = new PathImage(Config.iconsPath + "/file.pimg");
 
-    protected static final PathImage pyFileImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "pyfile.pimg"));
+    protected static final PathImage pyFileImage = new PathImage(Config.iconsPath + "/pyfile.pimg");
 
-    protected static final PathImage expandImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "expand.pimg"));
-    protected static final PathImage expandedImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "expanded.pimg"));
+    protected static final PathImage expandImage = new PathImage(Config.iconsPath + "/expand.pimg");
+    protected static final PathImage expandedImage = new PathImage(Config.iconsPath + "/expanded.pimg");
 
-    protected static final PathImage addFolderImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "addFolder.pimg"));
-    protected static final PathImage addFileImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "addFile.pimg"));
+    protected static final PathImage addFolderImage = new PathImage(Config.iconsPath + "/addFolder.pimg");
+    protected static final PathImage addFileImage = new PathImage(Config.iconsPath + "/addFile.pimg");
 
-    protected static final PathImage renameFileImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "rename.pimg"));
-    protected static final PathImage removeFileImage = new PathImage(FileUtil.joinPath(Config.iconsPath, "remove.pimg"));
+    protected static final PathImage renameFileImage = new PathImage(Config.iconsPath + "/rename.pimg");
+    protected static final PathImage removeFileImage = new PathImage(Config.iconsPath + "/remove.pimg");
 
     public void initialize() {
         corePlacement = new GridPlacement(theme);

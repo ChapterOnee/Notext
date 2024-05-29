@@ -3,10 +3,7 @@ package AmbrosiaUI.Utility.FileInterpreter;
 import AmbrosiaUI.Utility.Logger;
 import AmbrosiaUI.Widgets.Editors.TextEditor.EditorLine;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -26,10 +23,12 @@ public class FileInterpreter {
      */
     public void loadFromFile(String filename){
         try {
-            File myObj = new File(filename);
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
+            InputStream stream = getClass().getResourceAsStream("/" + filename);
+            if(stream ==  null) throw new FileNotFoundException("Failed to load file as resource " +"/" + filename);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            while (reader.ready()) {
+                String data = reader.readLine();
 
                 /*
                     Tag template:
@@ -77,9 +76,12 @@ public class FileInterpreter {
                 this.handleTag(tag, name, arguments);*/
 
             }
-            myReader.close();
+            reader.close();
 
         } catch (FileNotFoundException e) {
+            Logger.printError("An error occurred.");
+            e.printStackTrace();
+        } catch (IOException e) {
             Logger.printError("An error occurred.");
             e.printStackTrace();
         }

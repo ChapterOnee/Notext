@@ -12,6 +12,7 @@ import AmbrosiaUI.Widgets.Theme;
 
 import java.awt.*;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -209,10 +210,10 @@ public class Hinter {
 
     /**
      * Loads dictionaries from a directory
-     * @param directory The directory
+     * @param dir The directory
      */
-    public void loadFromDirectory(String directory){
-        File folder = new File(directory);
+    public void loadFromDirectory(String dir){
+        /*File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
 
         if(listOfFiles == null){
@@ -227,6 +228,21 @@ public class Hinter {
                 nw.loadFromFile(listOfFile.getAbsolutePath());
 
                 dictionaries.add(nw);
+            }
+        }*/
+        String path = "/"+dir;
+        URL url = getClass().getResource(path);
+        if (url != null) {
+            File directory = new File(url.getPath());
+            if (directory.isDirectory()) {
+                for (File file : directory.listFiles()) {
+                    if(!file.isDirectory()) {
+                        KeywordDictionary nw = new KeywordDictionary();
+                        nw.loadFromFile(dir+"/"+file.getName());
+
+                        dictionaries.add(nw);
+                    }
+                }
             }
         }
     }

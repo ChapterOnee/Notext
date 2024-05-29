@@ -5,10 +5,7 @@ import AmbrosiaUI.Utility.FileInterpreter.InterpretedCommand;
 import AmbrosiaUI.Utility.Logger;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -100,9 +97,10 @@ public class Theme extends FileInterpreter {
     }
 
     private void loadFont(String filename, String name){
-        File font_file = new File(filename);
         try {
-            Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
+            InputStream is = getClass().getResourceAsStream("/"+filename);
+            if(is ==  null) throw new FileNotFoundException("Failed to load file as resource " + filename);
+            Font font = Font.createFont(Font.TRUETYPE_FONT, is);
             custom_fonts.put(name, font);
         } catch (FontFormatException | IOException e) {
             Logger.printError("Failed to load font '" + filename + "': " + e);

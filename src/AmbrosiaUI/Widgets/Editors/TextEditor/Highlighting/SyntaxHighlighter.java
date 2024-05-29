@@ -1,8 +1,10 @@
 package AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting;
 
 import AmbrosiaUI.Utility.Logger;
+import App.Extension;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -21,10 +23,10 @@ public class SyntaxHighlighter {
 
     /**
      * Loads all syntax files from a set directory
-     * @param directory The directory path
+     * @param dir The directory path
      */
-    public void loadFromDirectory(String directory){
-        File folder = new File(directory);
+    public void loadFromDirectory(String dir){
+        /*File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
 
         if(listOfFiles == null){
@@ -39,6 +41,22 @@ public class SyntaxHighlighter {
                 nw.loadFromFile(listOfFile.getAbsolutePath());
 
                 highlighters.add(nw);
+            }
+        }*/
+        String path = "/"+dir;
+        URL url = getClass().getResource(path);
+        if (url != null) {
+            File directory = new File(url.getPath());
+            if (directory.isDirectory()) {
+                for (File file : directory.listFiles()) {
+                    if(!file.isDirectory()) {
+                        //System.out.println("File " + listOfFile.getName());
+                        Highlighter nw = new Highlighter("");
+                        nw.loadFromFile(dir+"/"+file.getName());
+
+                        highlighters.add(nw);
+                    }
+                }
             }
         }
     }

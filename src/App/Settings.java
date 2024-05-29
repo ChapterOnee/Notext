@@ -3,6 +3,7 @@ package App;
 import AmbrosiaUI.Utility.AdvancedGraphics;
 import AmbrosiaUI.Utility.Logger;
 import AmbrosiaUI.Utility.Size;
+import AmbrosiaUI.Widgets.Editors.TextEditor.Hinter.KeywordDictionary;
 import AmbrosiaUI.Widgets.Label;
 import AmbrosiaUI.Widgets.Placements.GridPlacement;
 import AmbrosiaUI.Widgets.SelectBox.SelectBox;
@@ -12,6 +13,7 @@ import AmbrosiaUI.Widgets.Widget;
 import AmbrosiaUI.Widgets.Window;
 
 import java.io.File;
+import java.net.URL;
 
 /**
  * Settings, currently can only set themes
@@ -30,33 +32,40 @@ public class Settings extends Window {
         SelectBox selection = new SelectBox("normal", 0,2,4);
         selection.setItemSize(new Size(200,40));
 
-        File folder = new File(Config.themesPath);
-        File[] listOfFiles = folder.listFiles();
 
-        if(listOfFiles == null){
-            Logger.printWarning("No themes, folder is empty.");
-            return;
-        }
+        String path = "/"+Config.themesPath;
+        URL url = getClass().getResource(path);
+        if (url != null) {
+            File directory = new File(url.getPath());
+            if (directory.isDirectory()) {
+                File[] listOfFiles = directory.listFiles();
 
-        for (File listOfFile : listOfFiles) {
-            if (listOfFile.isFile() && listOfFile.getName().endsWith(".thm")) {
-                String nm = listOfFile.getName().split("\\.")[0];
-                int w = Widget.getStringWidth(nm, theme.getFontByName(selection.getFont()));
-
-                if(w > selection.getItemSize().width){
-                    selection.getItemSize().width = w;
+                if(listOfFiles == null){
+                    Logger.printWarning("No themes, folder is empty.");
+                    return;
                 }
 
-                selection.addOption(new SelectBoxOption(nm){
-                    @Override
-                    public void onSelected() {
-                        theme.loadFromFile(listOfFile.getAbsolutePath());
-                        Window.reloadAllWindows();
+                for (File file : listOfFiles) {
+                    if (file.isFile() && file.getName().endsWith(".thm")) {
+                        String nm = file.getName().split("\\.")[0];
+                        int w = Widget.getStringWidth(nm, theme.getFontByName(selection.getFont()));
+
+                        if(w > selection.getItemSize().width){
+                            selection.getItemSize().width = w;
+                        }
+
+                        selection.addOption(new SelectBoxOption(nm){
+                            @Override
+                            public void onSelected() {
+                                theme.loadFromFile(Config.themesPath + "/" + file.getName());
+                                Window.reloadAllWindows();
+                            }
+                        });
+
+
+                        selection.selectLast();
                     }
-                });
-
-
-                selection.selectLast();
+                }
             }
         }
 

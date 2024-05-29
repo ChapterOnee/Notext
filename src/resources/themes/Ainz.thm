@@ -1,7 +1,7 @@
-color primary 39 37 76
-color secondary 242 236 248
+color primary 39 40 59
+color secondary 208 188 88
 
-color accent 69 176 210
+color accent 157 27 33
 color accentText 255 255 255
 color accent2 225 58 75
 
@@ -16,7 +16,7 @@ color strings 100 100 100
 color comment 50 50 50
 color numbers 150 150 200
 
-load_font "resources/fonts/JetBrainsMono[wght].ttf" roboto
+load_font "fonts/JetBrainsMono[wght].ttf" roboto
 
 font normal Monospaced 14
 font small Monospaced 12

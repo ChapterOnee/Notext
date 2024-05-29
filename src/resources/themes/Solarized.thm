@@ -1,22 +1,24 @@
-color primary 255 255 255 
-color secondary 240 240 240
+color primary 16 24 32
+color secondary 32 32 16
 
-color accent 180 120 120
+color accent 71 64 0
 color accentText 255 255 255
 color accent2 120 80 120
 
-color text2 100 100 100
-color text1 100 100 100
+color text2 177 196 216
+color text1 180 198 217
 color text1_disabled 210 210 210
 
-color selection 200 200 255
+color selection 	33 50 66
 
 color keywords 200 200 100
 color strings 100 100 100
 color comment 50 50 50
 color numbers 150 150 200
 
-load_font "resources/fonts/JetBrainsMono[wght].ttf" roboto
+Copperplate Gothic Bold
+
+load_font "fonts/JetBrainsMono[wght].ttf" roboto
 
 font normal Monospaced 14
 font small Monospaced 12
