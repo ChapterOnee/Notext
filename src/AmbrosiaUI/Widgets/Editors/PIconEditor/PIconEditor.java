@@ -378,7 +378,7 @@ public class PIconEditor extends Frame implements EditorLike {
     }
     @Override
     public void onKeyPressed(KeyEvent keyEvent) {
-        System.out.println(keyEvent.getKeyCode());
+        //System.out.println(keyEvent.getKeyCode());
         Position cursorPositonOnImage = getCursorPositionOnImage();
         switch (keyEvent.getKeyCode()){
             case 16 -> shiftDown = true;

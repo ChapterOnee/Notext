@@ -24,9 +24,15 @@ public class FileInterpreter {
     public void loadFromFile(String filename){
         try {
             InputStream stream = getClass().getResourceAsStream("/" + filename);
-            if(stream ==  null) throw new FileNotFoundException("Failed to load file as resource " +"/" + filename);
+            BufferedReader reader;
+            if(stream !=  null){
+                reader = new BufferedReader(new InputStreamReader(stream));
+            }
+            else{
+                reader = new BufferedReader(new FileReader(filename));
+            }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
             while (reader.ready()) {
                 String data = reader.readLine();
 

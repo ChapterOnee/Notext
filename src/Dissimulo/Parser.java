@@ -183,11 +183,11 @@ public class Parser {
                     current = new String(new char[currentOffset]).replace("\0"," ") + nodeToString(nodes.getNode());
 
                     currentlyUsedSpace += current.length();
-                    System.out.print(current);
+                    //System.out.print(current);
                 }
             }
 
-            System.out.println();
+            //System.out.println();
         }
     }
     private static void addToDisplayTree(ASTreeNode node, int depth, ArrayList<DisplayTreeNode> lines, int offset){
