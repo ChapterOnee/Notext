@@ -33,40 +33,24 @@ public class Settings extends Window {
         selection.setItemSize(new Size(200,40));
 
 
-        String path = "/"+Config.themesPath;
-        URL url = getClass().getResource(path);
-        if (url != null) {
-            File directory = new File(url.getPath());
-            if (directory.isDirectory()) {
-                File[] listOfFiles = directory.listFiles();
+        for (String path: Config.themes) {
+            String nm = path.split("\\.")[0];
+            int w = Widget.getStringWidth(nm, theme.getFontByName(selection.getFont()));
 
-                if(listOfFiles == null){
-                    Logger.printWarning("No themes, folder is empty.");
-                    return;
-                }
-
-                for (File file : listOfFiles) {
-                    if (file.isFile() && file.getName().endsWith(".thm")) {
-                        String nm = file.getName().split("\\.")[0];
-                        int w = Widget.getStringWidth(nm, theme.getFontByName(selection.getFont()));
-
-                        if(w > selection.getItemSize().width){
-                            selection.getItemSize().width = w;
-                        }
-
-                        selection.addOption(new SelectBoxOption(nm){
-                            @Override
-                            public void onSelected() {
-                                theme.loadFromFile(Config.themesPath + "/" + file.getName());
-                                Window.reloadAllWindows();
-                            }
-                        });
-
-
-                        selection.selectLast();
-                    }
-                }
+            if(w > selection.getItemSize().width){
+                selection.getItemSize().width = w;
             }
+
+            selection.addOption(new SelectBoxOption(nm){
+                @Override
+                public void onSelected() {
+                    theme.loadFromFile(Config.themesPath + "/" + path);
+                    Window.reloadAllWindows();
+                }
+            });
+
+
+            selection.selectLast();
         }
 
 

@@ -9,6 +9,7 @@ import AmbrosiaUI.Widgets.Editors.TextEditor.EditorLine;
 import AmbrosiaUI.Widgets.Editors.TextEditor.Highlighting.Highlighter;
 import AmbrosiaUI.Widgets.Editors.TextEditor.TextEditor;
 import AmbrosiaUI.Widgets.Theme;
+import App.Config;
 
 import java.awt.*;
 import java.io.File;
@@ -209,10 +210,9 @@ public class Hinter {
     }
 
     /**
-     * Loads dictionaries from a directory
-     * @param dir The directory
+     * Loads dictionaries from config
      */
-    public void loadFromDirectory(String dir){
+    public void loadFromConfig(){
         /*File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
 
@@ -230,20 +230,11 @@ public class Hinter {
                 dictionaries.add(nw);
             }
         }*/
-        String path = "/"+dir;
-        URL url = getClass().getResource(path);
-        if (url != null) {
-            File directory = new File(url.getPath());
-            if (directory.isDirectory()) {
-                for (File file : directory.listFiles()) {
-                    if(!file.isDirectory()) {
-                        KeywordDictionary nw = new KeywordDictionary();
-                        nw.loadFromFile(dir+"/"+file.getName());
+        for(String path : Config.extensions){
+            KeywordDictionary nw = new KeywordDictionary();
+            nw.loadFromFile(path);
 
-                        dictionaries.add(nw);
-                    }
-                }
-            }
+            dictionaries.add(nw);
         }
     }
 

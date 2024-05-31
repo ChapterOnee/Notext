@@ -64,10 +64,10 @@ public class TextEditor extends Frame implements EditorLike {
         highlighter.addQuery(new HighlightQuery("(#.*)|(//.*)", "primary", "secondary"));*/
 
         this.highlighter = new SyntaxHighlighter("default");
-        this.highlighter.loadFromDirectory(Config.syntaxPath);
+        this.highlighter.loadFromConfig();
 
         this.hinter = new Hinter(this, cursor);
-        this.hinter.loadFromDirectory(Config.dictionariesPath);
+        this.hinter.loadFromConfig();
 
         //this.highlighter.loadFromFile("syntax/default/theme.snx");
     }
@@ -725,9 +725,9 @@ public class TextEditor extends Frame implements EditorLike {
     @Override
     public void reload() {
         this.highlighter = new SyntaxHighlighter("default");
-        this.highlighter.loadFromDirectory(Config.syntaxPath);
+        this.highlighter.loadFromConfig();
         this.hinter = new Hinter(this, cursor);
-        this.hinter.loadFromDirectory(Config.dictionariesPath);
+        this.hinter.loadFromConfig();
         if(hasFile()) {
             openFile(this.getCurrentFile());
         }
